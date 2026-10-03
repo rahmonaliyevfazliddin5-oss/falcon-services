@@ -1,27 +1,35 @@
-# PATCH
-import bcrypt
-if hasattr(bcrypt,'_orig_hashpw')==False:
- bcrypt._orig_hashpw=bcrypt.hashpw
- def _h(p,s):
-  if isinstance(p,str): p=p.encode().;
-  return bcrypt._orig_hashpw(p[:72],s)
- bcrypt.hashpw=_h
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from contextlib import asynccontextmanager
 
-# --- BCRYPT 72-BYTE GLOBAL PATCH ---
-import bcrypt
-if not hasattr(bcrypt, '_orig_hashpw'):
-    bcrypt._orig_hashpw = bcrypt.hashpw
-    bcrypt._orig_checkpw = bcrypt.checkpw
-    def _patched_hashpw(password, salt):
-        if isinstance(password, str): password = password.encode('utf-8')
-        return bcrypt._orig_hashpw(password[:72], salt)
-    def _patched_checkpw(password, hashed_password):
-        if isinstance(password, str): password = password.encode('utf-8')
-        return bcrypt._orig_checkpw(password[:72], hashed_password)
-    bcrypt.hashpw = _patched_hashpw
-    bcrypt.checkpw = _patched_checkpw
-# -----------------------------------
+from database import engine
+import models
+import auth
+from seed import seed_db
 
-# init
+from routers import public, orders, admin, pages
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    models.Base.metadata.create_all(bind=engine)
+    seed_db()
+    yield
 
+app = FastAPI(title="Falcon Services API - 3-Bosqich", version="3.0.0", lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+app.include_router(auth.router)
+app.include_router(public.router)
+app.include_router(orders.router)
+app.include_router(admin.router)
+app.include_router(pages.router)
