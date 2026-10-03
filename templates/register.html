@@ -66,6 +66,23 @@
             const data = await res.json();
             
             if (res.ok) {
+                // Yangi ro'yxatdan o'tgan foydalanuvchini avtomatik login qilish (qayta so'ramaslik uchun)
+                const params = new URLSearchParams();
+                params.append('username', payload.email);
+                params.append('password', payload.password);
+                const loginRes = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: params.toString()
+                });
+                if (loginRes.ok) {
+                    const loginData = await loginRes.json();
+                    setToken(loginData.access_token);
+                    document.cookie = `access_token=${loginData.access_token}; path=/; max-age=7776000; SameSite=Lax`;
+                    showToast("Muvaffaqiyatli ro'yxatdan o'tdingiz!");
+                    setTimeout(() => window.location.href = '/profile', 800);
+                    return;
+                }
                 showToast("Ro'yxatdan o'tdingiz. Tizimga kiring.");
                 setTimeout(() => window.location.href = '/login', 1500);
             } else {
@@ -78,5 +95,23 @@
             console.error(e);
         }
     });
+
+    async function checkAlreadyLoggedIn() {
+        const token = getToken();
+        if (token) {
+            try {
+                const res = await fetchWithAuth(`${API_URL}/auth/me`);
+                if (res.ok) {
+                    const userData = await res.json();
+                    if (userData.role === 'admin') {
+                        window.location.href = '/admin';
+                    } else {
+                        window.location.href = '/profile';
+                    }
+                }
+            } catch (e) {}
+        }
+    }
+    document.addEventListener('DOMContentLoaded', checkAlreadyLoggedIn);
 </script>
 {% endblock %}

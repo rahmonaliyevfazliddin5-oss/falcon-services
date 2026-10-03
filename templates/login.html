@@ -60,7 +60,8 @@
             
             if (res.ok) {
                 setToken(data.access_token);
-                document.cookie = `access_token=${data.access_token}; path=/; max-age=86400`;
+                // 90 kunlik persistent cookie (har gal so'ramasligi uchun)
+                document.cookie = `access_token=${data.access_token}; path=/; max-age=7776000; SameSite=Lax`;
                 // Check next
                 const urlParams = new URLSearchParams(window.location.search);
                 const next = urlParams.get('next');
@@ -85,5 +86,30 @@
             console.error(e);
         }
     });
+
+    // Agar foydalanuvchi allaqachon tizimga kirgan bo'lsa, login sahifasida qayta so'ramasdan to'g'ri panelga yo'naltirish
+    async function checkAlreadyLoggedIn() {
+        const token = getToken();
+        if (token) {
+            try {
+                const res = await fetchWithAuth(`${API_URL}/auth/me`);
+                if (res.ok) {
+                    const userData = await res.json();
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const next = urlParams.get('next');
+                    if (next) {
+                        window.location.href = next;
+                    } else if (userData.role === 'admin') {
+                        window.location.href = '/admin';
+                    } else {
+                        window.location.href = '/profile';
+                    }
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    }
+    document.addEventListener('DOMContentLoaded', checkAlreadyLoggedIn);
 </script>
 {% endblock %}
