@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
@@ -16,7 +16,16 @@ async def lifespan(app: FastAPI):
     seed_db()
     yield
 
-app = FastAPI(title="Falcon Services API - 3-Bosqich", version="3.0.0", lifespan=lifespan)
+app = FastAPI(title="Falcon Services Platform", version="3.0.0", lifespan=lifespan)
+
+# Brauzer kesh (caching) sozlamalari middleware: rasmlar va statik resurslar darhol ochilishi uchun
+@app.middleware("http")
+async def add_cache_control_headers(request: Request, call_next):
+    response = await call_next(request)
+    if request.url.path.startswith("/static/"):
+        # Rasmlar va statik fayllar uchun 7 kunlik agressiv brauzer kesh
+        response.headers["Cache-Control"] = "public, max-age=604800, stale-while-revalidate=86400"
+    return response
 
 app.add_middleware(
     CORSMiddleware,

@@ -9,3 +9,5 @@ env/
 .idea/
 cloudflared.exe
 *.exe
+static/uploads/avatars/*
+!static/uploads/avatars/.gitkeep

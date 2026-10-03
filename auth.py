@@ -142,6 +142,8 @@ def update_profile(profile_data: schemas.UserUpdate, current_user: models.User =
     db.refresh(current_user)
     return current_user
 
+from PIL import Image, ImageOps
+
 @router.post("/avatar", response_model=schemas.UserOut)
 async def upload_avatar(
     file: UploadFile = File(...),
@@ -150,18 +152,40 @@ async def upload_avatar(
 ):
     if not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Faqat rasm fayllari (JPEG, PNG, WEBP) qabul qilinadi!")
-        
-    ext = file.filename.split(".")[-1].lower() if "." in file.filename else "jpg"
-    if ext not in ["jpg", "jpeg", "png", "webp", "gif"]:
-        raise HTTPException(status_code=400, detail="Rasm formati noto'g'ri (jpg, png, webp bo'lishi kerak)")
 
     upload_dir = os.path.join("static", "uploads", "avatars")
     os.makedirs(upload_dir, exist_ok=True)
-    filename = f"avatar_{current_user.id}_{uuid.uuid4().hex[:8]}.{ext}"
+    filename = f"avatar_{current_user.id}_{uuid.uuid4().hex[:8]}.webp"
     file_path = os.path.join(upload_dir, filename)
 
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    try:
+        # Open uploaded image using PIL
+        image = Image.open(file.file)
+        # Correct mobile phone orientation if EXIF rotation tags exist
+        image = ImageOps.exif_transpose(image)
+        
+        # Convert image to RGB/RGBA
+        if image.mode in ("RGBA", "LA") or (image.mode == "P" and "transparency" in image.info):
+            processed_image = image.convert("RGBA")
+        else:
+            processed_image = image.convert("RGB")
+            
+        # Resize/Thumbnail to max 400x400 (ultra fast loading on mobile networks)
+        processed_image.thumbnail((400, 400), Image.Resampling.LANCZOS)
+        
+        # Save as optimized lightweight WebP format
+        processed_image.save(file_path, "WEBP", quality=82, optimize=True, method=6)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Rasmni qayta ishlashda xatolik: {str(e)}")
+
+    # Clean previous custom avatar file if exists
+    if current_user.avatar_url and "/static/uploads/avatars/" in current_user.avatar_url:
+        old_path = current_user.avatar_url.lstrip("/")
+        if os.path.exists(old_path) and os.path.abspath(old_path) != os.path.abspath(file_path):
+            try:
+                os.remove(old_path)
+            except Exception:
+                pass
 
     current_user.avatar_url = f"/static/uploads/avatars/{filename}"
     db.commit()

@@ -271,3 +271,36 @@ def test_name_profanity_and_uniqueness(db_session):
     assert res2.status_code == 400
     assert "band qilingan" in res2.json()["detail"] or "taken" in res2.json()["detail"]
 
+
+# Test 9: Rasmlarni optimallashtirish (WebP) va Brauzer Kesh (Cache-Control)
+def test_image_optimization_and_caching(db_session):
+    from PIL import Image
+    import io
+
+    m1_token = get_token("m1@falcon.uz", "mijoz123")
+    m1_headers = {"Authorization": f"Bearer {m1_token}"}
+
+    # Create dummy image in memory
+    img = Image.new("RGB", (600, 600), color="blue")
+    buf = io.BytesIO()
+    img.save(buf, format="JPEG")
+    buf.seek(0)
+
+    # Upload avatar
+    res = client.post(
+        "/api/auth/avatar",
+        files={"file": ("photo.jpg", buf, "image/jpeg")},
+        headers=m1_headers
+    )
+    assert res.status_code == 200
+    data = res.json()
+    assert data["avatar_url"].endswith(".webp")
+    assert "/static/uploads/avatars/" in data["avatar_url"]
+
+    # Verify static cache header
+    static_res = client.get(data["avatar_url"])
+    assert static_res.status_code == 200
+    assert "Cache-Control" in static_res.headers
+    assert "max-age=604800" in static_res.headers["Cache-Control"]
+
+

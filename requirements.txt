@@ -9,3 +9,4 @@ email-validator
 python-jose[cryptography]
 python-dotenv
 jinja2
+pillow
