@@ -7,28 +7,28 @@ templates = Jinja2Templates(directory="templates")
 
 @router.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="index.html")
 
 @router.get("/services", response_class=HTMLResponse)
 async def services(request: Request):
-    return templates.TemplateResponse("services.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="services.html")
 
 @router.get("/services/{id}", response_class=HTMLResponse)
 async def service_detail(request: Request, id: int):
-    return templates.TemplateResponse("service_detail.html", {"request": request, "service_id": id})
+    return templates.TemplateResponse(request=request, name="service_detail.html", context={"service_id": id})
 
 @router.get("/login", response_class=HTMLResponse)
 async def login(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="login.html")
 
 @router.get("/register", response_class=HTMLResponse)
 async def register(request: Request):
-    return templates.TemplateResponse("register.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="register.html")
 
 @router.get("/profile", response_class=HTMLResponse)
 async def profile(request: Request):
-    return templates.TemplateResponse("profile.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="profile.html")
 
 @router.get("/admin", response_class=HTMLResponse)
 async def admin_panel(request: Request):
-    return templates.TemplateResponse("admin.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="admin.html")
