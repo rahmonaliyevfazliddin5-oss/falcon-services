@@ -2,55 +2,64 @@
 
 {% block content %}
 <!-- Hero Section -->
-<div class="bg-blue-600 pb-24 sm:pb-32 pt-20">
+<div class="bg-blue-600 pb-20 sm:pb-28 pt-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
+        <span class="inline-block bg-blue-500/40 text-blue-100 text-xs sm:text-sm font-semibold px-4 py-1.5 rounded-full mb-6 backdrop-blur-sm border border-blue-400/30" data-i18n="hero.badge">
+            Professional IT Xizmatlar Platformasi
+        </span>
+        <h1 class="text-3xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl" data-i18n="hero.title">
             Raqamli biznesingizni biz bilan o'stiring
         </h1>
-        <p class="mt-6 max-w-2xl mx-auto text-xl text-blue-100">
-            Professional veb-saytlar, grafik dizayn, SMM va video montaj xizmatlarini bir joydan tez va oson buyurtma qiling.
+        <p class="mt-6 max-w-2xl mx-auto text-base sm:text-lg text-blue-100" data-i18n="hero.subtitle">
+            Veb-saytlar, MVP dasturlash, mobil ilovalar va SEO xizmatlarini bir joydan tez va sifatli buyurtma qiling.
         </p>
-        <div class="mt-10 flex justify-center gap-4">
-            <a href="/services" class="px-8 py-3 border border-transparent text-base font-medium rounded-lg text-blue-700 bg-white hover:bg-gray-50 md:text-lg">
+        <div class="mt-8 flex justify-center gap-3 sm:gap-4 flex-wrap">
+            <a href="/services" class="px-6 py-3 border border-transparent text-sm sm:text-base font-bold rounded-xl text-blue-700 bg-white hover:bg-gray-50 shadow-md transition" data-i18n="hero.btn_catalog">
                 Xizmatlarga buyurtma berish
+            </a>
+            <a href="/services" class="px-6 py-3 border border-white/30 text-sm sm:text-base font-semibold rounded-xl text-white bg-blue-700/60 hover:bg-blue-700 transition" data-i18n="hero.btn_explore">
+                Katalogni ko'rish
             </a>
         </div>
     </div>
 </div>
 
 <!-- Process Section -->
-<div class="py-16 bg-white">
+<div class="py-16 bg-white transition-colors">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-3xl font-extrabold text-gray-900 text-center mb-12">Ishlash jarayoni</h2>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 text-center mb-12" data-i18n="hero.process_title">Ishlash jarayoni</h2>
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
-            <div>
-                <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold text-blue-600">1</div>
-                <h3 class="text-lg font-bold">Xizmatni tanlash</h3>
-                <p class="text-gray-500 text-sm mt-2">Katalogdan o'zingizga kerakli xizmatni tanlang</p>
+            <div class="p-4 rounded-xl bg-gray-50/50 dark:bg-slate-800/50 border border-gray-100 dark:border-slate-700/50">
+                <div class="bg-blue-100 dark:bg-blue-950 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold text-blue-600 dark:text-blue-400">1</div>
+                <h3 class="text-base font-bold text-gray-900" data-i18n="hero.step1_title">Xizmatni tanlash</h3>
+                <p class="text-gray-500 text-sm mt-2" data-i18n="hero.step1_desc">Katalogdan o'zingizga kerakli IT xizmatini tanlang</p>
             </div>
-            <div>
-                <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold text-blue-600">2</div>
-                <h3 class="text-lg font-bold">Texnik topshiriq</h3>
-                <p class="text-gray-500 text-sm mt-2">Loyihangiz haqida to'liq ma'lumot yuboring</p>
+            <div class="p-4 rounded-xl bg-gray-50/50 dark:bg-slate-800/50 border border-gray-100 dark:border-slate-700/50">
+                <div class="bg-blue-100 dark:bg-blue-950 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold text-blue-600 dark:text-blue-400">2</div>
+                <h3 class="text-base font-bold text-gray-900" data-i18n="hero.step2_title">Texnik topshiriq</h3>
+                <p class="text-gray-500 text-sm mt-2" data-i18n="hero.step2_desc">Loyihangiz va talablaringiz haqida ma'lumot yuboring</p>
             </div>
-            <div>
-                <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold text-blue-600">3</div>
-                <h3 class="text-lg font-bold">Jarayonni kuzatish</h3>
-                <p class="text-gray-500 text-sm mt-2">Kabinet orqali jarayon va xabarlarni kuzatib boring</p>
+            <div class="p-4 rounded-xl bg-gray-50/50 dark:bg-slate-800/50 border border-gray-100 dark:border-slate-700/50">
+                <div class="bg-blue-100 dark:bg-blue-950 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold text-blue-600 dark:text-blue-400">3</div>
+                <h3 class="text-base font-bold text-gray-900" data-i18n="hero.step3_title">Jarayonni kuzatish</h3>
+                <p class="text-gray-500 text-sm mt-2" data-i18n="hero.step3_desc">Shaxsiy kabinet orqali ish holatini kuzatib boring</p>
             </div>
-            <div>
-                <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold text-blue-600">4</div>
-                <h3 class="text-lg font-bold">Natijani qabul qilish</h3>
-                <p class="text-gray-500 text-sm mt-2">Tayyor bo'lgan ajoyib natijani qabul qilib oling</p>
+            <div class="p-4 rounded-xl bg-gray-50/50 dark:bg-slate-800/50 border border-gray-100 dark:border-slate-700/50">
+                <div class="bg-blue-100 dark:bg-blue-950 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold text-blue-600 dark:text-blue-400">4</div>
+                <h3 class="text-base font-bold text-gray-900" data-i18n="hero.step4_title">Natijani qabul qilish</h3>
+                <p class="text-gray-500 text-sm mt-2" data-i18n="hero.step4_desc">Tayyor bo'lgan yuqori sifatli natijani qabul qilib oling</p>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Recommended Services -->
-<div class="py-16 bg-gray-50">
+<div class="py-16 bg-gray-50 transition-colors">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-3xl font-extrabold text-gray-900 mb-8">Tavsiya etilgan xizmatlar</h2>
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900" data-i18n="hero.recommended_title">Tavsiya etilgan IT xizmatlar</h2>
+            <a href="/services" class="text-blue-600 dark:text-blue-400 text-sm font-bold hover:underline" data-i18n="hero.btn_explore">Barchasini ko'rish &rarr;</a>
+        </div>
         <div id="loading" class="flex justify-center py-12"><div class="spinner"></div></div>
         <div id="servicesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
             <!-- Populated by JS -->
@@ -61,48 +70,66 @@
 
 {% block scripts %}
 <script>
+    let rawServices = [];
+
     async function loadRecommended() {
         try {
-            const res = await fetch(`${API_URL}/services?limit=6&sort_by=newest`);
-            if (res.ok) {
-                const data = await res.json();
-                const grid = document.getElementById('servicesGrid');
-                const loading = document.getElementById('loading');
-                
-                loading.classList.add('hidden');
-                grid.classList.remove('hidden');
-                
-                if (data.items.length === 0) {
-                    grid.innerHTML = `<p class="col-span-3 text-center text-gray-500">Ma'lumot topilmadi</p>`;
-                    return;
+            if (rawServices.length === 0) {
+                const res = await fetch(`${API_URL}/services?limit=6&sort_by=newest`);
+                if (res.ok) {
+                    const data = await res.json();
+                    rawServices = data.items || [];
                 }
-
-                grid.innerHTML = data.items.map(s => `
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition cursor-pointer flex flex-col" onclick="window.location.href='/services/${s.id}'">
-                        <img src="${s.image_url}" alt="${s.title}" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/2563eb/ffffff?text=Falcon+Services'">
-                        <div class="p-5 flex-grow flex flex-col">
-                            <h3 class="text-lg font-bold text-gray-900 line-clamp-1">${s.title}</h3>
-                            <p class="text-sm text-gray-500 mt-2 line-clamp-2">${s.description}</p>
-                            ${s.working_link ? `
-                                <div class="mt-2.5">
-                                    <a href="${s.working_link}" target="_blank" onclick="event.stopPropagation()" class="inline-flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 font-bold hover:underline bg-blue-50 dark:bg-slate-700 px-2 py-1 rounded">
-                                        Faol Ishchi Havola ↗
-                                    </a>
-                                </div>
-                            ` : ''}
-                            <div class="mt-auto pt-4 flex justify-between items-center border-t border-gray-100 dark:border-slate-700">
-                                <span class="text-lg font-bold text-blue-600 dark:text-blue-400">${s.price.toLocaleString()} UZS</span>
-                                <span class="text-sm text-gray-500">${s.delivery_days} kun</span>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
             }
+            renderRecommended();
         } catch (e) {
             console.error("Xatolik", e);
         }
     }
+
+    function renderRecommended() {
+        const grid = document.getElementById('servicesGrid');
+        const loading = document.getElementById('loading');
+        
+        loading.classList.add('hidden');
+        grid.classList.remove('hidden');
+        
+        if (rawServices.length === 0) {
+            grid.innerHTML = `<p class="col-span-3 text-center text-gray-500 py-8" data-i18n="services.empty_desc">Hech qanday xizmat topilmadi</p>`;
+            return;
+        }
+
+        grid.innerHTML = rawServices.map(raw => {
+            const s = localizeService(raw);
+            const workingLinkText = t('services.working_link');
+            const daysText = formatDays(s.delivery_days);
+            
+            return `
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all cursor-pointer flex flex-col group" onclick="window.location.href='/services/${s.id}'">
+                    <div class="relative overflow-hidden h-48 bg-gray-100">
+                        <img src="${s.image_url}" alt="${s.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://placehold.co/600x400/2563eb/ffffff?text=Falcon+Services'">
+                    </div>
+                    <div class="p-5 flex-grow flex flex-col">
+                        <h3 class="text-base sm:text-lg font-bold text-gray-900 group-hover:text-blue-600 transition line-clamp-1">${s.title}</h3>
+                        <p class="text-xs sm:text-sm text-gray-500 mt-2 line-clamp-2">${s.description}</p>
+                        ${s.working_link ? `
+                            <div class="mt-3">
+                                <a href="${s.working_link}" target="_blank" onclick="event.stopPropagation()" class="inline-flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 font-bold hover:underline bg-blue-50 dark:bg-slate-700/80 px-2.5 py-1 rounded-md">
+                                    ${workingLinkText}
+                                </a>
+                            </div>
+                        ` : ''}
+                        <div class="mt-auto pt-4 flex justify-between items-center border-t border-gray-100 dark:border-slate-700">
+                            <span class="text-base sm:text-lg font-extrabold text-blue-600 dark:text-blue-400">${s.price.toLocaleString()} UZS</span>
+                            <span class="text-xs text-gray-500 font-medium">${daysText}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
     
     document.addEventListener('DOMContentLoaded', loadRecommended);
+    window.addEventListener('languageChanged', renderRecommended);
 </script>
 {% endblock %}

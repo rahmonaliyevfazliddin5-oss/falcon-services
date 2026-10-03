@@ -6,40 +6,40 @@
         
         <!-- Filters Sidebar -->
         <div class="w-full md:w-64 flex-shrink-0">
-            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-                <h3 class="font-bold text-lg mb-4">Filtrlash</h3>
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 transition-colors">
+                <h3 class="font-bold text-lg mb-4 text-gray-900" data-i18n="services.filter_title">Filtrlash</h3>
                 <form id="filterForm" class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Qidiruv</label>
-                        <input type="text" id="search" name="search" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border" placeholder="Xizmat nomi...">
+                        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="services.search_label">Qidiruv</label>
+                        <input type="text" id="search" name="search" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2.5 border" placeholder="Xizmat nomi..." data-i18n-placeholder="services.search_placeholder">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Kategoriya</label>
-                        <select id="category_id" name="category_id" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border">
-                            <option value="">Barchasi</option>
+                        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="services.category_label">Kategoriya</label>
+                        <select id="category_id" name="category_id" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2.5 border">
+                            <option value="" data-i18n="services.all_categories">Barcha kategoriyalar</option>
                         </select>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Min narx</label>
-                            <input type="number" id="min_price" name="min_price" class="w-full border-gray-300 rounded-lg shadow-sm p-2 border sm:text-sm">
+                            <label class="block text-xs font-medium text-gray-700 mb-1" data-i18n="services.min_price">Min narx</label>
+                            <input type="number" id="min_price" name="min_price" class="w-full border-gray-300 rounded-lg shadow-sm p-2 border text-sm" placeholder="0">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Max narx</label>
-                            <input type="number" id="max_price" name="max_price" class="w-full border-gray-300 rounded-lg shadow-sm p-2 border sm:text-sm">
+                            <label class="block text-xs font-medium text-gray-700 mb-1" data-i18n="services.max_price">Max narx</label>
+                            <input type="number" id="max_price" name="max_price" class="w-full border-gray-300 rounded-lg shadow-sm p-2 border text-sm" placeholder="Max">
                         </div>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Saralash</label>
-                        <select id="sort_by" name="sort_by" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border">
-                            <option value="newest">Yangi qo'shilganlar</option>
-                            <option value="price_asc">Arzonidan qimmatiga</option>
-                            <option value="price_desc">Qimmatidan arzoniga</option>
+                        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="services.sort_label">Saralash</label>
+                        <select id="sort_by" name="sort_by" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2.5 border">
+                            <option value="newest" data-i18n="services.sort_newest">Yangi qo'shilganlar</option>
+                            <option value="price_asc" data-i18n="services.sort_price_asc">Arzonidan qimmatiga</option>
+                            <option value="price_desc" data-i18n="services.sort_price_desc">Qimmatidan arzoniga</option>
                         </select>
                     </div>
                     <div class="pt-2 flex gap-2">
-                        <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700">Izlash</button>
-                        <button type="button" id="clearBtn" class="w-full bg-gray-100 text-gray-700 py-2 rounded-lg text-sm font-medium hover:bg-gray-200">Tozalash</button>
+                        <button type="submit" class="w-full bg-blue-600 text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-700 transition shadow-sm" data-i18n="services.btn_search">Izlash</button>
+                        <button type="button" id="clearBtn" class="w-full bg-gray-100 text-gray-700 py-2.5 rounded-lg text-sm font-semibold hover:bg-gray-200 transition" data-i18n="services.btn_clear">Tozalash</button>
                     </div>
                 </form>
             </div>
@@ -47,16 +47,16 @@
 
         <!-- Catalog List -->
         <div class="flex-grow">
-            <h2 class="text-2xl font-bold mb-6">Xizmatlar katalogi</h2>
+            <h2 class="text-2xl font-bold mb-6 text-gray-900" data-i18n="services.title">Xizmatlar katalogi</h2>
             
             <div id="loading" class="flex justify-center py-12"><div class="spinner"></div></div>
             
-            <div id="emptyState" class="hidden text-center py-12 bg-white rounded-xl border border-gray-100 shadow-sm">
+            <div id="emptyState" class="hidden text-center py-12 bg-white rounded-xl border border-gray-100 shadow-sm transition-colors">
                 <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                <h3 class="mt-2 text-sm font-medium text-gray-900">Ma'lumot topilmadi</h3>
-                <p class="mt-1 text-sm text-gray-500">Kiritilgan filtrlar bo'yicha hech narsa yo'q.</p>
+                <h3 class="mt-2 text-base font-bold text-gray-900" data-i18n="services.empty_title">Ma'lumot topilmadi</h3>
+                <p class="mt-1 text-sm text-gray-500" data-i18n="services.empty_desc">Kiritilgan filtrlar bo'yicha hech qanday xizmat topilmadi.</p>
                 <div class="mt-6">
-                    <button type="button" onclick="clearFilters()" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">Filtrlarni tozalash</button>
+                    <button type="button" onclick="clearFilters()" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700" data-i18n="services.btn_clear">Filtrlarni tozalash</button>
                 </div>
             </div>
 
@@ -76,18 +76,29 @@
 {% block scripts %}
 <script>
     let currentPage = 1;
+    let cachedServicesData = null;
+    let rawCategories = [];
 
     async function loadCategories() {
         const res = await fetch(`${API_URL}/categories`);
         if (res.ok) {
-            const cats = await res.json();
-            const select = document.getElementById('category_id');
-            cats.forEach(c => {
-                select.innerHTML += `<option value="${c.id}">${c.name}</option>`;
-            });
-            // Restore from URL after categories loaded
+            rawCategories = await res.json();
+            renderCategoriesDropdown();
             restoreFiltersFromUrl();
         }
+    }
+
+    function renderCategoriesDropdown() {
+        const select = document.getElementById('category_id');
+        const currentVal = select.value;
+        const allCatsText = t('services.all_categories');
+        
+        select.innerHTML = `<option value="">${allCatsText}</option>`;
+        rawCategories.forEach(c => {
+            const localizedCatName = localizeCategory(c.name);
+            select.innerHTML += `<option value="${c.id}">${localizedCatName}</option>`;
+        });
+        if (currentVal) select.value = currentVal;
     }
 
     function restoreFiltersFromUrl() {
@@ -130,9 +141,9 @@
         try {
             const res = await fetch(`${API_URL}/services?${params.toString()}`);
             if (res.ok) {
-                const data = await res.json();
-                renderServices(data);
-                renderPagination(data);
+                cachedServicesData = await res.json();
+                renderServices(cachedServicesData);
+                renderPagination(cachedServicesData);
             }
         } catch (e) {
             showToast("Xatolik yuz berdi", "error");
@@ -146,42 +157,55 @@
         
         loading.classList.add('hidden');
         
-        if (data.items.length === 0) {
+        if (!data || data.items.length === 0) {
             empty.classList.remove('hidden');
             return;
         }
 
         grid.classList.remove('hidden');
-        grid.innerHTML = data.items.map(s => `
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition cursor-pointer flex flex-col" onclick="window.location.href='/services/${s.id}'">
-                <img src="${s.image_url}" alt="${s.title}" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/2563eb/ffffff?text=Falcon+Services'">
-                <div class="p-5 flex-grow flex flex-col">
-                    <p class="text-sm text-gray-500 mt-2 line-clamp-2">${s.description}</p>
-                    ${s.working_link ? `
-                        <div class="mt-2.5">
-                            <a href="${s.working_link}" target="_blank" onclick="event.stopPropagation()" class="inline-flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 font-bold hover:underline bg-blue-50 dark:bg-slate-700 px-2.5 py-1 rounded-md">
-                                Faol Ishchi Havola ↗
-                            </a>
+        const workingLinkText = t('services.working_link');
+
+        grid.innerHTML = data.items.map(raw => {
+            const s = localizeService(raw);
+            const daysText = formatDays(s.delivery_days);
+
+            return `
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition cursor-pointer flex flex-col group" onclick="window.location.href='/services/${s.id}'">
+                    <div class="relative overflow-hidden h-48 bg-gray-100">
+                        <img src="${s.image_url}" alt="${s.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://placehold.co/600x400/2563eb/ffffff?text=Falcon+Services'">
+                    </div>
+                    <div class="p-5 flex-grow flex flex-col">
+                        <h3 class="text-base sm:text-lg font-bold text-gray-900 group-hover:text-blue-600 transition line-clamp-1">${s.title}</h3>
+                        <p class="text-xs sm:text-sm text-gray-500 mt-2 line-clamp-2">${s.description}</p>
+                        ${s.working_link ? `
+                            <div class="mt-3">
+                                <a href="${s.working_link}" target="_blank" onclick="event.stopPropagation()" class="inline-flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 font-bold hover:underline bg-blue-50 dark:bg-slate-700/80 px-2.5 py-1 rounded-md">
+                                    ${workingLinkText}
+                                </a>
+                            </div>
+                        ` : ''}
+                        <div class="mt-auto pt-4 flex justify-between items-center border-t border-gray-100 dark:border-slate-700">
+                            <span class="text-base sm:text-lg font-extrabold text-blue-600 dark:text-blue-400">${s.price.toLocaleString()} UZS</span>
+                            <span class="text-xs text-gray-500 font-medium">${daysText}</span>
                         </div>
-                    ` : ''}
-                    <div class="mt-auto pt-4 flex justify-between items-center border-t border-gray-100 dark:border-slate-700">
-                        <span class="text-lg font-bold text-blue-600 dark:text-blue-400">${s.price.toLocaleString()} UZS</span>
-                        <span class="text-sm text-gray-500">${s.delivery_days} kun</span>
                     </div>
                 </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
     }
 
     function renderPagination(data) {
         const pag = document.getElementById('pagination');
-        if (data.pages <= 1) return;
+        if (!data || data.pages <= 1) {
+            pag.classList.add('hidden');
+            return;
+        }
         pag.classList.remove('hidden');
         
         let html = '';
         for (let i = 1; i <= data.pages; i++) {
-            const activeClass = i === data.page ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50';
-            html += `<button onclick="changePage(${i})" class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium ${activeClass}">${i}</button>`;
+            const activeClass = i === data.page ? 'bg-blue-600 text-white shadow-sm' : 'bg-white text-gray-700 hover:bg-gray-50';
+            html += `<button onclick="changePage(${i})" class="px-3.5 py-1.5 border border-gray-200 rounded-lg text-sm font-semibold transition ${activeClass}">${i}</button>`;
         }
         pag.innerHTML = html;
     }
@@ -207,6 +231,14 @@
     document.getElementById('clearBtn').addEventListener('click', clearFilters);
 
     document.addEventListener('DOMContentLoaded', loadCategories);
+
+    // Dynamic language change listener
+    window.addEventListener('languageChanged', () => {
+        renderCategoriesDropdown();
+        if (cachedServicesData) {
+            renderServices(cachedServicesData);
+        }
+    });
 
     // Handle browser back/forward buttons
     window.addEventListener('popstate', restoreFiltersFromUrl);

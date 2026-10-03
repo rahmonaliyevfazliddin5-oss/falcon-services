@@ -2,43 +2,47 @@
 
 {% block content %}
 <div class="min-h-[70vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+    <div class="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-sm border border-gray-100 transition-colors">
         <div>
-            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            <h2 class="mt-4 text-center text-3xl font-extrabold text-gray-900 tracking-tight" data-i18n="register.title">
                 Ro'yxatdan o'tish
             </h2>
+            <p class="text-xs text-center text-gray-500 mt-2" data-i18n="register.profanity_warn">
+                Ism odobli va haqoratsiz bo'lishi shart
+            </p>
         </div>
         
-        <div id="errorBox" class="hidden bg-red-50 border-l-4 border-red-500 p-4">
-            <p class="text-sm text-red-700" id="errorMsg"></p>
+        <div id="errorBox" class="hidden bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
+            <p class="text-sm text-red-700 font-medium" id="errorMsg"></p>
         </div>
 
-        <form id="registerForm" class="mt-8 space-y-4">
+        <form id="registerForm" class="mt-6 space-y-4">
             <div>
-                <label class="block text-sm font-medium text-gray-700">Ism</label>
-                <input id="name" type="text" required class="mt-1 w-full border border-gray-300 rounded-lg p-2 focus:ring-blue-500 focus:border-blue-500">
+                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1" data-i18n="register.name">Ism (Unikal)</label>
+                <input id="name" type="text" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-blue-500 focus:border-blue-500" placeholder="Haqiqiy ismingizni kiriting" data-i18n-placeholder="register.name_placeholder">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700">Elektron pochta</label>
-                <input id="email" type="email" required class="mt-1 w-full border border-gray-300 rounded-lg p-2 focus:ring-blue-500 focus:border-blue-500">
+                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1" data-i18n="register.email">Elektron pochta</label>
+                <input id="email" type="email" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-blue-500 focus:border-blue-500" placeholder="user@falcon.com">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700">Telefon</label>
-                <input id="phone" type="text" class="mt-1 w-full border border-gray-300 rounded-lg p-2 focus:ring-blue-500 focus:border-blue-500" placeholder="+998998967440">
+                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1" data-i18n="register.phone">Telefon raqami</label>
+                <input id="phone" type="text" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-blue-500 focus:border-blue-500" placeholder="+998998967440">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700">Parol</label>
-                <input id="password" type="password" required class="mt-1 w-full border border-gray-300 rounded-lg p-2 focus:ring-blue-500 focus:border-blue-500">
+                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1" data-i18n="register.password">Parol</label>
+                <input id="password" type="password" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-blue-500 focus:border-blue-500" placeholder="••••••••">
             </div>
 
             <div class="pt-2">
-                <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
+                <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none transition" data-i18n="register.submit">
                     Ro'yxatdan o'tish
                 </button>
             </div>
             
-            <div class="text-sm text-center">
-                Akkauntingiz bormi? <a href="/login" class="font-medium text-blue-600 hover:text-blue-500">Tizimga kirish</a>
+            <div class="text-sm text-center text-gray-500">
+                <span data-i18n="register.have_account">Akkauntingiz bormi?</span> 
+                <a href="/login" class="font-bold text-blue-600 hover:text-blue-500" data-i18n="register.login_link">Tizimga kirish</a>
             </div>
         </form>
     </div>
@@ -66,7 +70,7 @@
             const data = await res.json();
             
             if (res.ok) {
-                // Yangi ro'yxatdan o'tgan foydalanuvchini avtomatik login qilish (qayta so'ramaslik uchun)
+                // Avtomatik login qilib eslab qolish tokeni va cookie o'rnatish
                 const params = new URLSearchParams();
                 params.append('username', payload.email);
                 params.append('password', payload.password);
@@ -88,7 +92,6 @@
             } else {
                 const box = document.getElementById('errorBox');
                 box.classList.remove('hidden');
-                box.classList.add('block');
                 document.getElementById('errorMsg').innerText = data.detail || "Xatolik yuz berdi";
             }
         } catch (e) {
@@ -101,17 +104,11 @@
         if (token) {
             try {
                 const res = await fetchWithAuth(`${API_URL}/auth/me`);
-                if (res.ok) {
-                    const userData = await res.json();
-                    if (userData.role === 'admin') {
-                        window.location.href = '/admin';
-                    } else {
-                        window.location.href = '/profile';
-                    }
-                }
+                if (res.ok) window.location.href = '/profile';
             } catch (e) {}
         }
     }
+
     document.addEventListener('DOMContentLoaded', checkAlreadyLoggedIn);
 </script>
 {% endblock %}
