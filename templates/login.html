@@ -60,6 +60,7 @@
             
             if (res.ok) {
                 setToken(data.access_token);
+                document.cookie = `access_token=${data.access_token}; path=/; max-age=86400`;
                 // Check next
                 const urlParams = new URLSearchParams(window.location.search);
                 const next = urlParams.get('next');
@@ -83,6 +84,6 @@
         } catch (e) {
             console.error(e);
         }
-    }
+    });
 </script>
 {% endblock %}
