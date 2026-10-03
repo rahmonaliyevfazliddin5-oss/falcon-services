@@ -9,14 +9,7 @@ def seed_db():
     db = SessionLocal()
     
     try:
-        # 1. Clear old orders, messages, history to start fresh
-        db.query(models.Message).delete()
-        db.query(models.OrderStatusHistory).delete()
-        db.query(models.Order).delete()
-        
-        # 2. Preserve ONLY the main Falcon Admin account and remove old/test users
-        db.query(models.User).filter(models.User.email != "falcon@admin.com").delete()
-        
+        # 1. Asosiy Falcon Admin akkaunti mavjudligini ta'minlash (agar bo'lmasa yaratish)
         admin = db.query(models.User).filter(models.User.email == "falcon@admin.com").first()
         if not admin:
             admin = models.User(
@@ -29,15 +22,15 @@ def seed_db():
             )
             db.add(admin)
         else:
-            admin.name = "Falcon Admin"
-            admin.password_hash = get_password_hash("falconadmin777")
             admin.role = "admin"
-            admin.phone = "+998998967440"
             if not admin.avatar_url:
                 admin.avatar_url = "/static/default-avatar.png"
         db.commit()
 
-        # 3. Clean and populate exact IT Services categories & services if empty
+        # DIQQAT: Ro'yxatdan o'tgan yangi foydalanuvchilar va ularning buyurtmalari
+        # bazada DOIMIY saqlanib qoladi, hech qachon o'chirilmaydi!
+
+        # 2. IT Xizmatlari kategoriyalari bo'sh bo'lsa kiritish
         if db.query(models.Category).count() == 0:
             categories_data = [
                 models.Category(name="Web sayt yaratish", slug="web-sayt-yaratish"),
@@ -50,6 +43,7 @@ def seed_db():
             db.add_all(categories_data)
             db.commit()
 
+        # 3. IT Xizmatlari bo'sh bo'lsa kiritish
         if db.query(models.Service).count() == 0:
             cat_web = db.query(models.Category).filter(models.Category.slug == "web-sayt-yaratish").first()
             cat_mvp = db.query(models.Category).filter(models.Category.slug == "mvp-qurish").first()
@@ -125,7 +119,7 @@ def seed_db():
             db.add_all(services_data)
             db.commit()
 
-        print("Database successfully seeded with clean state, preserved Admin, and IT services!")
+        print("Database initialized: Admin verified, registered users and orders preserved permanently.")
 
     finally:
         db.close()

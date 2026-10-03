@@ -22,11 +22,33 @@ async def service_detail(request: Request, id: int):
     return templates.TemplateResponse(request=request, name="service_detail.html", context={"service_id": id})
 
 @router.get("/login", response_class=HTMLResponse)
-async def login(request: Request):
+async def login(request: Request, db: Session = Depends(get_db)):
+    token = request.cookies.get("access_token")
+    if token:
+        try:
+            payload = jwt.decode(token, auth.SECRET_KEY, algorithms=[auth.ALGORITHM])
+            email = payload.get("sub")
+            if email:
+                user = auth.get_user(db, email=email)
+                if user:
+                    return RedirectResponse(url="/admin" if user.role == "admin" else "/profile", status_code=302)
+        except Exception:
+            pass
     return templates.TemplateResponse(request=request, name="login.html")
 
 @router.get("/register", response_class=HTMLResponse)
-async def register(request: Request):
+async def register(request: Request, db: Session = Depends(get_db)):
+    token = request.cookies.get("access_token")
+    if token:
+        try:
+            payload = jwt.decode(token, auth.SECRET_KEY, algorithms=[auth.ALGORITHM])
+            email = payload.get("sub")
+            if email:
+                user = auth.get_user(db, email=email)
+                if user:
+                    return RedirectResponse(url="/profile", status_code=302)
+        except Exception:
+            pass
     return templates.TemplateResponse(request=request, name="register.html")
 
 @router.get("/profile", response_class=HTMLResponse)

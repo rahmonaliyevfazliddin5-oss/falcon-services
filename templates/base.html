@@ -207,10 +207,26 @@
     <script>
         const API_URL = '/api';
 
-        // Auth Utilities
-        function getToken() { return localStorage.getItem('token'); }
-        function setToken(token) { localStorage.setItem('token', token); }
-        function removeToken() { localStorage.removeItem('token'); }
+        // Auth Utilities (Persistent 90-kunlik cookie va localStorage)
+        function getToken() { 
+            let t = localStorage.getItem('token');
+            if (!t) {
+                const match = document.cookie.match(/(?:^|;\s*)access_token=([^;]+)/);
+                if (match) {
+                    t = decodeURIComponent(match[1]);
+                    localStorage.setItem('token', t);
+                }
+            }
+            return t;
+        }
+        function setToken(token) { 
+            localStorage.setItem('token', token); 
+            document.cookie = `access_token=${token}; path=/; max-age=7776000; SameSite=Lax`;
+        }
+        function removeToken() { 
+            localStorage.removeItem('token'); 
+            document.cookie = "access_token=; path=/; max-age=0";
+        }
 
         async function fetchWithAuth(url, options = {}) {
             const token = getToken();

@@ -3,7 +3,7 @@ from typing import Optional
 import os
 import shutil
 import uuid
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Response
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -103,7 +103,7 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return db_user
 
 @router.post("/login", response_model=schemas.Token)
-def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = get_user(db, email=form_data.username)
     if not user or not verify_password(form_data.password, user.password_hash):
         raise HTTPException(
@@ -114,6 +114,16 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user.email}, expires_delta=access_token_expires
+    )
+    # Server darajasida 90 kunlik persistent cookie o'rnatish (foydalanuvchini doimiy eslab qolish)
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        max_age=7776000,
+        expires=7776000,
+        path="/",
+        httponly=False,
+        samesite="lax"
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
