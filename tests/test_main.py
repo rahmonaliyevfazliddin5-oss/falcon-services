@@ -54,6 +54,7 @@ def db_session():
     db.close()
     # Teardown
     Base.metadata.drop_all(bind=engine)
+    engine.dispose()
     if os.path.exists("./test_falcon.db"):
         os.remove("./test_falcon.db")
 
