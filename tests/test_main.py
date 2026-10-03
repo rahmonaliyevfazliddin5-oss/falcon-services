@@ -304,3 +304,39 @@ def test_image_optimization_and_caching(db_session):
     assert "max-age=604800" in static_res.headers["Cache-Control"]
 
 
+# Test 10: Maintenance Mode (Texnik sozlash rejimi va maintenance.png)
+def test_maintenance_mode():
+    import main
+
+    # Initially False
+    main.MAINTENANCE_MODE = False
+    res_normal = client.get("/")
+    assert res_normal.status_code == 200
+
+    # Turn on Maintenance Mode
+    main.MAINTENANCE_MODE = True
+    try:
+        # Status endpoint works
+        st_res = client.get("/api/maintenance/status")
+        assert st_res.status_code == 200
+        assert st_res.json()["maintenance"] is True
+
+        # Public page returns 503 and contains maintenance image
+        page_res = client.get("/")
+        assert page_res.status_code == 503
+        assert "maintenance.png" in page_res.text
+
+        # API returns 503 JSON
+        api_res = client.get("/api/services")
+        assert api_res.status_code == 503
+        assert api_res.json()["maintenance"] is True
+
+        # Static assets still accessible
+        static_res = client.get("/static/maintenance.png")
+        assert static_res.status_code == 200
+    finally:
+        # Revert back to False
+        main.MAINTENANCE_MODE = False
+
+
+
