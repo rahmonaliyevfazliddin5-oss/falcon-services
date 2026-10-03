@@ -176,7 +176,8 @@
 
         function logout() {
             removeToken();
-            window.location.href = '/';
+            document.cookie = "access_token=; path=/; max-age=0";
+            window.location.href = '/login';
         }
 
         document.addEventListener('DOMContentLoaded', updateNavbar);

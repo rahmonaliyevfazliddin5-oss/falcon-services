@@ -1,6 +1,10 @@
 from fastapi import APIRouter, Request, Depends
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
+from sqlalchemy.orm import Session
+from database import get_db
+import auth
+from jose import jwt, JWTError
 
 router = APIRouter(tags=["pages"])
 templates = Jinja2Templates(directory="templates")
@@ -30,5 +34,19 @@ async def profile(request: Request):
     return templates.TemplateResponse(request=request, name="profile.html")
 
 @router.get("/admin", response_class=HTMLResponse)
-async def admin_panel(request: Request):
+async def admin_panel(request: Request, db: Session = Depends(get_db)):
+    token = request.cookies.get("access_token")
+    if not token:
+        return RedirectResponse(url="/login?next=/admin", status_code=302)
+    try:
+        payload = jwt.decode(token, auth.SECRET_KEY, algorithms=[auth.ALGORITHM])
+        email: str = payload.get("sub")
+        if not email:
+            return RedirectResponse(url="/login?next=/admin", status_code=302)
+        user = auth.get_user(db, email=email)
+        if not user or user.role != "admin":
+            return RedirectResponse(url="/login?next=/admin", status_code=302)
+    except (JWTError, Exception):
+        return RedirectResponse(url="/login?next=/admin", status_code=302)
+        
     return templates.TemplateResponse(request=request, name="admin.html")
