@@ -36,19 +36,10 @@
             </div>
         </form>
 
-        <div class="mt-6 bg-gray-50 rounded-xl border p-5">
-            <p class="font-bold mb-3 text-center text-gray-800">Demo Obrazlarga Tezkor Kirish (1-Click Login)</p>
-            <div class="space-y-2">
-                <button type="button" onclick="quickLogin('admin@falcon.uz', 'admin123')" class="w-full flex items-center justify-center gap-2 py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition">
-                    🛠 Administrator bo'lib kirish
-                </button>
-                <button type="button" onclick="quickLogin('mijoz1@falcon.uz', 'mijoz123')" class="w-full flex items-center justify-center gap-2 py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition">
-                    👤 1-Mijoz bo'lib kirish
-                </button>
-                <button type="button" onclick="quickLogin('mijoz2@falcon.uz', 'mijoz123')" class="w-full flex items-center justify-center gap-2 py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition">
-                    👥 2-Mijoz bo'lib kirish
-                </button>
-            </div>
+        <div class="mt-6 bg-blue-50 rounded-lg p-4 text-sm text-blue-700">
+            <p class="font-bold mb-1">Demo Akkauntlar:</p>
+            <p>Admin: admin@falcon.uz / admin123</p>
+            <p>Mijoz: mijoz1@falcon.uz / mijoz123</p>
         </div>
     </div>
 </div>
@@ -58,17 +49,10 @@
 <script>
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        await performLogin(document.getElementById('email').value, document.getElementById('password').value);
-    });
-
-    async function quickLogin(email, password) {
-        await performLogin(email, password);
-    }
-
-    async function performLogin(username, password) {
+        
         const params = new URLSearchParams();
-        params.append('username', username);
-        params.append('password', password);
+        params.append('username', document.getElementById('email').value);
+        params.append('password', document.getElementById('password').value);
 
         try {
             const res = await fetch(`${API_URL}/auth/login`, {
