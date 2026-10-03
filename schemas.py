@@ -130,8 +130,15 @@ class DashboardStats(BaseModel):
     new_orders_count: int
     in_progress_orders_count: int
     completed_orders_sum: int
+    completed_orders_count: int = 0
+    cancelled_orders_count: int = 0
+    total_revenue_potential: int = 0
+    total_users_count: int = 0
+    total_services_count: int = 0
+    average_order_value: int = 0
     status_distribution: dict
     top_services: List[dict]
+    recent_activity: List[dict] = []
 
 class OrderAdminOut(OrderOut):
     user_name: str

@@ -20,6 +20,27 @@
     
     <!-- DASHBOARD -->
     <div id="content-dashboard" class="tab-content block">
+        <!-- Real-Time Live Sync Indicator -->
+        <div class="mb-6 flex flex-wrap items-center justify-between gap-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800/80 p-4 rounded-xl border border-blue-100 dark:border-slate-700 transition-colors">
+            <div class="flex items-center gap-3">
+                <span class="relative flex h-3.5 w-3.5">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500"></span>
+                </span>
+                <div>
+                    <h4 class="text-sm font-bold text-gray-900 dark:text-gray-100">Jonli Real-Time Statistika</h4>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Bazada ro'yxatdan o'tgan haqiqiy ma'lumotlar bilan sinxronlangan &bull; Yangilandi: <span id="dash-last-updated" class="font-extrabold text-blue-600 dark:text-blue-400">hozir</span></p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="loadDashboard()" class="text-xs bg-white dark:bg-slate-700 hover:bg-gray-50 text-gray-700 dark:text-gray-200 px-3.5 py-2 rounded-lg border border-gray-200 dark:border-slate-600 font-bold shadow-xs flex items-center gap-1.5 transition">
+                    <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    Jonli yangilash
+                </button>
+            </div>
+        </div>
+
+        <!-- Filter & CSV Bar -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-6 bg-white p-4 rounded-xl shadow-sm border border-gray-100 transition-colors">
             <div class="flex flex-wrap gap-4 items-end">
                 <div>
@@ -33,41 +54,84 @@
                 <button onclick="loadDashboard()" class="bg-gray-800 hover:bg-gray-700 transition text-white px-4 py-2 rounded-lg text-sm font-medium" data-i18n="admin.filter_btn">Filtrlash</button>
             </div>
             <div>
-                <button onclick="exportCSV()" class="bg-green-600 hover:bg-green-700 transition text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2">
+                <button onclick="exportCSV()" class="bg-green-600 hover:bg-green-700 transition text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 shadow-sm">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                     <span data-i18n="admin.export_csv">CSV formatda yuklab olish</span>
                 </button>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 transition-colors">
-                <p class="text-sm font-medium text-gray-500 truncate" data-i18n="admin.stat_total">Jami buyurtmalar</p>
-                <p class="mt-2 text-3xl font-bold text-gray-900" id="stat-total">0</p>
+        <!-- 6 Real-Time KPI Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 transition-colors">
+                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider truncate" data-i18n="admin.stat_total">Jami buyurtmalar</p>
+                <p class="mt-2 text-2xl font-black text-gray-900" id="stat-total">0</p>
+                <p class="text-[11px] text-gray-400 mt-1">Barcha arizalar</p>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 transition-colors">
-                <p class="text-sm font-medium text-gray-500 truncate" data-i18n="admin.stat_new">Yangi buyurtmalar</p>
-                <p class="mt-2 text-3xl font-bold text-blue-600" id="stat-new">0</p>
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 transition-colors">
+                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider truncate" data-i18n="admin.stat_new">Yangi arizalar</p>
+                <p class="mt-2 text-2xl font-black text-blue-600" id="stat-new">0</p>
+                <p class="text-[11px] text-blue-400 mt-1">Ko'rib chiqilishi kerak</p>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 transition-colors">
-                <p class="text-sm font-medium text-gray-500 truncate" data-i18n="admin.stat_progress">Jarayondagi buyurtmalar</p>
-                <p class="mt-2 text-3xl font-bold text-purple-600" id="stat-progress">0</p>
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 transition-colors">
+                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider truncate" data-i18n="admin.stat_progress">Jarayonda</p>
+                <p class="mt-2 text-2xl font-black text-purple-600" id="stat-progress">0</p>
+                <p class="text-[11px] text-purple-400 mt-1">Faol dasturlashda</p>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 transition-colors">
-                <p class="text-sm font-medium text-gray-500 truncate" data-i18n="admin.stat_sum">Umumiy qiymat (Yakunlangan)</p>
-                <p class="mt-2 text-2xl font-bold text-green-600" id="stat-sum">0 UZS</p>
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 transition-colors">
+                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider truncate">Faol Mijozlar</p>
+                <p class="mt-2 text-2xl font-black text-amber-600" id="stat-users">0</p>
+                <p class="text-[11px] text-gray-400 mt-1">Ro'yxatdan o'tganlar</p>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 transition-colors">
+                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider truncate">O'rtacha Chek</p>
+                <p class="mt-2 text-xl font-black text-indigo-600" id="stat-aov">0 UZS</p>
+                <p class="text-[11px] text-gray-400 mt-1">Bitta buyurtmaga</p>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 transition-colors">
+                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider truncate" data-i18n="admin.stat_sum">Haqiqiy Tushum</p>
+                <p class="mt-2 text-xl font-black text-emerald-600" id="stat-sum">0 UZS</p>
+                <p class="text-[11px] text-emerald-500 mt-1">Yakunlangan ishlar</p>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Charts and Top Services -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 transition-colors">
-                <h3 class="text-lg font-bold mb-4 text-gray-900" data-i18n="admin.chart_title">Holatlar bo'yicha ulush</h3>
+                <h3 class="text-base font-bold mb-4 text-gray-900" data-i18n="admin.chart_title">Holatlar bo'yicha real ulush</h3>
                 <canvas id="statusChart"></canvas>
             </div>
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 transition-colors">
-                <h3 class="text-lg font-bold mb-4 text-gray-900" data-i18n="admin.top_services">Top-5 Xizmatlar</h3>
-                <ul class="space-y-4" id="topServicesList">
+                <h3 class="text-base font-bold mb-4 text-gray-900" data-i18n="admin.top_services">Eng talabgir Top-5 Xizmatlar</h3>
+                <ul class="space-y-3" id="topServicesList">
                 </ul>
+            </div>
+        </div>
+
+        <!-- Real-Time Recent Activity Timeline -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 transition-colors">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base font-bold text-gray-900 flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+                    Real-Time So'nggi Harakatlar (Live Stream)
+                </h3>
+                <span class="text-xs text-gray-400 font-medium">Baza bilan bevosita bog'langan</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-100">
+                    <thead class="bg-gray-50 dark:bg-slate-800 text-xs text-gray-500 uppercase font-semibold">
+                        <tr>
+                            <th class="py-2.5 px-4 text-left">Buyurtma</th>
+                            <th class="py-2.5 px-4 text-left">Loyiha</th>
+                            <th class="py-2.5 px-4 text-left">Mijoz</th>
+                            <th class="py-2.5 px-4 text-left">Summasi</th>
+                            <th class="py-2.5 px-4 text-left">Holat</th>
+                            <th class="py-2.5 px-4 text-right">Vaqt</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentActivityList" class="divide-y divide-gray-100 text-xs text-gray-700 dark:text-gray-200">
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -313,6 +377,23 @@
         }
     }
 
+    let dashboardPollingTimer = null;
+    function startDashboardPolling() {
+        if (dashboardPollingTimer) clearInterval(dashboardPollingTimer);
+        dashboardPollingTimer = setInterval(() => {
+            const dashTab = document.getElementById('content-dashboard');
+            if (dashTab && !dashTab.classList.contains('hidden')) {
+                loadDashboard(true);
+            }
+        }, 7000);
+    }
+    function stopDashboardPolling() {
+        if (dashboardPollingTimer) {
+            clearInterval(dashboardPollingTimer);
+            dashboardPollingTimer = null;
+        }
+    }
+
     function switchTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
         document.getElementById('content-' + tabId).classList.remove('hidden');
@@ -327,14 +408,19 @@
             activeBtn.classList.add('border-blue-500', 'text-blue-600');
         }
 
-        if(tabId === 'dashboard') loadDashboard();
+        if(tabId === 'dashboard') {
+            loadDashboard();
+            startDashboardPolling();
+        } else {
+            stopDashboardPolling();
+        }
         if(tabId === 'orders') loadAdminOrders();
         if(tabId === 'services') loadAdminServices();
         if(tabId === 'users') loadAdminUsers();
     }
 
     // DASHBOARD
-    async function loadDashboard() {
+    async function loadDashboard(isBackground = false) {
         const start = document.getElementById('dash_start').value;
         const end = document.getElementById('dash_end').value;
         let url = `${API_URL}/admin/dashboard?`;
@@ -348,6 +434,9 @@
             document.getElementById('stat-new').innerText = data.new_orders_count;
             document.getElementById('stat-progress').innerText = data.in_progress_orders_count;
             document.getElementById('stat-sum').innerText = (data.completed_orders_sum || 0).toLocaleString() + ' UZS';
+            if (document.getElementById('stat-users')) document.getElementById('stat-users').innerText = data.total_users_count || 0;
+            if (document.getElementById('stat-aov')) document.getElementById('stat-aov').innerText = (data.average_order_value || 0).toLocaleString() + ' UZS';
+            if (document.getElementById('dash-last-updated')) document.getElementById('dash-last-updated').innerText = new Date().toLocaleTimeString();
 
             // Chart
             const ctx = document.getElementById('statusChart').getContext('2d');
@@ -367,6 +456,7 @@
                     }]
                 },
                 options: {
+                    animation: isBackground ? false : { duration: 600 },
                     plugins: {
                         tooltip: {
                             callbacks: {
@@ -388,12 +478,35 @@
 
             // Top Services
             const tsList = document.getElementById('topServicesList');
-            tsList.innerHTML = data.top_services.map((ts, i) => `
-                <li class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <span class="text-sm font-medium text-gray-900">${i+1}. ${ts.title}</span>
-                    <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-bold">${ts.count} marta</span>
-                </li>
-            `).join('');
+            if(data.top_services && data.top_services.length > 0) {
+                tsList.innerHTML = data.top_services.map((ts, i) => `
+                    <li class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <span class="text-sm font-medium text-gray-900">${i+1}. ${ts.title}</span>
+                        <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-bold">${ts.count} marta</span>
+                    </li>
+                `).join('');
+            } else {
+                tsList.innerHTML = `<li class="p-3 text-center text-xs text-gray-400">Hozircha xizmatlar statistikasi yo'q</li>`;
+            }
+
+            // Real-Time Recent Activity Stream
+            const actList = document.getElementById('recentActivityList');
+            if(actList) {
+                if(!data.recent_activity || data.recent_activity.length === 0) {
+                    actList.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-gray-400">Hozircha faoliyat qayd etilmagan</td></tr>`;
+                } else {
+                    actList.innerHTML = data.recent_activity.map(act => `
+                        <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition">
+                            <td class="py-2.5 px-4 font-bold text-gray-900 dark:text-gray-100">${act.order_number}</td>
+                            <td class="py-2.5 px-4 text-gray-700 dark:text-gray-300 truncate max-w-[150px]">${act.project_name || act.service_title}</td>
+                            <td class="py-2.5 px-4 font-medium text-gray-800 dark:text-gray-200">${act.client_name}</td>
+                            <td class="py-2.5 px-4 font-bold text-gray-900 dark:text-gray-100">${(act.price || 0).toLocaleString()} UZS</td>
+                            <td class="py-2.5 px-4"><span class="px-2 py-0.5 rounded-full text-[11px] font-bold ${getBadgeColor(act.status)}">${act.status}</span></td>
+                            <td class="py-2.5 px-4 text-right text-gray-400 font-mono text-[11px]">${act.time}</td>
+                        </tr>
+                    `).join('');
+                }
+            }
         }
     }
 

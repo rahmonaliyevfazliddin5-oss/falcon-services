@@ -15,7 +15,7 @@ from routers import public, orders, admin, pages
 
 # =========================================================================
 # Qoida (Rule): MAINTENANCE_MODE
-# Sozlash yakunlandi (False) - Asosiy platforma to'liq ishchi holatda!
+# O'zgarishlar muvaffaqiyatli yakunlandi -> MAINTENANCE_MODE = False
 # =========================================================================
 MAINTENANCE_MODE: bool = False
 

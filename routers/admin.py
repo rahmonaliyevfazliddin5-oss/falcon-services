@@ -142,10 +142,16 @@ def admin_dashboard(start_date: date = None, end_date: date = None, db: Session 
     total_orders = query.count()
     new_orders = query.filter(models.Order.status == "Yangi").count()
     in_progress = query.filter(models.Order.status.in_(["Qabul qilindi", "Jarayonda"])).count()
+    completed_orders_count = query.filter(models.Order.status == "Yakunlandi").count()
+    cancelled_orders_count = query.filter(models.Order.status == "Bekor qilindi").count()
     
-    completed_sum = db.query(func.sum(models.Order.price_snapshot)).filter(
-        models.Order.status == "Yakunlandi"
-    ).scalar() or 0
+    completed_sum = query.filter(models.Order.status == "Yakunlandi").with_entities(func.sum(models.Order.price_snapshot)).scalar() or 0
+    total_potential = query.filter(models.Order.status != "Bekor qilindi").with_entities(func.sum(models.Order.price_snapshot)).scalar() or 0
+    
+    total_users_count = db.query(models.User).filter(models.User.role == "client").count()
+    total_services_count = db.query(models.Service).filter(models.Service.is_archived == False).count()
+    
+    average_order_value = int(completed_sum / completed_orders_count) if completed_orders_count > 0 else (int(total_potential / total_orders) if total_orders > 0 else 0)
 
     # Status distribution
     dist = {}
@@ -161,13 +167,34 @@ def admin_dashboard(start_date: date = None, end_date: date = None, db: Session 
 
     top_services_list = [{"title": t[0], "count": t[1]} for t in top_services]
 
+    # Real-time recent activity stream
+    recent_orders = query.order_by(desc(models.Order.created_at)).limit(6).all()
+    recent_activity = [
+        {
+            "order_number": o.order_number,
+            "project_name": o.project_name,
+            "service_title": o.service_title_snapshot,
+            "client_name": o.user.name,
+            "price": o.price_snapshot,
+            "status": o.status,
+            "time": o.created_at.strftime("%Y-%m-%d %H:%M")
+        } for o in recent_orders
+    ]
+
     return schemas.DashboardStats(
         total_orders=total_orders,
         new_orders_count=new_orders,
         in_progress_orders_count=in_progress,
+        completed_orders_count=completed_orders_count,
+        cancelled_orders_count=cancelled_orders_count,
         completed_orders_sum=completed_sum,
+        total_revenue_potential=total_potential,
+        total_users_count=total_users_count,
+        total_services_count=total_services_count,
+        average_order_value=average_order_value,
         status_distribution=dist,
-        top_services=top_services_list
+        top_services=top_services_list,
+        recent_activity=recent_activity
     )
 
 # --- CSV Export ---

@@ -24,6 +24,28 @@
     </div>
 </div>
 
+<!-- Live Platform Stats Banner -->
+<div class="relative -mt-10 sm:-mt-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 mb-8">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-gray-100 dark:border-slate-700/60 p-6 grid grid-cols-2 lg:grid-cols-4 gap-6 text-center transition-colors">
+        <div class="p-2 border-r border-gray-100 dark:border-slate-700/60">
+            <div class="text-2xl sm:text-4xl font-black text-blue-600 dark:text-blue-400" id="pub-stat-services">0+</div>
+            <div class="text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-400 mt-1" data-i18n="hero.stat_services">Faol IT xizmatlar</div>
+        </div>
+        <div class="p-2 lg:border-r border-gray-100 dark:border-slate-700/60">
+            <div class="text-2xl sm:text-4xl font-black text-blue-600 dark:text-blue-400" id="pub-stat-clients">0+</div>
+            <div class="text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-400 mt-1" data-i18n="hero.stat_clients">Ro'yxatdan o'tgan mijozlar</div>
+        </div>
+        <div class="p-2 border-r border-gray-100 dark:border-slate-700/60">
+            <div class="text-2xl sm:text-4xl font-black text-blue-600 dark:text-blue-400" id="pub-stat-orders">0+</div>
+            <div class="text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-400 mt-1" data-i18n="hero.stat_orders">Qabul qilingan loyihalar</div>
+        </div>
+        <div class="p-2">
+            <div class="text-2xl sm:text-4xl font-black text-emerald-600 dark:text-emerald-400" id="pub-stat-completed">100%</div>
+            <div class="text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-400 mt-1" data-i18n="hero.stat_guarantee">Sifat kafolati</div>
+        </div>
+    </div>
+</div>
+
 <!-- Process Section -->
 <div class="py-16 bg-white transition-colors">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -129,7 +151,27 @@
         }).join('');
     }
     
-    document.addEventListener('DOMContentLoaded', loadRecommended);
+    async function loadPublicStats() {
+        try {
+            const res = await fetch(`${API_URL}/stats`);
+            if (res.ok) {
+                const data = await res.json();
+                const sEl = document.getElementById('pub-stat-services');
+                const cEl = document.getElementById('pub-stat-clients');
+                const oEl = document.getElementById('pub-stat-orders');
+                if (sEl) sEl.innerText = (data.active_services || 0) + '+';
+                if (cEl) cEl.innerText = (data.registered_clients || 0) + '+';
+                if (oEl) oEl.innerText = (data.total_orders || 0) + '+';
+            }
+        } catch (e) {
+            console.error("Public stats error", e);
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        loadRecommended();
+        loadPublicStats();
+    });
     window.addEventListener('languageChanged', renderRecommended);
 </script>
 {% endblock %}

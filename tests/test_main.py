@@ -342,4 +342,48 @@ def test_maintenance_mode():
         main.MAINTENANCE_MODE = False
 
 
+# Test 11: Real-time jonli statistika va KPI hisob-kitoblari
+def test_realtime_statistics(db_session):
+    import main
+    main.MAINTENANCE_MODE = False
+
+    # 1. Public stats endpoint
+    res = client.get("/api/stats")
+    assert res.status_code == 200
+    stats = res.json()
+    assert "active_services" in stats
+    assert "registered_clients" in stats
+    assert "completed_projects" in stats
+    assert "total_orders" in stats
+    assert isinstance(stats["registered_clients"], int)
+
+    # 2. Admin dashboard live statistics
+    admin_token = get_token("admin_test@falcon.uz", "admin123")
+    dash_res = client.get("/api/admin/dashboard", headers={"Authorization": f"Bearer {admin_token}"})
+    assert dash_res.status_code == 200
+    dash = dash_res.json()
+    assert "total_orders" in dash
+    assert "new_orders_count" in dash
+    assert "in_progress_orders_count" in dash
+    assert "completed_orders_count" in dash
+    assert "cancelled_orders_count" in dash
+    assert "completed_orders_sum" in dash
+    assert "total_revenue_potential" in dash
+    assert "total_users_count" in dash
+    assert "total_services_count" in dash
+    assert "average_order_value" in dash
+    assert "status_distribution" in dash
+    assert "top_services" in dash
+    assert "recent_activity" in dash
+    assert isinstance(dash["recent_activity"], list)
+    if len(dash["recent_activity"]) > 0:
+        act = dash["recent_activity"][0]
+        assert "order_number" in act
+        assert "project_name" in act
+        assert "client_name" in act
+        assert "price" in act
+        assert "status" in act
+        assert "time" in act
+
+
 

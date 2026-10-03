@@ -34,6 +34,10 @@ const translations = {
         "hero.step4_title": "Natijani qabul qilish",
         "hero.step4_desc": "Tayyor bo'lgan yuqori sifatli natijani qabul qilib oling",
         "hero.recommended_title": "Tavsiya etilgan IT xizmatlar",
+        "hero.stat_services": "Faol IT xizmatlar",
+        "hero.stat_clients": "Ro'yxatdan o'tgan mijozlar",
+        "hero.stat_orders": "Qabul qilingan loyihalar",
+        "hero.stat_guarantee": "Sifat kafolati",
         
         // Services Catalog & Filters
         "services.title": "Xizmatlar katalogi",
@@ -178,6 +182,10 @@ const translations = {
         "hero.step4_title": "Получение результата",
         "hero.step4_desc": "Примите готовый качественный IT-продукт",
         "hero.recommended_title": "Рекомендуемые IT-услуги",
+        "hero.stat_services": "Активные IT-услуги",
+        "hero.stat_clients": "Зарегистрированные клиенты",
+        "hero.stat_orders": "Принятые проекты",
+        "hero.stat_guarantee": "Гарантия качества",
         
         // Services Catalog & Filters
         "services.title": "Каталог IT-услуг",
@@ -322,6 +330,10 @@ const translations = {
         "hero.step4_title": "Receive Results",
         "hero.step4_desc": "Get top-tier completed digital results on time",
         "hero.recommended_title": "Recommended IT Services",
+        "hero.stat_services": "Active IT Services",
+        "hero.stat_clients": "Registered Clients",
+        "hero.stat_orders": "Received Projects",
+        "hero.stat_guarantee": "Quality Guarantee",
         
         // Services Catalog & Filters
         "services.title": "IT Services Catalog",

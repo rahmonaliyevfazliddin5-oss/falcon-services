@@ -69,3 +69,17 @@ def get_service_detail(id: int, db: Session = Depends(get_db)):
     response = schemas.ServiceDetailOut.model_validate(service)
     response.related_services = [schemas.ServiceOut.model_validate(r) for r in related]
     return response
+
+@router.get("/stats")
+def get_public_platform_stats(db: Session = Depends(get_db)):
+    active_services = db.query(models.Service).filter(models.Service.is_archived == False).count()
+    registered_clients = db.query(models.User).filter(models.User.role == "client").count()
+    completed_projects = db.query(models.Order).filter(models.Order.status == "Yakunlandi").count()
+    total_orders = db.query(models.Order).count()
+    
+    return {
+        "active_services": active_services,
+        "registered_clients": registered_clients,
+        "completed_projects": completed_projects,
+        "total_orders": total_orders
+    }
