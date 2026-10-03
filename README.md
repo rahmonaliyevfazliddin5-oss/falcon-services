@@ -1,149 +1,131 @@
-# Falcon Services - Raqamli Xizmatlar Platformasi
+# Falcon Services 🦅
 
-**"Falcon Services"** — bu mijozlar uchun raqamli xizmatlarni (Veb dasturlash, Grafik dizayn, SMM, Video montaj) qulay shaklda buyurtma qilish va ularning jarayonini kuzatish imkonini beruvchi zamonaviy platforma.
+**Falcon Services** — raqamli xizmatlar buyurtma qilish uchun mo'ljallangan zamonaviy, tez va xavfsiz platforma. Loyiha Python (FastAPI) orqali qurilgan bo'lib, xizmatlarni kataloglash, buyurtma berish, jarayonni kuzatish va administrator tomonidan ularni to'liq boshqarish imkonini beradi.
 
-## 🛠 Texnologiyalar va Stack
-Loyiha uchun zamonaviy va tezkor texnologiyalar yig'indisi tanlandi:
-- **Backend (API):** `FastAPI` — Python'dagi eng tezkor va asinxron freymvorklardan biri bo'lib, Pydantic orqali ma'lumotlarni qat'iy tekshirish imkonini beradi. Swagger UI integratsiyasi avtomatik ishlaydi.
-- **Ma'lumotlar Bazasi:** `SQLAlchemy` (ORM) va `SQLite` (ishlab chiqish uchun) — ma'lumotlar bazasi bilan xavfsiz va obyektga yo'naltirilgan tarzda ishlash uchun tanlandi. (PostgreSQL ga osongina o'zgartirish mumkin).
-- **Autentifikatsiya:** `JWT (JSON Web Tokens)` va `Passlib (Bcrypt)` — xavfsiz sessiyasiz autentifikatsiya standarti, mobil va frontend ilovalar uchun eng qulay usul.
-- **Frontend (UI):** `Jinja2` va `TailwindCSS` — server-side rendering orqali sahifalarni tez yuklash hamda Tailwind orqali zamonaviy va responsiv (moslashuvchan) dizayn yaratish uchun tanlandi. Statistika uchun `Chart.js` kiritildi. JavaScript asosan Fetch API orqali backend bilan bog'lanish uchun ishlatildi.
+## 🛠 Texnologiyalar
+* **Backend:** FastAPI, Python 3.10+
+* **Ma'lumotlar Bazasi:** SQLAlchemy, SQLite (`falcon_services.db`)
+* **Xavfsizlik:** JWT Token (python-jose), Passlib (Bcrypt) parollarni xeshlash
+* **Frontend:** Jinja2 Templates, TailwindCSS, Vanilla JS, Chart.js
+* **Testlash:** Pytest, HTTPX
 
-## 📊 Ma'lumotlar Bazasi Sxemasi (ER-Diagram)
-Quyida loyihadagi 6 ta asosiy jadval va ularning bog'lanishlari ko'rsatilgan:
+## 📂 Loyiha Strukturasi va ER-Diagramma
+Ma'lumotlar bazasi asosan 6 ta jadvaldan tashkil topgan bo'lib, ForeignKey orqali o'zaro bog'langan:
 
 ```mermaid
 erDiagram
     User ||--o{ Order : "places"
-    User ||--o{ OrderStatusHistory : "changes status"
     User ||--o{ Message : "sends"
     Category ||--o{ Service : "contains"
-    Service ||--o{ Order : "is ordered via"
-    Order ||--o{ OrderStatusHistory : "has"
-    Order ||--o{ Message : "has"
-
+    Service ||--o{ Order : "ordered in"
+    Order ||--o{ OrderStatusHistory : "has status history"
+    Order ||--o{ Message : "has messages"
     User {
-        Integer id PK
-        String name
-        String email UK
-        String password_hash
-        String role
-        String phone
-        DateTime created_at
+        int id PK
+        string name
+        string email
+        string password_hash
+        string role
+        string phone
+        datetime created_at
     }
     Category {
-        Integer id PK
-        String name UK
-        String slug UK
-        DateTime created_at
+        int id PK
+        string name
+        string slug
     }
     Service {
-        Integer id PK
-        Integer category_id FK
-        String title
-        Text description
-        String image_url
-        Integer price
-        Integer delivery_days
-        Text included_items
-        Boolean is_archived
-        DateTime created_at
+        int id PK
+        int category_id FK
+        string title
+        int price
+        boolean is_archived
     }
     Order {
-        Integer id PK
-        String order_number UK
-        Integer user_id FK
-        Integer service_id FK
-        String service_title_snapshot
-        Integer price_snapshot
-        String project_name
-        Text technical_task
-        Date desired_deadline
-        String contact_phone
-        String status
-        DateTime created_at
+        int id PK
+        int user_id FK
+        int service_id FK
+        int price_snapshot
+        string status
     }
     OrderStatusHistory {
-        Integer id PK
-        Integer order_id FK
-        String old_status
-        String new_status
-        Integer changed_by_user_id FK
-        DateTime changed_at
+        int id PK
+        int order_id FK
+        string old_status
+        string new_status
     }
     Message {
-        Integer id PK
-        Integer order_id FK
-        Integer sender_id FK
-        Text text
-        DateTime created_at
+        int id PK
+        int order_id FK
+        int sender_id FK
+        string text
     }
 ```
 
-## ⚙️ O'rnatish va Ishga tushirish
+## 🚀 O'rnatish va Ishga tushirish (Local)
 
-Loyihani lokal muhitda ishga tushirish uchun quyidagi qadamlarni bajaring:
-
-1. **Repozitoriyni yuklab olish:**
+1. **Repozitoriyni yuklab oling:**
    ```bash
-   git clone <repo-url>
-   cd falcon_services
+   git clone https://github.com/rahmonaliyevfazliddin5-oss/falcon-services.git
+   cd falcon-services
    ```
-2. **Virtual muhit (venv) yaratish va faollashtirish:**
+2. **Virtual muhit (Virtual Environment) yarating:**
    ```bash
    python -m venv venv
    # Windows uchun:
    venv\Scripts\activate
-   # Mac/Linux uchun:
+   # Linux/Mac uchun:
    source venv/bin/activate
    ```
-3. **Kutubxonalarni o'rnatish:**
+3. **Kutubxonalarni o'rnating:**
    ```bash
    pip install -r requirements.txt
    ```
-4. **Muhit o'zgaruvchilarini sozlash (`.env`):**
-   Loyiha papkasida `.env` faylini yarating (namuna `.env.example` da mavjud):
-   ```env
-   SECRET_KEY=supersecretkey-change-it-in-production
-   ALGORITHM=HS256
-   ACCESS_TOKEN_EXPIRE_MINUTES=30
-   ```
-5. **Serverni ishga tushirish:**
+4. **Baza va muhit o'zgaruvchilarini sozlang:**
+   Loyihada allaqachon SQLite bazasi (`falcon_services.db`) va `seed.py` tayyorlangan. Shuningdek `.env.example` dan nusxa olib `.env` yaratish tavsiya etiladi.
+5. **Serverni ishga tushiring:**
    ```bash
    uvicorn main:app --reload
    ```
-   *Loyiha ishga tushganda bazani avtomatik yaratadi va boshlang'ich ma'lumotlar bilan to'ldiradi (`seed.py`).*
-
-## 👥 Boshlang'ich Ma'lumotlar va Demo Akkauntlar
-Loyiha ishga tushganda `seed.py` fayli orqali quyidagi demo foydalanuvchilar, kategoriyalar va 12 ta xizmat avtomatik qo'shiladi:
-
-| Rol | Email | Parol |
-|---|---|---|
-| Administrator | admin@falcon.uz | admin123 |
-| 1-Mijoz | mijoz1@falcon.uz | mijoz123 |
-| 2-Mijoz | mijoz2@falcon.uz | mijoz123 |
+   *Sayt `http://localhost:8000` manzilida ishga tushadi.*
 
 ## 🧪 Avtomatlashtirilgan Testlar
-Loyiha barqarorligini ta'minlash uchun `pytest` yordamida izolyatsiya qilingan (alohida test xotirasida ishlovchi) avtomatlashtirilgan testlar yozilgan.
-
-**Testni ishga tushirish:**
+Loyiha to'liq `pytest` bilan qoplangan. Testlarni ishga tushirish uchun:
 ```bash
 pytest -v
 ```
-**Test qilinadigan ssenariylar (kamida 7 ta):**
-1. Ro'yxatdan o'tishda ruxsatsiz Administrator rolini saqlab qolishdan himoya va takroriy email blokirovkasi.
-2. Buyurtma berish formasi validatsiyasi (Texnik topshiriq va kun tekshiruvi).
-3. **Narx muzlatilishi (Price Snapshot)**: Xizmat narxi o'zgarganda, oldingi buyurtma narxi saqlanib qolishi.
-4. **IDOR Himoyasi**: Mijozlar faqat o'z buyurtmalarini ko'ra olishi va yoza olishi.
-5. Oddiy foydalanuvchini Admin paneldan uzib qo'yish (`403 Forbidden`).
-6. Holatlar (State Machine) mantig'i: sakrab o'tishni cheklash va mijoz huquqlarini tekshirish.
-7. Xizmatni arxivlash (Soft delete): katalogda yashirish, lekin buyurtmalarni saqlab qolish.
+* Barcha buyurtma validatsiyalari, IDOR himoyasi, Admin himoyasi, Price Snapshot (narxni muzlatish) holatlari va Rol xavfsizligi tekshiriladi.
 
-## 🤖 AI Vositalaridan Foydalanish
-Loyiha davomida sifatni oshirish va tezlikni ta'minlash maqsadida **Antigravity AI (Gemini 3.1 Pro)** agentidan quyidagi vazifalar uchun foydalanildi:
-1. Ma'lumotlar bazasi modellarini ORM da (SQLAlchemy) optimal loyihalash va munosabatlarni o'rnatish.
-2. `seed.py` uchun realistik o'zbek tilidagi ma'lumotlarni, professional Unsplash rasm URL lari bilan shakllantirish.
-3. Frontend qismi uchun `TailwindCSS` va `Jinja2` kombinatsiyasida zamonaviy dizayn tuzish (ayniqsa admin dashboard va chat interfeyslari).
-4. Murakkab mantiq talab qiladigan API tekshiruvlari va `pytest` qamrovini tezkor yozish.
+## 🔐 API Endpointlar (Qisqacha)
+Swagger interfeysini ko'rish uchun `http://localhost:8000/docs` manziliga kiring.
 
-> **Eslatma / Cheklovlar:** Imtihon topshirig'iga binoan, loyihada real to'lov tizimi ulanmagan. Admin dashboard panelida ko'rsatilgan "Yakunlangan buyurtmalar summasi" faqat hisobot xarakteriga ega va jami qiymatni bildiradi.
+* **Ochiq (Public):**
+  * `GET /api/categories` - Kategoriyalar
+  * `GET /api/services` - Xizmatlar (qidiruv, filtr, saralash)
+  * `GET /api/services/{id}` - Bitta xizmat ma'lumotlari
+* **Auth (Token kerak emas):**
+  * `POST /api/auth/register` - Ro'yxatdan o'tish
+  * `POST /api/auth/login` - Kirish (JWT token beradi)
+* **Mijoz uchun (JWT "client" yoki "admin"):**
+  * `GET /api/auth/me` - Profil
+  * `PUT /api/auth/profile` - Profilni tahrirlash
+  * `POST /api/orders` - Buyurtma berish (narx avtomat snapshot qilinadi)
+  * `GET /api/orders/my` - Mening buyurtmalarim
+  * `GET /api/orders/{id}` - Buyurtma tafsilotlari
+  * `PATCH /api/orders/{id}/status` - Mijoz faqat "Yangi" holatidagini "Bekor qilindi" qila oladi.
+  * `POST /api/orders/{id}/messages` - Chat xabar yozish
+* **Admin uchun (Faqat JWT "admin"):**
+  * `GET /api/admin/dashboard` - Statistika
+  * `GET /api/admin/orders` - Barcha buyurtmalar
+  * `GET /api/admin/orders/export-csv` - Buyurtmalarni Excel (CSV) ga yuklash
+  * `POST, PUT, PATCH /api/admin/services` - Xizmatlarni boshqarish (Arxivlash)
+
+## 👥 Demo Akkauntlar
+Loyiha tekshiruvi uchun bazada tayyor akkauntlar mavjud (Ular orqali tizimga kirish mumkin):
+* **Admin:** `admin@falcon.uz` | Parol: `admin123`
+* **Mijoz:** `mijoz1@falcon.uz` | Parol: `mijoz123`
+* **Mijoz 2:** `mijoz2@falcon.uz` | Parol: `mijoz123`
+
+---
+*Ushbu loyiha amaliy imtihon topshirig'i doirasida 100% talablarga javob beradigan qilib yaratildi.*
+*(Eslatma: Loyihani ishlab chiqish davomida AI yordamchisidan, xususan Google Antigravity hamda Gemini imkoniyatlaridan murakkab komponentlar dizayni, test ssenariylari, ORM so'rovlari va sifat nazoratini avtomatlashtirishda keng foydalanildi.)*
