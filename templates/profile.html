@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        
+        <!-- Sidebar -->
+        <div class="md:col-span-1">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <h3 class="font-bold text-lg mb-4">Mening Profilim</h3>
+                <form id="profileForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Ism</label>
+                        <input id="p-name" type="text" class="mt-1 w-full border border-gray-300 rounded-lg p-2 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Email</label>
+                        <input id="p-email" type="text" disabled class="mt-1 w-full border border-gray-300 rounded-lg p-2 text-sm bg-gray-50">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Telefon</label>
+                        <input id="p-phone" type="text" class="mt-1 w-full border border-gray-300 rounded-lg p-2 text-sm">
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700">Saqlash</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Orders -->
+        <div class="md:col-span-3">
+            <h2 class="text-2xl font-bold mb-6">Mening buyurtmalarim</h2>
+            <div id="loading" class="flex justify-center py-12"><div class="spinner"></div></div>
+            <div id="ordersList" class="space-y-4 hidden">
+                <!-- JS Populated -->
+            </div>
+            <div id="emptyOrders" class="hidden text-center py-12 bg-white rounded-xl border border-gray-100 shadow-sm">
+                <p class="text-gray-500">Hali buyurtmalar yo'q.</p>
+                <a href="/services" class="mt-4 inline-block text-blue-600 font-medium hover:underline">Xizmatlar katalogiga o'tish</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Order Detail Modal -->
+<div id="orderModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex-col items-center justify-center z-40 p-4">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+        <div class="p-4 border-b flex justify-between items-center bg-gray-50 rounded-t-xl">
+            <h3 class="text-lg font-bold" id="m-title">Buyurtma tafsilotlari</h3>
+            <button onclick="closeOrderModal()" class="text-gray-400 hover:text-gray-600">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        
+        <div class="p-6 overflow-y-auto flex-grow flex flex-col md:flex-row gap-6">
+            <!-- Left Info -->
+            <div class="w-full md:w-1/2 space-y-6">
+                <div>
+                    <p class="text-sm text-gray-500">Texnik topshiriq</p>
+                    <p class="text-gray-900 mt-1 bg-gray-50 p-3 rounded-lg text-sm" id="m-tt"></p>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-sm text-gray-500">Muddati</p>
+                        <p class="font-medium" id="m-deadline"></p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Telefon</p>
+                        <p class="font-medium" id="m-phone"></p>
+                    </div>
+                </div>
+                
+                <div>
+                    <p class="text-sm text-gray-500 mb-2">Holatlar tarixi</p>
+                    <ul class="space-y-3 relative border-l border-gray-200 ml-3" id="m-history">
+                    </ul>
+                </div>
+                
+                <div id="cancelDiv" class="hidden pt-4 border-t">
+                    <button onclick="cancelOrder()" class="text-red-600 font-medium text-sm hover:underline">Buyurtmani bekor qilish</button>
+                </div>
+            </div>
+            
+            <!-- Right Chat -->
+            <div class="w-full md:w-1/2 flex flex-col border rounded-xl overflow-hidden h-[400px] md:h-auto">
+                <div class="bg-gray-50 p-3 border-b font-medium text-sm">Yozishma</div>
+                <div id="chatBox" class="flex-grow p-4 overflow-y-auto space-y-3 bg-white">
+                </div>
+                <form id="chatForm" class="border-t p-3 bg-gray-50 flex gap-2">
+                    <input type="text" id="chatInput" required class="flex-grow border border-gray-300 rounded-lg p-2 text-sm focus:ring-blue-500" placeholder="Xabar yozing...">
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium">Yuborish</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let currentUserId = null;
+    let currentOrderId = null;
+
+    function getBadgeColor(status) {
+        if(status === 'Yangi') return 'bg-blue-100 text-blue-800';
+        if(status === 'Qabul qilindi') return 'bg-yellow-100 text-yellow-800';
+        if(status === 'Jarayonda') return 'bg-purple-100 text-purple-800';
+        if(status === 'Yakunlandi') return 'bg-green-100 text-green-800';
+        return 'bg-red-100 text-red-800';
+    }
+
+    async function loadProfileData() {
+        try {
+            const res = await fetchWithAuth(`${API_URL}/auth/me`);
+            if (res.ok) {
+                const user = await res.json();
+                currentUserId = user.id;
+                document.getElementById('p-name').value = user.name;
+                document.getElementById('p-email').value = user.email;
+                document.getElementById('p-phone').value = user.phone || '';
+                
+                loadOrders();
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    document.getElementById('profileForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const payload = {
+            name: document.getElementById('p-name').value,
+            phone: document.getElementById('p-phone').value
+        };
+        const res = await fetchWithAuth(`${API_URL}/auth/profile`, {
+            method: 'PUT',
+            body: JSON.stringify(payload)
+        });
+        if(res.ok) showToast("Profil yangilandi");
+    });
+
+    async function loadOrders() {
+        const res = await fetchWithAuth(`${API_URL}/orders/my`);
+        if(res.ok) {
+            const orders = await res.json();
+            document.getElementById('loading').classList.add('hidden');
+            const list = document.getElementById('ordersList');
+            
+            if(orders.length === 0) {
+                document.getElementById('emptyOrders').classList.remove('hidden');
+                return;
+            }
+            
+            list.classList.remove('hidden');
+            list.innerHTML = orders.map(o => `
+                <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex flex-col md:flex-row justify-between md:items-center gap-4">
+                    <div>
+                        <div class="flex items-center gap-3 mb-1">
+                            <span class="font-bold text-gray-900">${o.order_number}</span>
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-medium ${getBadgeColor(o.status)}">${o.status}</span>
+                        </div>
+                        <p class="font-medium text-lg">${o.service_title_snapshot}</p>
+                        <p class="text-sm text-gray-500 mt-1">${new Date(o.created_at).toLocaleDateString()}</p>
+                    </div>
+                    <div class="flex flex-col items-end gap-2">
+                        <span class="font-bold text-lg text-blue-600">${o.price_snapshot.toLocaleString()} UZS</span>
+                        <button onclick="openOrderModal(${o.id})" class="text-sm font-medium text-gray-700 bg-gray-100 px-4 py-2 rounded-lg hover:bg-gray-200 transition">Batafsil / Yozishma</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+
+    async function openOrderModal(id) {
+        currentOrderId = id;
+        const modal = document.getElementById('orderModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        
+        document.getElementById('chatBox').innerHTML = '<div class="spinner mx-auto mt-4"></div>';
+
+        const res = await fetchWithAuth(`${API_URL}/orders/${id}`);
+        if(res.ok) {
+            const o = await res.json();
+            document.getElementById('m-title').innerText = `${o.order_number} - ${o.service_title_snapshot}`;
+            document.getElementById('m-tt').innerText = o.technical_task;
+            document.getElementById('m-deadline').innerText = o.desired_deadline;
+            document.getElementById('m-phone').innerText = o.contact_phone;
+            
+            // History
+            const hist = document.getElementById('m-history');
+            hist.innerHTML = o.status_history.map(h => `
+                <li class="pl-6 relative">
+                    <span class="absolute w-3 h-3 bg-blue-600 rounded-full -left-[6.5px] top-1"></span>
+                    <p class="text-sm font-medium">${h.new_status}</p>
+                    <p class="text-xs text-gray-400">${new Date(h.changed_at).toLocaleString()}</p>
+                </li>
+            `).join('');
+
+            // Cancel button
+            const cancelBtn = document.getElementById('cancelDiv');
+            if(o.status === 'Yangi') {
+                cancelBtn.classList.remove('hidden');
+            } else {
+                cancelBtn.classList.add('hidden');
+            }
+
+            renderChat(o.messages);
+        }
+    }
+
+    function closeOrderModal() {
+        document.getElementById('orderModal').classList.add('hidden');
+        document.getElementById('orderModal').classList.remove('flex');
+        currentOrderId = null;
+    }
+
+    function renderChat(messages) {
+        const box = document.getElementById('chatBox');
+        if(messages.length === 0) {
+            box.innerHTML = '<p class="text-center text-sm text-gray-400 mt-4">Xabarlar yo\'q</p>';
+            return;
+        }
+        box.innerHTML = messages.map(m => {
+            const isMe = m.sender_id === currentUserId;
+            return `
+                <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}">
+                    <div class="${isMe ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-800'} px-4 py-2 rounded-lg max-w-[85%] text-sm">
+                        ${m.text}
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1">${new Date(m.created_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
+                </div>
+            `;
+        }).join('');
+        box.scrollTop = box.scrollHeight;
+    }
+
+    document.getElementById('chatForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const input = document.getElementById('chatInput');
+        const text = input.value;
+        if(!text) return;
+        
+        input.value = '';
+        input.disabled = true;
+
+        const res = await fetchWithAuth(`${API_URL}/orders/${currentOrderId}/messages`, {
+            method: 'POST',
+            body: JSON.stringify({text})
+        });
+        
+        if(res.ok) {
+            // reload messages
+            const mRes = await fetchWithAuth(`${API_URL}/orders/${currentOrderId}/messages`);
+            const msgs = await mRes.json();
+            renderChat(msgs);
+        }
+        input.disabled = false;
+        input.focus();
+    });
+
+    function cancelOrder() {
+        confirmAction("Buyurtmani bekor qilish", "Haqiqatan ham bu buyurtmani bekor qilmoqchimisiz? Bu amalni ortga qaytarib bo'lmaydi.", async () => {
+            const res = await fetchWithAuth(`${API_URL}/orders/${currentOrderId}/status`, {
+                method: 'PATCH',
+                body: JSON.stringify({status: 'Bekor qilindi'})
+            });
+            if(res.ok) {
+                showToast("Buyurtma bekor qilindi");
+                closeOrderModal();
+                loadOrders();
+            } else {
+                const data = await res.json();
+                showToast(data.detail || "Xatolik", "error");
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if(!getToken()) window.location.href = '/login';
+        else loadProfileData();
+    });
+</script>
+{% endblock %}

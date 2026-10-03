@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="bg-blue-600 pb-24 sm:pb-32 pt-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
+            Raqamli biznesingizni biz bilan o'stiring
+        </h1>
+        <p class="mt-6 max-w-2xl mx-auto text-xl text-blue-100">
+            Professional veb-saytlar, grafik dizayn, SMM va video montaj xizmatlarini bir joydan tez va oson buyurtma qiling.
+        </p>
+        <div class="mt-10 flex justify-center gap-4">
+            <a href="/services" class="px-8 py-3 border border-transparent text-base font-medium rounded-lg text-blue-700 bg-white hover:bg-gray-50 md:text-lg">
+                Xizmatlarga buyurtma berish
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Process Section -->
+<div class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-extrabold text-gray-900 text-center mb-12">Ishlash jarayoni</h2>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
+            <div>
+                <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold text-blue-600">1</div>
+                <h3 class="text-lg font-bold">Xizmatni tanlash</h3>
+                <p class="text-gray-500 text-sm mt-2">Katalogdan o'zingizga kerakli xizmatni tanlang</p>
+            </div>
+            <div>
+                <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold text-blue-600">2</div>
+                <h3 class="text-lg font-bold">Texnik topshiriq</h3>
+                <p class="text-gray-500 text-sm mt-2">Loyihangiz haqida to'liq ma'lumot yuboring</p>
+            </div>
+            <div>
+                <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold text-blue-600">3</div>
+                <h3 class="text-lg font-bold">Jarayonni kuzatish</h3>
+                <p class="text-gray-500 text-sm mt-2">Kabinet orqali jarayon va xabarlarni kuzatib boring</p>
+            </div>
+            <div>
+                <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold text-blue-600">4</div>
+                <h3 class="text-lg font-bold">Natijani qabul qilish</h3>
+                <p class="text-gray-500 text-sm mt-2">Tayyor bo'lgan ajoyib natijani qabul qilib oling</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recommended Services -->
+<div class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-extrabold text-gray-900 mb-8">Tavsiya etilgan xizmatlar</h2>
+        <div id="loading" class="flex justify-center py-12"><div class="spinner"></div></div>
+        <div id="servicesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    async function loadRecommended() {
+        try {
+            const res = await fetch(`${API_URL}/services?limit=6&sort_by=newest`);
+            if (res.ok) {
+                const data = await res.json();
+                const grid = document.getElementById('servicesGrid');
+                const loading = document.getElementById('loading');
+                
+                loading.classList.add('hidden');
+                grid.classList.remove('hidden');
+                
+                if (data.items.length === 0) {
+                    grid.innerHTML = `<p class="col-span-3 text-center text-gray-500">Ma'lumot topilmadi</p>`;
+                    return;
+                }
+
+                grid.innerHTML = data.items.map(s => `
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition cursor-pointer flex flex-col" onclick="window.location.href='/services/${s.id}'">
+                        <img src="${s.image_url}" alt="${s.title}" class="w-full h-48 object-cover">
+                        <div class="p-5 flex-grow flex flex-col">
+                            <h3 class="text-lg font-bold text-gray-900 line-clamp-1">${s.title}</h3>
+                            <p class="text-sm text-gray-500 mt-2 line-clamp-2">${s.description}</p>
+                            <div class="mt-auto pt-4 flex justify-between items-center">
+                                <span class="text-lg font-bold text-blue-600">${s.price.toLocaleString()} UZS</span>
+                                <span class="text-sm text-gray-500">${s.delivery_days} kun</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        } catch (e) {
+            console.error("Xatolik", e);
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', loadRecommended);
+</script>
+{% endblock %}

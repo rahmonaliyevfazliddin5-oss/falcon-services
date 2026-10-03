@@ -1,0 +1,457 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-8">
+        <h1 class="text-3xl font-extrabold text-gray-900">Admin Panel</h1>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <div class="border-b border-gray-200 mb-6">
+        <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+            <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn border-blue-500 text-blue-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Dashboard</button>
+            <button onclick="switchTab('orders')" id="tab-orders" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Buyurtmalar</button>
+            <button onclick="switchTab('services')" id="tab-services" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Xizmatlar</button>
+            <button onclick="switchTab('users')" id="tab-users" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Foydalanuvchilar</button>
+        </nav>
+    </div>
+
+    <!-- Tab Contents -->
+    
+    <!-- DASHBOARD -->
+    <div id="content-dashboard" class="tab-content block">
+        <div class="flex justify-between items-end mb-6 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+            <div class="flex gap-4 items-end">
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Boshlanish sanasi</label>
+                    <input type="date" id="dash_start" class="border border-gray-300 rounded-lg p-2 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Tugash sanasi</label>
+                    <input type="date" id="dash_end" class="border border-gray-300 rounded-lg p-2 text-sm">
+                </div>
+                <button onclick="loadDashboard()" class="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium">Filtrlash</button>
+            </div>
+            <div>
+                <button onclick="exportCSV()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    CSV formatda yuklab olish
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <p class="text-sm font-medium text-gray-500 truncate">Jami buyurtmalar</p>
+                <p class="mt-2 text-3xl font-bold text-gray-900" id="stat-total">0</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <p class="text-sm font-medium text-gray-500 truncate">Yangi buyurtmalar</p>
+                <p class="mt-2 text-3xl font-bold text-blue-600" id="stat-new">0</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <p class="text-sm font-medium text-gray-500 truncate">Jarayondagi buyurtmalar</p>
+                <p class="mt-2 text-3xl font-bold text-purple-600" id="stat-progress">0</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <p class="text-sm font-medium text-gray-500 truncate">Yakunlangan buyurtmalar qiymati (to'lov tizimisiz)</p>
+                <p class="mt-2 text-2xl font-bold text-green-600" id="stat-sum">0 UZS</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <h3 class="text-lg font-bold mb-4">Holatlar bo'yicha</h3>
+                <canvas id="statusChart"></canvas>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <h3 class="text-lg font-bold mb-4">Eng ko'p buyurtma qilingan xizmatlar</h3>
+                <ul class="space-y-4" id="topServicesList">
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- ORDERS -->
+    <div id="content-orders" class="tab-content hidden">
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 flex gap-4">
+            <input type="text" id="ord_search" placeholder="Qidiruv..." class="flex-grow border border-gray-300 rounded-lg p-2 text-sm">
+            <select id="ord_status" class="border border-gray-300 rounded-lg p-2 text-sm">
+                <option value="">Barcha holatlar</option>
+                <option value="Yangi">Yangi</option>
+                <option value="Qabul qilindi">Qabul qilindi</option>
+                <option value="Jarayonda">Jarayonda</option>
+                <option value="Yakunlandi">Yakunlandi</option>
+                <option value="Bekor qilindi">Bekor qilindi</option>
+            </select>
+            <button onclick="loadAdminOrders()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium">Filtrlash</button>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Xizmat</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mijoz</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Holat</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sana</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Amal</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200" id="adminOrdersTbody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- SERVICES -->
+    <div id="content-services" class="tab-content hidden">
+        <div class="flex justify-end mb-4">
+            <button onclick="openServiceModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium">+ Yangi xizmat</button>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nomi</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Narxi</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Muddati</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Holati</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Amal</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200" id="adminServicesTbody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- USERS -->
+    <div id="content-users" class="tab-content hidden">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ism</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telefon</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rol</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sana</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200" id="adminUsersTbody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<!-- Admin Order Detail Modal -->
+<div id="adminOrderModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex-col items-center justify-center z-40 p-4">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+        <div class="p-4 border-b flex justify-between items-center bg-gray-50 rounded-t-xl">
+            <h3 class="text-lg font-bold" id="ao-title"></h3>
+            <button onclick="closeAdminOrderModal()" class="text-gray-400 hover:text-gray-600">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        
+        <div class="p-6 overflow-y-auto flex-grow flex flex-col md:flex-row gap-6">
+            <div class="w-full md:w-1/2 space-y-6">
+                <div>
+                    <p class="text-sm text-gray-500">Holatni o'zgartirish</p>
+                    <div class="flex gap-2 mt-1">
+                        <select id="ao-status-select" class="flex-grow border border-gray-300 rounded-lg p-2 text-sm focus:ring-blue-500">
+                            <option value="Yangi">Yangi</option>
+                            <option value="Qabul qilindi">Qabul qilindi</option>
+                            <option value="Jarayonda">Jarayonda</option>
+                            <option value="Yakunlandi">Yakunlandi</option>
+                            <option value="Bekor qilindi">Bekor qilindi</option>
+                        </select>
+                        <button onclick="changeAdminOrderStatus()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium">Saqlash</button>
+                    </div>
+                </div>
+
+                <div>
+                    <p class="text-sm text-gray-500">Texnik topshiriq</p>
+                    <p class="text-gray-900 mt-1 bg-gray-50 p-3 rounded-lg text-sm" id="ao-tt"></p>
+                </div>
+                
+                <div id="ao-history" class="space-y-2 mt-4 text-sm"></div>
+            </div>
+            
+            <div class="w-full md:w-1/2 flex flex-col border rounded-xl overflow-hidden h-[400px] md:h-auto">
+                <div class="bg-gray-50 p-3 border-b font-medium text-sm">Yozishma</div>
+                <div id="ao-chatBox" class="flex-grow p-4 overflow-y-auto space-y-3 bg-white"></div>
+                <form id="ao-chatForm" class="border-t p-3 bg-gray-50 flex gap-2">
+                    <input type="text" id="ao-chatInput" required class="flex-grow border border-gray-300 rounded-lg p-2 text-sm" placeholder="Mijozga javob yozing...">
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium">Yuborish</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let chartInstance = null;
+    let currentAdminOrderId = null;
+    let myAdminId = null;
+
+    // Tab Switching
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+        document.querySelectorAll('.tab-btn').forEach(el => {
+            el.classList.remove('border-blue-500', 'text-blue-600');
+            el.classList.add('border-transparent', 'text-gray-500');
+        });
+        
+        document.getElementById(`content-${tabId}`).classList.remove('hidden');
+        const btn = document.getElementById(`tab-${tabId}`);
+        btn.classList.add('border-blue-500', 'text-blue-600');
+        btn.classList.remove('border-transparent', 'text-gray-500');
+
+        if(tabId === 'dashboard') loadDashboard();
+        if(tabId === 'orders') loadAdminOrders();
+        if(tabId === 'services') loadAdminServices();
+        if(tabId === 'users') loadAdminUsers();
+    }
+
+    async function checkAdmin() {
+        const token = getToken();
+        if(!token) { window.location.href = '/login'; return; }
+        const res = await fetchWithAuth(`${API_URL}/auth/me`);
+        if(res.ok) {
+            const user = await res.json();
+            if(user.role !== 'admin') window.location.href = '/';
+            myAdminId = user.id;
+            loadDashboard();
+        } else {
+            window.location.href = '/login';
+        }
+    }
+
+    // DASHBOARD
+    async function loadDashboard() {
+        const start = document.getElementById('dash_start').value;
+        const end = document.getElementById('dash_end').value;
+        let url = `${API_URL}/admin/dashboard?`;
+        if(start) url += `start_date=${start}&`;
+        if(end) url += `end_date=${end}`;
+
+        const res = await fetchWithAuth(url);
+        if(res.ok) {
+            const data = await res.json();
+            document.getElementById('stat-total').innerText = data.total_orders;
+            document.getElementById('stat-new').innerText = data.new_orders_count;
+            document.getElementById('stat-progress').innerText = data.in_progress_orders_count;
+            document.getElementById('stat-sum').innerText = `${data.completed_orders_sum.toLocaleString()} UZS`;
+
+            // Chart
+            const ctx = document.getElementById('statusChart').getContext('2d');
+            if(chartInstance) chartInstance.destroy();
+            chartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(data.status_distribution),
+                    datasets: [{
+                        data: Object.values(data.status_distribution),
+                        backgroundColor: ['#93c5fd', '#fde047', '#d8b4fe', '#86efac', '#fca5a5']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            // Top Services
+            const ts = document.getElementById('topServicesList');
+            ts.innerHTML = data.top_services.map(s => `
+                <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+                    <span class="font-medium text-sm text-gray-700">${s.title}</span>
+                    <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-1 rounded-full">${s.count} ta</span>
+                </li>
+            `).join('');
+        }
+    }
+
+    function exportCSV() {
+        const start = document.getElementById('dash_start').value;
+        const end = document.getElementById('dash_end').value;
+        let url = `${API_URL}/admin/orders/export-csv?`;
+        if(start) url += `start_date=${start}&`;
+        if(end) url += `end_date=${end}`;
+
+        fetchWithAuth(url)
+            .then(res => res.blob())
+            .then(blob => {
+                const a = document.createElement('a');
+                a.href = window.URL.createObjectURL(blob);
+                a.download = 'orders.csv';
+                a.click();
+            });
+    }
+
+    // ORDERS
+    function getBadgeColor(status) {
+        if(status === 'Yangi') return 'bg-blue-100 text-blue-800';
+        if(status === 'Qabul qilindi') return 'bg-yellow-100 text-yellow-800';
+        if(status === 'Jarayonda') return 'bg-purple-100 text-purple-800';
+        if(status === 'Yakunlandi') return 'bg-green-100 text-green-800';
+        return 'bg-red-100 text-red-800';
+    }
+
+    async function loadAdminOrders() {
+        const search = document.getElementById('ord_search').value;
+        const status = document.getElementById('ord_status').value;
+        let url = `${API_URL}/admin/orders?`;
+        if(search) url += `search=${search}&`;
+        if(status) url += `status=${status}`;
+
+        const res = await fetchWithAuth(url);
+        if(res.ok) {
+            const orders = await res.json();
+            const tb = document.getElementById('adminOrdersTbody');
+            tb.innerHTML = orders.map(o => `
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${o.order_number}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${o.service_title_snapshot}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Mijoz ID: ${o.user_id}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <span class="px-2 py-1 rounded-full text-xs font-medium ${getBadgeColor(o.status)}">${o.status}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${new Date(o.created_at).toLocaleDateString()}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button onclick="openAdminOrderModal(${o.id})" class="text-blue-600 hover:text-blue-900">Boshqarish</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+    }
+
+    async function openAdminOrderModal(id) {
+        currentAdminOrderId = id;
+        const res = await fetchWithAuth(`${API_URL}/orders/${id}`);
+        if(res.ok) {
+            const o = await res.json();
+            document.getElementById('ao-title').innerText = `${o.order_number}`;
+            document.getElementById('ao-tt').innerText = o.technical_task;
+            document.getElementById('ao-status-select').value = o.status;
+            
+            document.getElementById('ao-history').innerHTML = o.status_history.map(h => `<p>${new Date(h.changed_at).toLocaleString()} - ${h.new_status}</p>`).join('');
+
+            renderAdminChat(o.messages);
+            
+            document.getElementById('adminOrderModal').classList.remove('hidden');
+            document.getElementById('adminOrderModal').classList.add('flex');
+        }
+    }
+
+    function closeAdminOrderModal() {
+        document.getElementById('adminOrderModal').classList.add('hidden');
+        document.getElementById('adminOrderModal').classList.remove('flex');
+    }
+
+    async function changeAdminOrderStatus() {
+        const status = document.getElementById('ao-status-select').value;
+        const res = await fetchWithAuth(`${API_URL}/orders/${currentAdminOrderId}/status`, {
+            method: 'PATCH',
+            body: JSON.stringify({status})
+        });
+        if(res.ok) {
+            showToast("Holat o'zgardi");
+            openAdminOrderModal(currentAdminOrderId);
+            loadAdminOrders();
+        } else {
+            const data = await res.json();
+            showToast(data.detail || "Xato", "error");
+        }
+    }
+
+    function renderAdminChat(messages) {
+        const box = document.getElementById('ao-chatBox');
+        box.innerHTML = messages.map(m => {
+            const isMe = m.sender_id === myAdminId;
+            return `
+                <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}">
+                    <div class="${isMe ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-800'} px-4 py-2 rounded-lg max-w-[85%] text-sm">
+                        ${m.text}
+                    </div>
+                </div>
+            `;
+        }).join('');
+        box.scrollTop = box.scrollHeight;
+    }
+
+    document.getElementById('ao-chatForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const input = document.getElementById('ao-chatInput');
+        const text = input.value;
+        if(!text) return;
+        
+        input.value = '';
+        const res = await fetchWithAuth(`${API_URL}/orders/${currentAdminOrderId}/messages`, {
+            method: 'POST',
+            body: JSON.stringify({text})
+        });
+        if(res.ok) {
+            openAdminOrderModal(currentAdminOrderId);
+        }
+    });
+
+    // SERVICES
+    async function loadAdminServices() {
+        const res = await fetchWithAuth(`${API_URL}/admin/services`);
+        if(res.ok) {
+            const srvs = await res.json();
+            const tb = document.getElementById('adminServicesTbody');
+            tb.innerHTML = srvs.map(s => `
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${s.title}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${s.price.toLocaleString()}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${s.delivery_days} k</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <span class="px-2 py-1 rounded-full text-xs font-medium ${s.is_archived ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}">${s.is_archived ? 'Arxivlangan' : 'Faol'}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button onclick="toggleArchive(${s.id}, ${!s.is_archived})" class="text-${s.is_archived ? 'green' : 'red'}-600 hover:underline ml-2">
+                            ${s.is_archived ? 'Faollashtirish' : 'Arxivlash'}
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+    }
+
+    function toggleArchive(id, archive) {
+        confirmAction(archive ? "Arxivlash" : "Faollashtirish", "Tasdiqlaysizmi?", async () => {
+            const res = await fetchWithAuth(`${API_URL}/admin/services/${id}/archive?is_archived=${archive}`, { method: 'PATCH' });
+            if(res.ok) {
+                showToast("Muvaffaqiyatli");
+                loadAdminServices();
+            }
+        });
+    }
+
+    // USERS
+    async function loadAdminUsers() {
+        const res = await fetchWithAuth(`${API_URL}/admin/users`);
+        if(res.ok) {
+            const users = await res.json();
+            const tb = document.getElementById('adminUsersTbody');
+            tb.innerHTML = users.map(u => `
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${u.name}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${u.email}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${u.phone || '-'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${u.role}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${new Date(u.created_at).toLocaleDateString()}</td>
+                </tr>
+            `).join('');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', checkAdmin);
+</script>
+{% endblock %}
