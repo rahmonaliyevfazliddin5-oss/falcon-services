@@ -122,7 +122,7 @@ Swagger interfeysini ko'rish uchun `http://localhost:8000/docs` manziliga kiring
 
 ## 👥 Demo Akkauntlar
 Loyiha tekshiruvi uchun bazada tayyor akkauntlar mavjud (Ular orqali tizimga kirish mumkin):
-* **Admin:** `admin@falcon.uz` | Parol: `admin123`
+* **Admin:** `falcon@admin.com` | Parol: `falconadmin777`
 * **Mijoz:** `mijoz1@falcon.uz` | Parol: `mijoz123`
 * **Mijoz 2:** `mijoz2@falcon.uz` | Parol: `mijoz123`
 

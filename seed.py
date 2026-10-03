@@ -9,16 +9,47 @@ def seed_db():
     db = SessionLocal()
     
     try:
-        # Check if users already exist
-        admin = db.query(models.User).filter(models.User.email == "admin@falcon.uz").first()
-        if not admin:
-            users_data = [
-                models.User(name="Admin", email="admin@falcon.uz", password_hash=get_password_hash("admin123"), role="admin"),
-                models.User(name="Mijoz 1", email="mijoz1@falcon.uz", password_hash=get_password_hash("mijoz123"), role="client"),
-                models.User(name="Mijoz 2", email="mijoz2@falcon.uz", password_hash=get_password_hash("mijoz123"), role="client")
-            ]
-            db.add_all(users_data)
+        # Ensure new admin exists and remove old admin
+        old_admin = db.query(models.User).filter(models.User.email == "admin@falcon.uz").first()
+        new_admin = db.query(models.User).filter(models.User.email == "falcon@admin.com").first()
+
+        if old_admin and not new_admin:
+            old_admin.email = "falcon@admin.com"
+            old_admin.name = "Falcon Admin"
+            old_admin.password_hash = get_password_hash("falconadmin777")
+            old_admin.role = "admin"
             db.commit()
+            admin = old_admin
+        elif not new_admin:
+            admin = models.User(
+                name="Falcon Admin",
+                email="falcon@admin.com",
+                password_hash=get_password_hash("falconadmin777"),
+                role="admin"
+            )
+            db.add(admin)
+            db.commit()
+        else:
+            admin = new_admin
+            admin.password_hash = get_password_hash("falconadmin777")
+            admin.role = "admin"
+            db.commit()
+
+        # If old admin still exists as a separate record, reassign and delete
+        if old_admin and old_admin.id != admin.id:
+            db.query(models.Message).filter(models.Message.sender_id == old_admin.id).update({models.Message.sender_id: admin.id})
+            db.query(models.OrderStatusHistory).filter(models.OrderStatusHistory.changed_by_user_id == old_admin.id).update({models.OrderStatusHistory.changed_by_user_id: admin.id})
+            db.delete(old_admin)
+            db.commit()
+
+        # Ensure demo clients exist
+        c1 = db.query(models.User).filter(models.User.email == "mijoz1@falcon.uz").first()
+        if not c1:
+            db.add(models.User(name="Mijoz 1", email="mijoz1@falcon.uz", password_hash=get_password_hash("mijoz123"), role="client"))
+        c2 = db.query(models.User).filter(models.User.email == "mijoz2@falcon.uz").first()
+        if not c2:
+            db.add(models.User(name="Mijoz 2", email="mijoz2@falcon.uz", password_hash=get_password_hash("mijoz123"), role="client"))
+        db.commit()
 
         # Categories
         cat_count = db.query(models.Category).count()
@@ -60,7 +91,7 @@ def seed_db():
 
             # Test Orders
             user = db.query(models.User).filter(models.User.email == "mijoz1@falcon.uz").first()
-            admin = db.query(models.User).filter(models.User.email == "admin@falcon.uz").first()
+            admin = db.query(models.User).filter(models.User.email == "falcon@admin.com").first()
             service = db.query(models.Service).first()
 
             if user and admin and service:
