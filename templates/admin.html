@@ -30,10 +30,10 @@
                     <label class="block text-xs font-medium text-gray-500 mb-1">Tugash sanasi</label>
                     <input type="date" id="dash_end" class="border border-gray-300 rounded-lg p-2 text-sm">
                 </div>
-                <button onclick="loadDashboard()" class="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium">Filtrlash</button>
+                <button onclick="loadDashboard()" class="bg-gray-800 hover:bg-gray-700 transition text-white px-4 py-2 rounded-lg text-sm font-medium">Filtrlash</button>
             </div>
             <div>
-                <button onclick="exportCSV()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2">
+                <button onclick="exportCSV()" class="bg-green-600 hover:bg-green-700 transition text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                     CSV formatda yuklab olish
                 </button>
@@ -54,18 +54,18 @@
                 <p class="mt-2 text-3xl font-bold text-purple-600" id="stat-progress">0</p>
             </div>
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <p class="text-sm font-medium text-gray-500 truncate">Yakunlangan buyurtmalar qiymati (to'lov tizimisiz)</p>
+                <p class="text-sm font-medium text-gray-500 truncate">Umumiy qiymat (Yakunlangan)</p>
                 <p class="mt-2 text-2xl font-bold text-green-600" id="stat-sum">0 UZS</p>
             </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <h3 class="text-lg font-bold mb-4">Holatlar bo'yicha</h3>
+                <h3 class="text-lg font-bold mb-4">Holatlar bo'yicha ulush</h3>
                 <canvas id="statusChart"></canvas>
             </div>
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <h3 class="text-lg font-bold mb-4">Eng ko'p buyurtma qilingan xizmatlar</h3>
+                <h3 class="text-lg font-bold mb-4">Top-5 Xizmatlar</h3>
                 <ul class="space-y-4" id="topServicesList">
                 </ul>
             </div>
@@ -75,8 +75,8 @@
     <!-- ORDERS -->
     <div id="content-orders" class="tab-content hidden">
         <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 flex gap-4">
-            <input type="text" id="ord_search" placeholder="Qidiruv..." class="flex-grow border border-gray-300 rounded-lg p-2 text-sm">
-            <select id="ord_status" class="border border-gray-300 rounded-lg p-2 text-sm">
+            <input type="text" id="ord_search" placeholder="Loyihani yoki mijozni qidirish..." class="flex-grow border border-gray-300 rounded-lg p-2 text-sm focus:ring-blue-500 focus:border-blue-500">
+            <select id="ord_status" class="border border-gray-300 rounded-lg p-2 text-sm focus:ring-blue-500 focus:border-blue-500">
                 <option value="">Barcha holatlar</option>
                 <option value="Yangi">Yangi</option>
                 <option value="Qabul qilindi">Qabul qilindi</option>
@@ -84,16 +84,18 @@
                 <option value="Yakunlandi">Yakunlandi</option>
                 <option value="Bekor qilindi">Bekor qilindi</option>
             </select>
-            <button onclick="loadAdminOrders()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium">Filtrlash</button>
+            <button onclick="loadAdminOrders()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition">Filtrlash</button>
         </div>
         
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Xizmat</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mijoz</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mijoz (Ism, Email)</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Loyiha Nomi</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Narx (UZS)</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Holat</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sana</th>
                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Amal</th>
@@ -107,18 +109,19 @@
 
     <!-- SERVICES -->
     <div id="content-services" class="tab-content hidden">
-        <div class="flex justify-end mb-4">
-            <button onclick="openServiceModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium">+ Yangi xizmat</button>
+        <div class="flex justify-end mb-6">
+            <button onclick="openServiceModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition">+ Yangi xizmat</button>
         </div>
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nomi</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Narxi</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Muddati</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Holati</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Amal</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rasm & Nomi</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategoriya (ID)</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Narx (UZS)</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Muddat</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Holat</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Amallar</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200" id="adminServicesTbody">
@@ -129,15 +132,16 @@
 
     <!-- USERS -->
     <div id="content-users" class="tab-content hidden">
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ism</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID & Ism</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telefon</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rol</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sana</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Buyurtmalar</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ro'yxatdan o'tgan sana</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200" id="adminUsersTbody">
@@ -145,93 +149,170 @@
             </table>
         </div>
     </div>
-
 </div>
 
-<!-- Admin Order Detail Modal -->
-<div id="adminOrderModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex-col items-center justify-center z-40 p-4">
-    <div class="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col">
-        <div class="p-4 border-b flex justify-between items-center bg-gray-50 rounded-t-xl">
-            <h3 class="text-lg font-bold" id="ao-title"></h3>
+<!-- Admin Order Management Modal -->
+<div id="adminOrderModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">
+        <div class="p-6 border-b border-gray-200 flex justify-between items-center bg-gray-50">
+            <h3 class="text-xl font-bold text-gray-900" id="ao-title">Buyurtma</h3>
             <button onclick="closeAdminOrderModal()" class="text-gray-400 hover:text-gray-600">
-                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
         
         <div class="p-6 overflow-y-auto flex-grow flex flex-col md:flex-row gap-6">
-            <div class="w-full md:w-1/2 space-y-6">
+            <div class="flex-1 space-y-6">
                 <div>
-                    <p class="text-sm text-gray-500">Holatni o'zgartirish</p>
-                    <div class="flex gap-2 mt-1">
-                        <select id="ao-status-select" class="flex-grow border border-gray-300 rounded-lg p-2 text-sm focus:ring-blue-500">
+                    <h4 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Texnik Topshiriq</h4>
+                    <div class="bg-gray-50 p-4 rounded-lg text-sm text-gray-800 whitespace-pre-wrap border border-gray-200" id="ao-tt"></div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Mijoz Telefoni</h4>
+                        <p class="font-medium text-gray-900" id="ao-phone"></p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Kutilayotgan Sana</h4>
+                        <p class="font-medium text-gray-900" id="ao-deadline"></p>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Holatni o'zgartirish</h4>
+                    <div class="flex gap-2">
+                        <select id="ao-status-select" class="flex-grow border border-gray-300 rounded-lg p-2 text-sm focus:ring-blue-500 focus:border-blue-500" onchange="toggleCancelReason()">
                             <option value="Yangi">Yangi</option>
                             <option value="Qabul qilindi">Qabul qilindi</option>
                             <option value="Jarayonda">Jarayonda</option>
                             <option value="Yakunlandi">Yakunlandi</option>
                             <option value="Bekor qilindi">Bekor qilindi</option>
                         </select>
-                        <button onclick="changeAdminOrderStatus()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium">Saqlash</button>
+                        <button onclick="changeAdminOrderStatus()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition">Saqlash</button>
+                    </div>
+                    <div id="cancelReasonContainer" class="mt-3 hidden">
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Bekor qilish sababi (Majburiy)</label>
+                        <textarea id="ao-cancel-reason" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-blue-500 focus:border-blue-500" rows="2" placeholder="Nima sababdan bekor qilinmoqda?"></textarea>
                     </div>
                 </div>
 
                 <div>
-                    <p class="text-sm text-gray-500">Texnik topshiriq</p>
-                    <p class="text-gray-900 mt-1 bg-gray-50 p-3 rounded-lg text-sm" id="ao-tt"></p>
+                    <h4 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Holatlar Tarixi (Timeline)</h4>
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 space-y-2 text-sm" id="ao-history">
+                    </div>
                 </div>
-                
-                <div id="ao-history" class="space-y-2 mt-4 text-sm"></div>
             </div>
             
-            <div class="w-full md:w-1/2 flex flex-col border rounded-xl overflow-hidden h-[400px] md:h-auto">
-                <div class="bg-gray-50 p-3 border-b font-medium text-sm">Yozishma</div>
-                <div id="ao-chatBox" class="flex-grow p-4 overflow-y-auto space-y-3 bg-white"></div>
-                <form id="ao-chatForm" class="border-t p-3 bg-gray-50 flex gap-2">
-                    <input type="text" id="ao-chatInput" required class="flex-grow border border-gray-300 rounded-lg p-2 text-sm" placeholder="Mijozga javob yozing...">
-                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium">Yuborish</button>
+            <div class="w-full md:w-1/3 flex flex-col border border-gray-200 rounded-lg overflow-hidden h-[400px] md:h-auto bg-gray-50">
+                <div class="bg-gray-100 p-3 border-b border-gray-200 font-bold text-gray-700 text-center">Chat</div>
+                <div id="ao-chatBox" class="flex-grow p-4 overflow-y-auto space-y-4 bg-white">
+                </div>
+                <form id="ao-chatForm" class="p-3 bg-gray-100 border-t border-gray-200 flex gap-2">
+                    <input type="text" id="ao-chatInput" class="flex-grow rounded-lg border border-gray-300 p-2 text-sm focus:ring-blue-500 focus:border-blue-500" placeholder="Xabar yozing..." required>
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition">Jo'natish</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Service Form Modal -->
+<div id="serviceModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden">
+        <div class="p-5 border-b border-gray-200 flex justify-between items-center bg-gray-50">
+            <h3 class="text-lg font-bold text-gray-900" id="serviceModalTitle">Yangi Xizmat Qo'shish</h3>
+            <button onclick="closeServiceModal()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <form id="serviceForm" class="p-5 space-y-4">
+            <input type="hidden" id="sf-id">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Kategoriya ID</label>
+                <input type="number" id="sf-category" class="w-full border border-gray-300 rounded-lg p-2 text-sm" required>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Nomi</label>
+                <input type="text" id="sf-title" class="w-full border border-gray-300 rounded-lg p-2 text-sm" required>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tavsif</label>
+                <textarea id="sf-desc" class="w-full border border-gray-300 rounded-lg p-2 text-sm" required></textarea>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Rasm URL</label>
+                <input type="url" id="sf-img" class="w-full border border-gray-300 rounded-lg p-2 text-sm" required>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Narx (UZS)</label>
+                    <input type="number" id="sf-price" class="w-full border border-gray-300 rounded-lg p-2 text-sm" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Muddat (Kun)</label>
+                    <input type="number" id="sf-days" class="w-full border border-gray-300 rounded-lg p-2 text-sm" required>
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Ichidagi xizmatlar (Tarkibi)</label>
+                <input type="text" id="sf-includes" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
+            </div>
+            <div class="pt-4 flex justify-end gap-3">
+                <button type="button" onclick="closeServiceModal()" class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">Bekor qilish</button>
+                <button type="submit" class="px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">Saqlash</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
 <script>
+    let myAdminId = null;
     let chartInstance = null;
     let currentAdminOrderId = null;
-    let myAdminId = null;
 
-    // Tab Switching
+    async function checkAdmin() {
+        const token = getToken();
+        if (!token) {
+            window.location.href = '/login?next=/admin';
+            return;
+        }
+        try {
+            const userRes = await fetchWithAuth(`${API_URL}/auth/me`);
+            const user = await userRes.json();
+            if (user.role !== 'admin') {
+                window.location.href = '/profile';
+                return;
+            }
+            myAdminId = user.id;
+            switchTab('dashboard'); // Automatically load dashboard on start
+        } catch (e) {
+            console.error(e);
+            window.location.href = '/login';
+        }
+    }
+
     function switchTab(tabId) {
-        document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-        document.querySelectorAll('.tab-btn').forEach(el => {
-            el.classList.remove('border-blue-500', 'text-blue-600');
-            el.classList.add('border-transparent', 'text-gray-500');
-        });
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+        document.getElementById('content-' + tabId).classList.remove('hidden');
         
-        document.getElementById(`content-${tabId}`).classList.remove('hidden');
-        const btn = document.getElementById(`tab-${tabId}`);
-        btn.classList.add('border-blue-500', 'text-blue-600');
-        btn.classList.remove('border-transparent', 'text-gray-500');
+        document.querySelectorAll('.tab-btn').forEach(b => {
+            b.classList.remove('border-blue-500', 'text-blue-600');
+            b.classList.add('border-transparent', 'text-gray-500');
+        });
+        const activeBtn = document.getElementById('tab-' + tabId);
+        if(activeBtn) {
+            activeBtn.classList.remove('border-transparent', 'text-gray-500');
+            activeBtn.classList.add('border-blue-500', 'text-blue-600');
+        }
 
         if(tabId === 'dashboard') loadDashboard();
         if(tabId === 'orders') loadAdminOrders();
         if(tabId === 'services') loadAdminServices();
         if(tabId === 'users') loadAdminUsers();
-    }
-
-    async function checkAdmin() {
-        const token = getToken();
-        if(!token) { window.location.href = '/login'; return; }
-        const res = await fetchWithAuth(`${API_URL}/auth/me`);
-        if(res.ok) {
-            const user = await res.json();
-            if(user.role !== 'admin') window.location.href = '/';
-            myAdminId = user.id;
-            loadDashboard();
-        } else {
-            window.location.href = '/login';
-        }
     }
 
     // DASHBOARD
@@ -248,29 +329,51 @@
             document.getElementById('stat-total').innerText = data.total_orders;
             document.getElementById('stat-new').innerText = data.new_orders_count;
             document.getElementById('stat-progress').innerText = data.in_progress_orders_count;
-            document.getElementById('stat-sum').innerText = `${data.completed_orders_sum.toLocaleString()} UZS`;
+            document.getElementById('stat-sum').innerText = (data.completed_orders_sum || 0).toLocaleString() + ' UZS';
 
             // Chart
             const ctx = document.getElementById('statusChart').getContext('2d');
             if(chartInstance) chartInstance.destroy();
+            
+            const labels = Object.keys(data.status_distribution);
+            const values = Object.values(data.status_distribution);
+            
             chartInstance = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: Object.keys(data.status_distribution),
+                    labels: labels,
                     datasets: [{
-                        data: Object.values(data.status_distribution),
-                        backgroundColor: ['#93c5fd', '#fde047', '#d8b4fe', '#86efac', '#fca5a5']
+                        data: values,
+                        backgroundColor: ['#3b82f6', '#eab308', '#a855f7', '#22c55e', '#ef4444'],
+                        borderWidth: 0
                     }]
                 },
-                options: { responsive: true, maintainAspectRatio: false }
+                options: {
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.parsed !== null) {
+                                        let total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        let percentage = total > 0 ? Math.round((context.parsed / total) * 100) : 0;
+                                        label += context.parsed + ' (' + percentage + '%)';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
             });
 
             // Top Services
-            const ts = document.getElementById('topServicesList');
-            ts.innerHTML = data.top_services.map(s => `
-                <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
-                    <span class="font-medium text-sm text-gray-700">${s.title}</span>
-                    <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-1 rounded-full">${s.count} ta</span>
+            const tsList = document.getElementById('topServicesList');
+            tsList.innerHTML = data.top_services.map((ts, i) => `
+                <li class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span class="text-sm font-medium text-gray-900">${i+1}. ${ts.title}</span>
+                    <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-bold">${ts.count} marta</span>
                 </li>
             `).join('');
         }
@@ -279,9 +382,11 @@
     function exportCSV() {
         const start = document.getElementById('dash_start').value;
         const end = document.getElementById('dash_end').value;
+        const status = document.getElementById('ord_status').value;
         let url = `${API_URL}/admin/orders/export-csv?`;
         if(start) url += `start_date=${start}&`;
-        if(end) url += `end_date=${end}`;
+        if(end) url += `end_date=${end}&`;
+        if(status) url += `status=${status}`;
 
         fetchWithAuth(url)
             .then(res => res.blob())
@@ -313,20 +418,42 @@
         if(res.ok) {
             const orders = await res.json();
             const tb = document.getElementById('adminOrdersTbody');
+            if(orders.length === 0) {
+                tb.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-gray-500">Hech qanday buyurtma topilmadi</td></tr>`;
+                return;
+            }
             tb.innerHTML = orders.map(o => `
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${o.order_number}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${o.service_title_snapshot}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Mijoz ID: ${o.user_id}</td>
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">${o.order_number}</td>
+                    <td class="px-6 py-4 text-sm text-gray-900">${o.service_title_snapshot}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <div class="font-bold text-gray-900">${o.user_name}</div>
+                        <div class="text-xs">${o.user_email}</div>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500">${o.project_name}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">${o.price_snapshot.toLocaleString()}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm">
-                        <span class="px-2 py-1 rounded-full text-xs font-medium ${getBadgeColor(o.status)}">${o.status}</span>
+                        <span class="px-2 py-1 rounded-full text-xs font-bold ${getBadgeColor(o.status)}">${o.status}</span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${new Date(o.created_at).toLocaleDateString()}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <button onclick="openAdminOrderModal(${o.id})" class="text-blue-600 hover:text-blue-900">Boshqarish</button>
+                        <button onclick="openAdminOrderModal(${o.id})" class="text-blue-600 hover:text-blue-900 bg-blue-50 px-3 py-1 rounded-lg">Boshqarish</button>
                     </td>
                 </tr>
             `).join('');
+        }
+    }
+
+    function toggleCancelReason() {
+        const status = document.getElementById('ao-status-select').value;
+        const container = document.getElementById('cancelReasonContainer');
+        const reasonInput = document.getElementById('ao-cancel-reason');
+        if (status === 'Bekor qilindi') {
+            container.classList.remove('hidden');
+            reasonInput.setAttribute('required', 'true');
+        } else {
+            container.classList.add('hidden');
+            reasonInput.removeAttribute('required');
         }
     }
 
@@ -337,9 +464,21 @@
             const o = await res.json();
             document.getElementById('ao-title').innerText = `${o.order_number}`;
             document.getElementById('ao-tt').innerText = o.technical_task;
+            document.getElementById('ao-phone').innerText = o.contact_phone;
+            document.getElementById('ao-deadline').innerText = o.desired_deadline;
             document.getElementById('ao-status-select').value = o.status;
+            toggleCancelReason();
+            document.getElementById('ao-cancel-reason').value = '';
             
-            document.getElementById('ao-history').innerHTML = o.status_history.map(h => `<p>${new Date(h.changed_at).toLocaleString()} - ${h.new_status}</p>`).join('');
+            document.getElementById('ao-history').innerHTML = o.status_history.map(h => `
+                <div class="flex items-start gap-3">
+                    <div class="w-2 h-2 mt-1.5 rounded-full bg-blue-500"></div>
+                    <div>
+                        <p class="font-bold text-gray-800">${h.new_status}</p>
+                        <p class="text-xs text-gray-500">${new Date(h.changed_at).toLocaleString()}</p>
+                    </div>
+                </div>
+            `).join('');
 
             renderAdminChat(o.messages);
             
@@ -355,6 +494,18 @@
 
     async function changeAdminOrderStatus() {
         const status = document.getElementById('ao-status-select').value;
+        if (status === 'Bekor qilindi') {
+            const reason = document.getElementById('ao-cancel-reason').value.trim();
+            if(!reason) {
+                showToast("Bekor qilish sababini kiritish majburiy!", "error");
+                return;
+            }
+            // Add reason to chat
+            await fetchWithAuth(`${API_URL}/orders/${currentAdminOrderId}/messages`, {
+                method: 'POST', body: JSON.stringify({text: "Bekor qilindi. Sabab: " + reason})
+            });
+        }
+        
         const res = await fetchWithAuth(`${API_URL}/orders/${currentAdminOrderId}/status`, {
             method: 'PATCH',
             body: JSON.stringify({status})
@@ -363,9 +514,10 @@
             showToast("Holat o'zgardi");
             openAdminOrderModal(currentAdminOrderId);
             loadAdminOrders();
+            loadDashboard();
         } else {
             const data = await res.json();
-            showToast(data.detail || "Xato", "error");
+            showToast(data.detail || "Holatni o'zgartirib bo'lmaydi (ketma-ketlikni tekshiring)", "error");
         }
     }
 
@@ -375,8 +527,9 @@
             const isMe = m.sender_id === myAdminId;
             return `
                 <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}">
-                    <div class="${isMe ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-800'} px-4 py-2 rounded-lg max-w-[85%] text-sm">
+                    <div class="${isMe ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-800'} px-4 py-2 rounded-xl max-w-[90%] text-sm shadow-sm border border-transparent">
                         ${m.text}
+                        <p class="text-[10px] mt-1 text-right ${isMe ? 'text-blue-200' : 'text-gray-400'}">${new Date(m.created_at).toLocaleTimeString()}</p>
                     </div>
                 </div>
             `;
@@ -387,7 +540,7 @@
     document.getElementById('ao-chatForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const input = document.getElementById('ao-chatInput');
-        const text = input.value;
+        const text = input.value.trim();
         if(!text) return;
         
         input.value = '';
@@ -407,15 +560,20 @@
             const srvs = await res.json();
             const tb = document.getElementById('adminServicesTbody');
             tb.innerHTML = srvs.map(s => `
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${s.title}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${s.price.toLocaleString()}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${s.delivery_days} k</td>
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 flex items-center gap-3">
+                        <img src="${s.image_url}" class="w-10 h-10 rounded object-cover shadow-sm" onerror="this.src='https://placehold.co/400x400/2563eb/ffffff?text=F'">
+                        ${s.title}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${s.category_id}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">${s.price.toLocaleString()}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${s.delivery_days} kun</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm">
-                        <span class="px-2 py-1 rounded-full text-xs font-medium ${s.is_archived ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}">${s.is_archived ? 'Arxivlangan' : 'Faol'}</span>
+                        <span class="px-2 py-1 rounded-full text-xs font-bold ${s.is_archived ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}">${s.is_archived ? 'Arxivlangan' : 'Faol'}</span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <button onclick="toggleArchive(${s.id}, ${!s.is_archived})" class="text-${s.is_archived ? 'green' : 'red'}-600 hover:underline ml-2">
+                        <button onclick='editService(JSON.parse(decodeURIComponent("${encodeURIComponent(JSON.stringify(s))}")))' class="text-blue-600 hover:underline mr-4">Tahrirlash</button>
+                        <button onclick="toggleArchive(${s.id}, ${!s.is_archived})" class="text-${s.is_archived ? 'green' : 'red'}-600 hover:underline">
                             ${s.is_archived ? 'Faollashtirish' : 'Arxivlash'}
                         </button>
                     </td>
@@ -423,6 +581,64 @@
             `).join('');
         }
     }
+
+    function openServiceModal() {
+        document.getElementById('serviceForm').reset();
+        document.getElementById('sf-id').value = '';
+        document.getElementById('serviceModalTitle').innerText = "Yangi Xizmat Qo'shish";
+        document.getElementById('serviceModal').classList.remove('hidden');
+        document.getElementById('serviceModal').classList.add('flex');
+    }
+
+    function editService(s) {
+        document.getElementById('sf-id').value = s.id;
+        document.getElementById('sf-title').value = s.title;
+        document.getElementById('sf-category').value = s.category_id;
+        document.getElementById('sf-desc').value = s.description;
+        document.getElementById('sf-img').value = s.image_url;
+        document.getElementById('sf-price').value = s.price;
+        document.getElementById('sf-days').value = s.delivery_days;
+        document.getElementById('sf-includes').value = s.included_items || '';
+        document.getElementById('serviceModalTitle').innerText = "Xizmatni Tahrirlash";
+        
+        document.getElementById('serviceModal').classList.remove('hidden');
+        document.getElementById('serviceModal').classList.add('flex');
+    }
+
+    function closeServiceModal() {
+        document.getElementById('serviceModal').classList.add('hidden');
+        document.getElementById('serviceModal').classList.remove('flex');
+    }
+
+    document.getElementById('serviceForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('sf-id').value;
+        const payload = {
+            category_id: parseInt(document.getElementById('sf-category').value),
+            title: document.getElementById('sf-title').value,
+            description: document.getElementById('sf-desc').value,
+            image_url: document.getElementById('sf-img').value,
+            price: parseInt(document.getElementById('sf-price').value),
+            delivery_days: parseInt(document.getElementById('sf-days').value),
+            included_items: document.getElementById('sf-includes').value
+        };
+
+        const method = id ? 'PUT' : 'POST';
+        const url = id ? `${API_URL}/admin/services/${id}` : `${API_URL}/admin/services`;
+
+        const res = await fetchWithAuth(url, {
+            method: method,
+            body: JSON.stringify(payload)
+        });
+        
+        if(res.ok) {
+            showToast("Xizmat saqlandi!");
+            closeServiceModal();
+            loadAdminServices();
+        } else {
+            showToast("Xatolik yuz berdi", "error");
+        }
+    });
 
     function toggleArchive(id, archive) {
         confirmAction(archive ? "Arxivlash" : "Faollashtirish", "Tasdiqlaysizmi?", async () => {
@@ -441,11 +657,16 @@
             const users = await res.json();
             const tb = document.getElementById('adminUsersTbody');
             tb.innerHTML = users.map(u => `
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${u.name}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${u.email}</td>
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <div class="font-bold">${u.id}. ${u.name}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600">${u.email}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${u.phone || '-'}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${u.role}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <span class="px-2 py-1 rounded-full text-xs font-bold ${u.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'}">${u.role.toUpperCase()}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">${u.orders_count} ta</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${new Date(u.created_at).toLocaleDateString()}</td>
                 </tr>
             `).join('');

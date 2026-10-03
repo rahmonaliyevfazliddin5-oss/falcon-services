@@ -128,3 +128,10 @@ class DashboardStats(BaseModel):
     completed_orders_sum: int
     status_distribution: dict
     top_services: List[dict]
+
+class OrderAdminOut(OrderOut):
+    user_name: str
+    user_email: str
+
+class UserAdminOut(UserOut):
+    orders_count: int

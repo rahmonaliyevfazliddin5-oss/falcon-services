@@ -80,7 +80,7 @@ def admin_delete_category(id: int, db: Session = Depends(get_db), current_admin:
     return {"detail": "Kategoriya o'chirildi"}
 
 # --- Orders Management ---
-@router.get("/orders", response_model=list[schemas.OrderOut])
+@router.get("/orders", response_model=list[schemas.OrderAdminOut])
 def admin_get_orders(
     search: str = None,
     status: str = None,
@@ -104,12 +104,31 @@ def admin_get_orders(
     if end_date:
         query = query.filter(models.Order.created_at <= end_date)
         
-    return query.all()
+    orders = query.all()
+    res = []
+    for o in orders:
+        res.append({
+            'id': o.id, 'order_number': o.order_number, 'user_id': o.user_id,
+            'service_id': o.service_id, 'service_title_snapshot': o.service_title_snapshot,
+            'price_snapshot': o.price_snapshot, 'project_name': o.project_name,
+            'technical_task': o.technical_task, 'desired_deadline': o.desired_deadline,
+            'contact_phone': o.contact_phone, 'status': o.status, 'created_at': o.created_at,
+            'user_name': o.user.name, 'user_email': o.user.email
+        })
+    return res
 
 # --- Users Management ---
-@router.get("/users", response_model=list[schemas.UserOut])
+@router.get("/users", response_model=list[schemas.UserAdminOut])
 def admin_get_users(db: Session = Depends(get_db), current_admin: models.User = Depends(get_current_admin)):
-    return db.query(models.User).all()
+    users = db.query(models.User).all()
+    res = []
+    for u in users:
+        res.append({
+            'id': u.id, 'name': u.name, 'email': u.email,
+            'phone': u.phone, 'role': u.role, 'created_at': u.created_at,
+            'orders_count': db.query(models.Order).filter(models.Order.user_id == u.id).count()
+        })
+    return res
 
 # --- Dashboard & Reports ---
 @router.get("/dashboard", response_model=schemas.DashboardStats)
