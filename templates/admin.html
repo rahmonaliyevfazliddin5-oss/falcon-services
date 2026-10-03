@@ -117,9 +117,10 @@
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rasm & Nomi</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategoriya (ID)</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategoriya</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Narx (UZS)</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Muddat</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Faol Havola</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Holat</th>
                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Amallar</th>
                     </tr>
@@ -257,6 +258,10 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Ichidagi xizmatlar (Tarkibi)</label>
                 <input type="text" id="sf-includes" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Faol Ishchi Havola (Working Link URL)</label>
+                <input type="url" id="sf-link" class="w-full border border-gray-300 rounded-lg p-2 text-sm" placeholder="https://misol.uz / https://demo.falcon.uz">
             </div>
             <div class="pt-4 flex justify-end gap-3">
                 <button type="button" onclick="closeServiceModal()" class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">Bekor qilish</button>
@@ -579,6 +584,9 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${s.category_id}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">${s.price.toLocaleString()}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${s.delivery_days} kun</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${s.working_link ? `<a href="${s.working_link}" target="_blank" class="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline bg-blue-50 px-2 py-1 rounded">Havola ↗</a>` : '<span class="text-xs text-gray-400">-</span>'}
+                    </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm">
                         <span class="px-2 py-1 rounded-full text-xs font-bold ${s.is_archived ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}">${s.is_archived ? 'Arxivlangan' : 'Faol'}</span>
                     </td>
@@ -596,6 +604,7 @@
     function openServiceModal() {
         document.getElementById('serviceForm').reset();
         document.getElementById('sf-id').value = '';
+        document.getElementById('sf-link').value = '';
         document.getElementById('serviceModalTitle').innerText = "Yangi Xizmat Qo'shish";
         document.getElementById('serviceModal').classList.remove('hidden');
         document.getElementById('serviceModal').classList.add('flex');
@@ -610,6 +619,7 @@
         document.getElementById('sf-price').value = s.price;
         document.getElementById('sf-days').value = s.delivery_days;
         document.getElementById('sf-includes').value = s.included_items || '';
+        document.getElementById('sf-link').value = s.working_link || '';
         document.getElementById('serviceModalTitle').innerText = "Xizmatni Tahrirlash";
         
         document.getElementById('serviceModal').classList.remove('hidden');
@@ -631,7 +641,8 @@
             image_url: document.getElementById('sf-img').value,
             price: parseInt(document.getElementById('sf-price').value),
             delivery_days: parseInt(document.getElementById('sf-days').value),
-            included_items: document.getElementById('sf-includes').value
+            included_items: document.getElementById('sf-includes').value,
+            working_link: document.getElementById('sf-link').value.trim() || null
         };
 
         const method = id ? 'PUT' : 'POST';

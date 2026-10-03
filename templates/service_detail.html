@@ -17,6 +17,16 @@
             <div class="lg:col-span-2 space-y-6">
                 <img id="s-img" src="" alt="" class="w-full h-64 sm:h-96 object-cover rounded-xl shadow-sm" onerror="this.src='https://placehold.co/600x400/2563eb/ffffff?text=Falcon+Services'">
                 
+                <div id="workingLinkBox" class="hidden bg-blue-50 dark:bg-slate-800 p-4 rounded-xl border border-blue-200 dark:border-slate-700 flex items-center justify-between transition-colors">
+                    <div>
+                        <p class="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider" data-i18n="services.working_link">Faol Ishchi Havola / Demo</p>
+                        <p class="text-xs text-gray-600 dark:text-gray-300 mt-0.5">Ushbu xizmatning amaldagi faol loyiha havolasi</p>
+                    </div>
+                    <a id="s-link" href="#" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow transition flex items-center gap-1">
+                        Havolani ochish ↗
+                    </a>
+                </div>
+
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                     <h3 class="text-xl font-bold mb-4">Xizmat tavsifi</h3>
                     <p class="text-gray-600 whitespace-pre-line" id="s-desc"></p>
@@ -123,6 +133,13 @@
                 document.getElementById('s-desc').innerText = s.description;
                 document.getElementById('s-price').innerText = `${s.price.toLocaleString()} UZS`;
                 document.getElementById('s-days').innerText = s.delivery_days;
+
+                if (s.working_link) {
+                    document.getElementById('workingLinkBox').classList.remove('hidden');
+                    document.getElementById('s-link').href = s.working_link;
+                } else {
+                    document.getElementById('workingLinkBox').classList.add('hidden');
+                }
 
                 if (s.included_items) {
                     const items = s.included_items.split(',').map(i => i.trim());

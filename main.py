@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 
-from database import engine
+from database import engine, init_db
 import models
 import auth
 from seed import seed_db
@@ -12,7 +12,7 @@ from routers import public, orders, admin, pages
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    models.Base.metadata.create_all(bind=engine)
+    init_db()
     seed_db()
     yield
 

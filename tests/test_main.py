@@ -249,3 +249,25 @@ def test_archive_service(db_session):
     assert len(orders) > 0
     assert orders[0].service_title_snapshot == srv.title
 
+# Test 8: Ism xavfsizlik filtri va Unikallik
+def test_name_profanity_and_uniqueness(db_session):
+    # Try register with profanity
+    res = client.post("/api/auth/register", json={
+        "name": "bad_ahmoq_user",
+        "email": "profane@test.uz",
+        "phone": "+998901112233",
+        "password": "pass123"
+    })
+    assert res.status_code == 400
+    assert "taqiqlangan" in res.json()["detail"] or "inappropriate" in res.json()["detail"]
+
+    # Try duplicate name (Mijoz1 already seeded)
+    res2 = client.post("/api/auth/register", json={
+        "name": "Mijoz1",
+        "email": "unique_email@test.uz",
+        "phone": "+998901112233",
+        "password": "pass123"
+    })
+    assert res2.status_code == 400
+    assert "band qilingan" in res2.json()["detail"] or "taken" in res2.json()["detail"]
+

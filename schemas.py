@@ -7,6 +7,7 @@ class UserBase(BaseModel):
     name: str
     email: EmailStr
     phone: Optional[str] = None
+    avatar_url: Optional[str] = "/static/default-avatar.png"
 
 class UserCreate(UserBase):
     password: str
@@ -14,6 +15,7 @@ class UserCreate(UserBase):
 class UserUpdate(BaseModel):
     name: Optional[str] = None
     phone: Optional[str] = None
+    avatar_url: Optional[str] = None
 
 class UserOut(UserBase):
     id: int
@@ -44,6 +46,7 @@ class ServiceBase(BaseModel):
     price: int
     delivery_days: int
     included_items: Optional[str] = None
+    working_link: Optional[str] = None
     is_archived: bool = False
 
 class ServiceCreate(ServiceBase):
@@ -57,6 +60,7 @@ class ServiceUpdate(BaseModel):
     price: Optional[int] = None
     delivery_days: Optional[int] = None
     included_items: Optional[str] = None
+    working_link: Optional[str] = None
 
 class ServiceOut(ServiceBase):
     id: int

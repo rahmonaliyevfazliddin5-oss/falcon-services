@@ -12,6 +12,21 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
+def init_db():
+    Base.metadata.create_all(bind=engine)
+    with engine.connect() as conn:
+        from sqlalchemy import text
+        try:
+            conn.execute(text("ALTER TABLE users ADD COLUMN avatar_url VARCHAR"))
+            conn.commit()
+        except Exception:
+            pass
+        try:
+            conn.execute(text("ALTER TABLE services ADD COLUMN working_link VARCHAR"))
+            conn.commit()
+        except Exception:
+            pass
+
 def get_db():
     db = SessionLocal()
     try:

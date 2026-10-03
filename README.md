@@ -22,11 +22,12 @@ erDiagram
     Order ||--o{ Message : "has messages"
     User {
         int id PK
-        string name
-        string email
+        string name UK "Unikal ism"
+        string email UK
         string password_hash
         string role
         string phone
+        string avatar_url
         datetime created_at
     }
     Category {
@@ -39,6 +40,7 @@ erDiagram
         int category_id FK
         string title
         int price
+        string working_link "Faol ishchi havola"
         boolean is_archived
     }
     Order {

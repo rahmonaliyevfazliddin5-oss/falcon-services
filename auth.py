@@ -1,16 +1,20 @@
 from datetime import datetime, timedelta
 from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException, status
+import os
+import shutil
+import uuid
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from dotenv import load_dotenv
-import os
 
 from database import get_db
 import models
 import schemas
+import profanity
 
 load_dotenv()
 
@@ -70,15 +74,27 @@ def get_current_admin(current_user: models.User = Depends(get_current_user)):
 
 @router.post("/register", response_model=schemas.UserOut)
 def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    # 1. Profanity security filter
+    profanity.validate_name(user.name)
+
+    # 2. Email uniqueness check
     db_user = get_user(db, email=user.email)
     if db_user:
-        raise HTTPException(status_code=400, detail="Bu elektron pochta allaqachon ro'yxatdan o'tgan")
+        raise HTTPException(status_code=400, detail="Bu elektron pochta allaqachon ro'yxatdan o'tgan / This email is already registered")
+
+    # 3. Name uniqueness check
+    clean_name = user.name.strip()
+    existing_name = db.query(models.User).filter(func.lower(models.User.name) == func.lower(clean_name)).first()
+    if existing_name:
+        raise HTTPException(status_code=400, detail="Ushbu ism allaqachon band qilingan. Iltimos, boshqa ism tanlang / This name is already taken")
+
     hashed_password = get_password_hash(user.password)
     db_user = models.User(
-        name=user.name,
+        name=clean_name,
         email=user.email,
         password_hash=hashed_password,
         phone=user.phone,
+        avatar_url="/static/default-avatar.png",
         role="client" # Force role to client
     )
     db.add(db_user)
@@ -107,10 +123,47 @@ def read_users_me(current_user: models.User = Depends(get_current_user)):
 
 @router.put("/profile", response_model=schemas.UserOut)
 def update_profile(profile_data: schemas.UserUpdate, current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
-    if profile_data.name is not None:
-        current_user.name = profile_data.name
+    if profile_data.name is not None and profile_data.name.strip():
+        new_name = profile_data.name.strip()
+        if new_name.lower() != current_user.name.lower():
+            profanity.validate_name(new_name)
+            existing = db.query(models.User).filter(
+                func.lower(models.User.name) == func.lower(new_name),
+                models.User.id != current_user.id
+            ).first()
+            if existing:
+                raise HTTPException(status_code=400, detail="Ushbu ism allaqachon band qilingan / This name is already taken")
+            current_user.name = new_name
+            
     if profile_data.phone is not None:
         current_user.phone = profile_data.phone
+        
+    db.commit()
+    db.refresh(current_user)
+    return current_user
+
+@router.post("/avatar", response_model=schemas.UserOut)
+async def upload_avatar(
+    file: UploadFile = File(...),
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="Faqat rasm fayllari (JPEG, PNG, WEBP) qabul qilinadi!")
+        
+    ext = file.filename.split(".")[-1].lower() if "." in file.filename else "jpg"
+    if ext not in ["jpg", "jpeg", "png", "webp", "gif"]:
+        raise HTTPException(status_code=400, detail="Rasm formati noto'g'ri (jpg, png, webp bo'lishi kerak)")
+
+    upload_dir = os.path.join("static", "uploads", "avatars")
+    os.makedirs(upload_dir, exist_ok=True)
+    filename = f"avatar_{current_user.id}_{uuid.uuid4().hex[:8]}.{ext}"
+    file_path = os.path.join(upload_dir, filename)
+
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    current_user.avatar_url = f"/static/uploads/avatars/{filename}"
     db.commit()
     db.refresh(current_user)
     return current_user
