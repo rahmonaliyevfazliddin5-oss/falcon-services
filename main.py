@@ -15,9 +15,9 @@ from routers import public, orders, admin, pages
 
 # =========================================================================
 # Qoida (Rule): MAINTENANCE_MODE
-# Hozirda faollashtirildi (True) - Ekranga maintenance.png to'liq chiqadi!
+# Sozlash yakunlandi (False) - Asosiy platforma to'liq ishchi holatda!
 # =========================================================================
-MAINTENANCE_MODE: bool = True
+MAINTENANCE_MODE: bool = False
 
 templates = Jinja2Templates(directory="templates")
 
