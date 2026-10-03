@@ -2,165 +2,135 @@ from sqlalchemy.orm import Session
 from database import engine, SessionLocal
 import models
 from auth import get_password_hash
-from datetime import datetime, timedelta
+from datetime import datetime
 
 def seed_db():
     models.Base.metadata.create_all(bind=engine)
     db = SessionLocal()
     
     try:
-        # Ensure new admin exists and remove old admin
-        old_admin = db.query(models.User).filter(models.User.email == "admin@falcon.uz").first()
-        new_admin = db.query(models.User).filter(models.User.email == "falcon@admin.com").first()
-
-        if old_admin and not new_admin:
-            old_admin.email = "falcon@admin.com"
-            old_admin.name = "Falcon Admin"
-            old_admin.password_hash = get_password_hash("falconadmin777")
-            old_admin.role = "admin"
-            db.commit()
-            admin = old_admin
-        elif not new_admin:
+        # 1. Clear old orders, messages, history to start fresh
+        db.query(models.Message).delete()
+        db.query(models.OrderStatusHistory).delete()
+        db.query(models.Order).delete()
+        
+        # 2. Preserve ONLY the main Falcon Admin account and remove old/test users
+        db.query(models.User).filter(models.User.email != "falcon@admin.com").delete()
+        
+        admin = db.query(models.User).filter(models.User.email == "falcon@admin.com").first()
+        if not admin:
             admin = models.User(
                 name="Falcon Admin",
                 email="falcon@admin.com",
                 password_hash=get_password_hash("falconadmin777"),
-                role="admin"
+                role="admin",
+                avatar_url="/static/default-avatar.png",
+                phone="+998998967440"
             )
             db.add(admin)
-            db.commit()
         else:
-            admin = new_admin
+            admin.name = "Falcon Admin"
             admin.password_hash = get_password_hash("falconadmin777")
             admin.role = "admin"
-            db.commit()
-
-        # If old admin still exists as a separate record, reassign and delete
-        if old_admin and old_admin.id != admin.id:
-            db.query(models.Message).filter(models.Message.sender_id == old_admin.id).update({models.Message.sender_id: admin.id})
-            db.query(models.OrderStatusHistory).filter(models.OrderStatusHistory.changed_by_user_id == old_admin.id).update({models.OrderStatusHistory.changed_by_user_id: admin.id})
-            db.delete(old_admin)
-            db.commit()
-
-        # Ensure demo clients exist
-        c1 = db.query(models.User).filter(models.User.email == "mijoz1@falcon.uz").first()
-        if not c1:
-            db.add(models.User(name="Mijoz 1", email="mijoz1@falcon.uz", password_hash=get_password_hash("mijoz123"), role="client"))
-        c2 = db.query(models.User).filter(models.User.email == "mijoz2@falcon.uz").first()
-        if not c2:
-            db.add(models.User(name="Mijoz 2", email="mijoz2@falcon.uz", password_hash=get_password_hash("mijoz123"), role="client"))
+            admin.phone = "+998998967440"
+            if not admin.avatar_url:
+                admin.avatar_url = "/static/default-avatar.png"
         db.commit()
 
-        # Categories
-        cat_count = db.query(models.Category).count()
-        if cat_count == 0:
-            categories = [
-                models.Category(name="Veb dasturlash", slug="veb-dasturlash"),
-                models.Category(name="Grafik dizayn", slug="grafik-dizayn"),
-                models.Category(name="Video montaj", slug="video-montaj"),
-                models.Category(name="SMM va Marketing", slug="smm-va-marketing")
-            ]
-            db.add_all(categories)
-            db.commit()
+        # 3. Clean and populate exact IT Services categories & services
+        db.query(models.Service).delete()
+        db.query(models.Category).delete()
+        db.commit()
 
-            # Services
-            cat_web = db.query(models.Category).filter(models.Category.name == "Veb dasturlash").first()
-            cat_design = db.query(models.Category).filter(models.Category.name == "Grafik dizayn").first()
-            cat_video = db.query(models.Category).filter(models.Category.name == "Video montaj").first()
-            cat_smm = db.query(models.Category).filter(models.Category.name == "SMM va Marketing").first()
+        categories_data = [
+            models.Category(name="Web sayt yaratish", slug="web-sayt-yaratish"),
+            models.Category(name="MVP qurish", slug="mvp-qurish"),
+            models.Category(name="Mobil ilovalar", slug="mobil-ilovalar"),
+            models.Category(name="SEO va Marketing", slug="seo-va-marketing"),
+            models.Category(name="UI/UX Dizayn", slug="ui-ux-dizayn"),
+            models.Category(name="DevOps va Bulut", slug="devops-va-bulut")
+        ]
+        db.add_all(categories_data)
+        db.commit()
 
-            services = [
-                models.Service(category_id=cat_web.id, title="Landing Page Yaratish", description="Zamonaviy va konversiyali landing page.", image_url="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=800&q=80", price=1500000, delivery_days=5, included_items="Dizayn, Frontend, Backend ulash, Domen va Xosting setup", working_link="https://github.com/rahmonaliyevfazliddin5-oss/falcon-services"),
-                models.Service(category_id=cat_web.id, title="Korporativ Veb-sayt", description="Kompaniya uchun to'liq funksional sayt.", image_url="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=800&q=80", price=3000000, delivery_days=10, included_items="Ko'p sahifali dizayn, Admin panel, SEO optimizatsiya", working_link="https://github.com/rahmonaliyevfazliddin5-oss/falcon-services"),
-                models.Service(category_id=cat_web.id, title="E-commerce Do'kon", description="Onlayn savdo uchun internet do'kon.", image_url="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=800&q=80", price=5000000, delivery_days=14, included_items="Katalog, Savat, To'lov tizimlari, Admin panel", working_link="https://github.com/rahmonaliyevfazliddin5-oss/falcon-services"),
-                
-                models.Service(category_id=cat_design.id, title="Logotip Dizayni", description="Kompaniyangiz uchun unikal logotip.", image_url="https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&w=800&q=80", price=500000, delivery_days=3, included_items="3 xil variant, Vektor formatlar, Brandbook (qisqacha)"),
-                models.Service(category_id=cat_design.id, title="Ijtimoiy Tarmoq Postlari", description="Instagram va Telegram uchun postlar dizayni.", image_url="https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&w=800&q=80", price=800000, delivery_days=5, included_items="10 ta post dizayni, 5 ta story dizayni"),
-                models.Service(category_id=cat_design.id, title="Qadoq Dizayni", description="Mahsulot uchun jozibador qadoq dizayni.", image_url="https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=800&q=80", price=1200000, delivery_days=7, included_items="3D render, Printga tayyor fayllar"),
+        cat_web = db.query(models.Category).filter(models.Category.slug == "web-sayt-yaratish").first()
+        cat_mvp = db.query(models.Category).filter(models.Category.slug == "mvp-qurish").first()
+        cat_mobile = db.query(models.Category).filter(models.Category.slug == "mobil-ilovalar").first()
+        cat_seo = db.query(models.Category).filter(models.Category.slug == "seo-va-marketing").first()
+        cat_uiux = db.query(models.Category).filter(models.Category.slug == "ui-ux-dizayn").first()
+        cat_devops = db.query(models.Category).filter(models.Category.slug == "devops-va-bulut").first()
 
-                models.Service(category_id=cat_video.id, title="Reels/TikTok Montaj", description="Trenddagi qisqa videolar montaji.", image_url="https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=800&q=80", price=300000, delivery_days=3, included_items="Ovoz ustida ishlash, Subtitr, Effektlar, 3 ta video"),
-                models.Service(category_id=cat_video.id, title="YouTube Vlog Montaj", description="Uzun formatli YouTube videolari.", image_url="https://images.unsplash.com/photo-1536240478700-b869070f9279?auto=format&fit=crop&w=800&q=80", price=800000, delivery_days=5, included_items="Rang korreksiyasi, Musiqa tanlash, O'tishlar, 1 ta video (15-20 min)"),
-                models.Service(category_id=cat_video.id, title="Reklama Roligi", description="Mahsulot yoki xizmat uchun professional reklama.", image_url="https://images.unsplash.com/photo-1535016120720-40c74676578c?auto=format&fit=crop&w=800&q=80", price=2000000, delivery_days=7, included_items="Ssenariy, Ovoz yozish, Infografika, 1 ta rolik (1 min)"),
+        active_working_link = "https://github.com/rahmonaliyevfazliddin5-oss/falcon-services"
 
-                models.Service(category_id=cat_smm.id, title="SMM Start", description="Kichik bizneslar uchun SMM yuritish.", image_url="https://images.unsplash.com/photo-1611926653458-09294b3142bf?auto=format&fit=crop&w=800&q=80", price=1500000, delivery_days=30, included_items="15 ta post, 15 ta story, Reels g'oyalar, Kopirayting"),
-                models.Service(category_id=cat_smm.id, title="Targeting Sozlash", description="Facebook va Instagram reklamalari.", image_url="https://images.unsplash.com/photo-1533750516457-a7f992034fec?auto=format&fit=crop&w=800&q=80", price=1000000, delivery_days=7, included_items="Auditoriya tahlili, Kreativlar, Pixel o'rnatish, 1 oylik nazorat"),
-                models.Service(category_id=cat_smm.id, title="Kompleks Marketing", description="To'liq SMM va Marketing strategiyasi.", image_url="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80", price=4000000, delivery_days=30, included_items="Brending, SMM, Target, Influencer marketing, Oy yakuni hisoboti"),
-            ]
-            db.add_all(services)
-            db.commit()
+        services_data = [
+            models.Service(
+                category_id=cat_web.id,
+                title="Zamonaviy Korporativ Web sayt",
+                description="Kompaniyangiz va biznesingiz uchun to'liq funksional, moslashuvchan va yuqori tezlikka ega zamonaviy veb-sayt yaratish.",
+                image_url="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=800&q=80",
+                price=12500000, # $1,000
+                delivery_days=7,
+                included_items="Adaptiv dizayn, SEO baza, Admin boshqaruv paneli, Domen va Xosting integratsiyasi, SSL xavfsizlik",
+                working_link=active_working_link
+            ),
+            models.Service(
+                category_id=cat_mvp.id,
+                title="Startaplar uchun MVP Qurish",
+                description="Startapingizni tezda bozorga olib chiqish uchun eng kerakli funksiyalarga ega minimal ishchi mahsulot (MVP) ishlab chiqish.",
+                image_url="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80",
+                price=12500000, # $1,000
+                delivery_days=14,
+                included_items="Foydalanuvchi tizimi, Asosiy biznes logika, To'lov tizimlari, API arxitekturasi, Testlash",
+                working_link=active_working_link
+            ),
+            models.Service(
+                category_id=cat_mobile.id,
+                title="Cross-Platform Mobil Ilova (iOS & Android)",
+                description="Flutter va React Native asosida ikki operatsion tizimda ham silliq ishlaydigan professional mobil ilova yaratish.",
+                image_url="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=800&q=80",
+                price=20000000,
+                delivery_days=20,
+                included_items="iOS va Android versiyalar, Push-bildirishnomalar, Offline rejim, API ulash, App Store & Google Play nashri",
+                working_link=active_working_link
+            ),
+            models.Service(
+                category_id=cat_seo.id,
+                title="SEO Optimizatsiya va Raqamli Marketing",
+                description="Google qidiruv tizimida saytingizni Top-10 likka olib chiqish, texnik audit va konversiyani oshirish.",
+                image_url="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80",
+                price=6000000,
+                delivery_days=10,
+                included_items="Kalit so'zlar tahlili, On-page va Off-page SEO, Sayt tezligini oshirish, Google Analytics sozlash",
+                working_link=active_working_link
+            ),
+            models.Service(
+                category_id=cat_uiux.id,
+                title="UI/UX Dizayn Tizimi va Figma Prototip",
+                description="Foydalanuvchilar uchun qulay, jozibador va konversiyali interfeyslar, mobil va veb dizaynlar yaratish.",
+                image_url="https://images.unsplash.com/photo-1581291518655-9523c932edcf?auto=format&fit=crop&w=800&q=80",
+                price=7500000,
+                delivery_days=5,
+                included_items="Figma manba fayllari, Komponentlar kutubxonasi, Interaktiv klik prototip, Dizayn qo'llanma",
+                working_link=active_working_link
+            ),
+            models.Service(
+                category_id=cat_devops.id,
+                title="CI/CD va Bulutli Infratuzilma (DevOps)",
+                description="Serverlarni avtomatlashtirish, Docker konteynerlar, doimiy 24/7 ishlash kafolati va xavfsizlik monitoringi.",
+                image_url="https://images.unsplash.com/photo-1607799279861-4dd421887fb3?auto=format&fit=crop&w=800&q=80",
+                price=9000000,
+                delivery_days=4,
+                included_items="Docker & Kubernetes, GitHub Actions CI/CD, Nginx reverse proxy, Monitoring va Zaxira nusxalash",
+                working_link=active_working_link
+            )
+        ]
+        db.add_all(services_data)
+        db.commit()
 
-            # Test Orders
-            user = db.query(models.User).filter(models.User.email == "mijoz1@falcon.uz").first()
-            admin = db.query(models.User).filter(models.User.email == "falcon@admin.com").first()
-            service = db.query(models.Service).first()
-
-            if user and admin and service:
-                order1 = models.Order(
-                    order_number="ORD-10001",
-                    user_id=user.id,
-                    service_id=service.id,
-                    service_title_snapshot=service.title,
-                    price_snapshot=service.price,
-                    project_name="Mening yangi proyektim",
-                    technical_task="Juda zo'r, ko'k rangli, tez ishlaydigan landing page kerak. Quyidagi talablar: 1. Tezkor yuklanish 2. Mobil moslashuv",
-                    desired_deadline=datetime.utcnow().date() + timedelta(days=10),
-                    contact_phone="+998901234567",
-                    status="Yangi"
-                )
-                db.add(order1)
-                db.commit()
-
-                hist1 = models.OrderStatusHistory(
-                    order_id=order1.id,
-                    old_status=None,
-                    new_status="Yangi",
-                    changed_by_user_id=user.id
-                )
-                db.add(hist1)
-                
-                msg1 = models.Message(
-                    order_id=order1.id,
-                    sender_id=user.id,
-                    text="Assalomu alaykum, buyurtma qoldirdim!"
-                )
-                db.add(msg1)
-                db.commit()
-
-                # Order 2
-                order2 = models.Order(
-                    order_number="ORD-10002",
-                    user_id=user.id,
-                    service_id=service.id,
-                    service_title_snapshot=service.title,
-                    price_snapshot=service.price,
-                    project_name="Yana bir proyekt",
-                    technical_task="Bu gal boshqacha dizayn qiling, qizil va oq ranglarda, animatsiyali bo'lsin. Juda muhim proyekt.",
-                    desired_deadline=datetime.utcnow().date() + timedelta(days=15),
-                    contact_phone="+998901234567",
-                    status="Jarayonda"
-                )
-                db.add(order2)
-                db.commit()
-
-                hist2 = models.OrderStatusHistory(
-                    order_id=order2.id,
-                    old_status="Yangi",
-                    new_status="Jarayonda",
-                    changed_by_user_id=admin.id
-                )
-                db.add(hist2)
-                
-                msg2 = models.Message(
-                    order_id=order2.id,
-                    sender_id=admin.id,
-                    text="Buyurtmangiz qabul qilindi, ishni boshladik."
-                )
-                db.add(msg2)
-                db.commit()
+        print("Database successfully seeded with clean state, preserved Admin, and IT services!")
 
     finally:
         db.close()
 
 if __name__ == "__main__":
     seed_db()
-
