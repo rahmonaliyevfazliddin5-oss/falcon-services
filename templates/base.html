@@ -166,7 +166,11 @@
                     }
                     navSection.innerHTML = `
                         ${links}
-                        <button onclick="logout()" class="text-red-500 hover:text-red-700 text-sm font-medium ml-4">Chiqish</button>
+                        <div class="ml-4 flex items-center gap-3 border-l pl-4">
+                            <span class="text-xs text-gray-500">Siz <b class="text-gray-800">${user.role === 'admin' ? 'Admin' : 'Mijoz'}</b> sifatida kirdingiz</span>
+                            <button onclick="window.location.href='/login'" class="text-blue-600 hover:text-blue-800 text-xs font-medium border border-blue-200 bg-blue-50 px-2 py-1 rounded">Obrazni almashtirish</button>
+                            <button onclick="logout()" class="text-red-500 hover:text-red-700 text-xs font-medium">Chiqish</button>
+                        </div>
                     `;
                 }
             } catch (e) {
