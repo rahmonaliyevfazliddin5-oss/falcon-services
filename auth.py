@@ -27,7 +27,7 @@ def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password[:72], hashed_password)
 
 def get_password_hash(password):
-    return pwd_context.hash(password[:72])
+    return pwd_context.hash(password[:72][:72])
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
@@ -114,3 +114,4 @@ def update_profile(profile_data: schemas.UserUpdate, current_user: models.User =
     db.commit()
     db.refresh(current_user)
     return current_user
+
