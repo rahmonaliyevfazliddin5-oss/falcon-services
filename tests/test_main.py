@@ -27,6 +27,9 @@ def override_get_db():
 
 app.dependency_overrides[get_db] = override_get_db
 
+import main
+main.MAINTENANCE_MODE = False
+
 client = TestClient(app)
 
 @pytest.fixture(scope="module")

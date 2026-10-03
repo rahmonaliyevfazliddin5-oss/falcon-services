@@ -15,10 +15,9 @@ from routers import public, orders, admin, pages
 
 # =========================================================================
 # Qoida (Rule): MAINTENANCE_MODE
-# Kodga o'zgartirish kiritish jarayonida True bo'lib, ekranga maintenance.png chiqadi.
-# O'zgarishlar yakunlangach, qaytarib False holatiga o'tkaziladi.
+# Hozirda faollashtirildi (True) - Ekranga maintenance.png to'liq chiqadi!
 # =========================================================================
-MAINTENANCE_MODE: bool = False
+MAINTENANCE_MODE: bool = True
 
 templates = Jinja2Templates(directory="templates")
 
