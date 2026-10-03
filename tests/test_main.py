@@ -248,3 +248,4 @@ def test_archive_service(db_session):
     orders = db_session.query(models.Order).all()
     assert len(orders) > 0
     assert orders[0].service_title_snapshot == srv.title
+

@@ -135,3 +135,4 @@ class OrderAdminOut(OrderOut):
 
 class UserAdminOut(UserOut):
     orders_count: int
+
