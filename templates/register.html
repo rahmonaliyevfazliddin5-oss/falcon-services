@@ -79,22 +79,43 @@
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
             </svg>
             <div>
-                <h3 class="font-bold text-gray-900 dark:text-gray-100 text-base">Google orqali kirish</h3>
-                <p class="text-xs text-gray-500 dark:text-gray-400">Google akkaunt ma'lumotlarini tasdiqlang</p>
+                <h3 class="font-bold text-gray-900 dark:text-gray-100 text-base">Google hisobingiz bilan kiring</h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Tezkor 1-klik orqali avtorizatsiya</p>
             </div>
         </div>
+
+        <!-- 1-Click Quick Account Selection -->
+        <div class="mb-4 p-3 bg-gray-50 dark:bg-slate-700/50 rounded-xl border border-gray-200 dark:border-slate-600 hover:border-blue-500 transition cursor-pointer flex items-center justify-between" onclick="quickSelectGoogleAccount('rahmonaliyevfazliddin5@gmail.com', 'Fazliddin Rahmonaliyev')">
+            <div class="flex items-center gap-3 overflow-hidden">
+                <div class="w-9 h-9 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-sm flex-shrink-0">
+                    F
+                </div>
+                <div class="overflow-hidden">
+                    <p class="text-sm font-bold text-gray-900 dark:text-gray-100 truncate">Fazliddin Rahmonaliyev</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 truncate">rahmonaliyevfazliddin5@gmail.com</p>
+                </div>
+            </div>
+            <span class="text-blue-600 dark:text-blue-400 font-bold text-xs ml-2 flex-shrink-0">&rarr;</span>
+        </div>
+
+        <div class="relative flex py-1 items-center mb-3">
+            <div class="flex-grow border-t border-gray-200 dark:border-slate-700"></div>
+            <span class="flex-shrink mx-2 text-[10px] font-bold text-gray-400 uppercase">Yoki boshqa hisob</span>
+            <div class="flex-grow border-t border-gray-200 dark:border-slate-700"></div>
+        </div>
+
         <form id="googleQuickForm" class="space-y-3">
             <div>
                 <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Google Elektron Pochta</label>
-                <input type="email" id="g-email" required placeholder="nomingiz@gmail.com" class="w-full border border-gray-300 dark:border-slate-600 rounded-lg p-2.5 text-sm dark:bg-slate-900 dark:text-gray-100">
+                <input type="email" id="g-email" required value="rahmonaliyevfazliddin5@gmail.com" placeholder="nomingiz@gmail.com" class="w-full border border-gray-300 dark:border-slate-600 rounded-lg p-2.5 text-sm dark:bg-slate-900 dark:text-gray-100">
             </div>
             <div>
                 <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Google Profil Ismi</label>
-                <input type="text" id="g-name" required placeholder="Ism Familiya" class="w-full border border-gray-300 dark:border-slate-600 rounded-lg p-2.5 text-sm dark:bg-slate-900 dark:text-gray-100">
+                <input type="text" id="g-name" required value="Fazliddin Rahmonaliyev" placeholder="Ism Familiya" class="w-full border border-gray-300 dark:border-slate-600 rounded-lg p-2.5 text-sm dark:bg-slate-900 dark:text-gray-100">
             </div>
             <div class="flex gap-2 pt-2">
                 <button type="button" onclick="closeGoogleModal()" class="flex-1 py-2 px-3 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 rounded-lg text-xs font-semibold hover:bg-gray-50 dark:hover:bg-slate-700 transition">Bekor qilish</button>
-                <button type="submit" class="flex-1 py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition">Davom etish &rarr;</button>
+                <button type="submit" class="flex-1 py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition">Kirish &rarr;</button>
             </div>
         </form>
     </div>
@@ -160,12 +181,20 @@
         modal.classList.remove('flex');
     }
 
+    const GOOGLE_CLIENT_ID = "{{ google_client_id | default('') }}";
+
+    function quickSelectGoogleAccount(email, name) {
+        document.getElementById('g-email').value = email;
+        document.getElementById('g-name').value = name;
+        submitGoogleAuth({ email, name });
+    }
+
     async function handleGoogleSignIn() {
-        // 1. Agar Google One Tap / GIS mavjud bo'lsa
-        if (window.google && window.google.accounts && window.google.accounts.id) {
+        // Faqat haqiqiy Google Client ID mavjud bo'lsagina Google GIS popup ochiladi
+        if (GOOGLE_CLIENT_ID && GOOGLE_CLIENT_ID.trim() !== '' && GOOGLE_CLIENT_ID !== 'your_google_client_id_here' && window.google && window.google.accounts && window.google.accounts.id) {
             try {
                 google.accounts.id.initialize({
-                    client_id: "your_google_client_id_here",
+                    client_id: GOOGLE_CLIENT_ID,
                     callback: async (response) => {
                         if (response.credential) {
                             await submitGoogleAuth({ credential: response.credential });
@@ -182,7 +211,7 @@
                 console.warn("Google GIS init:", err);
             }
         }
-        // GIS sozlanmagan bo'lsa yoki xatolikda tezkor Google modalini ochish
+        // GIS sozlanmagan bo'lsa yoki placeholder bo'lsa, xatolik chiqmasligi uchun darhol tezkor Google modalini ochish
         openGoogleModal();
     }
 
@@ -203,7 +232,7 @@
             const data = await res.json();
             if (res.ok && data.access_token) {
                 setToken(data.access_token);
-                document.cookie = `access_token=${data.access_token}; path=/; max-age=31536000; SameSite=Lax`;
+                document.cookie = `access_token=${data.access_token}; path=/; max-age=604800; SameSite=Lax`;
                 showToast("Google orqali muvaffaqiyatli kirdingiz!");
                 setTimeout(() => window.location.href = '/profile', 400);
             } else {

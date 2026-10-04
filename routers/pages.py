@@ -1,3 +1,4 @@
+import os
 from fastapi import APIRouter, Request, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -34,7 +35,8 @@ async def login(request: Request, db: Session = Depends(get_db)):
                     return RedirectResponse(url="/admin" if user.role == "admin" else "/profile", status_code=302)
         except Exception:
             pass
-    return templates.TemplateResponse(request=request, name="login.html")
+    google_client_id = os.getenv("GOOGLE_CLIENT_ID", "")
+    return templates.TemplateResponse(request=request, name="login.html", context={"google_client_id": google_client_id})
 
 @router.get("/register", response_class=HTMLResponse)
 async def register(request: Request, db: Session = Depends(get_db)):
@@ -49,7 +51,8 @@ async def register(request: Request, db: Session = Depends(get_db)):
                     return RedirectResponse(url="/profile", status_code=302)
         except Exception:
             pass
-    return templates.TemplateResponse(request=request, name="register.html")
+    google_client_id = os.getenv("GOOGLE_CLIENT_ID", "")
+    return templates.TemplateResponse(request=request, name="register.html", context={"google_client_id": google_client_id})
 
 @router.get("/profile", response_class=HTMLResponse)
 async def profile(request: Request):
