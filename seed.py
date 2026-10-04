@@ -52,7 +52,7 @@ def seed_db():
             cat_uiux = db.query(models.Category).filter(models.Category.slug == "ui-ux-dizayn").first()
             cat_devops = db.query(models.Category).filter(models.Category.slug == "devops-va-bulut").first()
 
-            active_working_link = "https://github.com/rahmonaliyevfazliddin5-oss/falcon-services"
+            active_working_link = "https://www.eventmindai.uz/"
 
             services_data = [
                 models.Service(
