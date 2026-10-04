@@ -152,6 +152,75 @@ def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), 
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
+import base64
+import json
+
+@router.post("/google", response_model=schemas.UserRegisterOut)
+def google_auth(google_in: schemas.GoogleAuthIn, response: Response, db: Session = Depends(get_db)):
+    email = google_in.email
+    name = google_in.name
+    avatar_url = google_in.avatar_url or "/static/default-avatar.png"
+
+    # Agar Google ID token (credential) yuborilgan bo'lsa, payload dan ma'lumotlarni olish
+    if google_in.credential:
+        try:
+            parts = google_in.credential.split(".")
+            if len(parts) >= 2:
+                padding = "=" * (4 - len(parts[1]) % 4)
+                decoded_bytes = base64.urlsafe_b64decode(parts[1] + padding)
+                payload_json = json.loads(decoded_bytes.decode("utf-8"))
+                email = payload_json.get("email") or email
+                name = payload_json.get("name") or payload_json.get("given_name") or name
+                avatar_url = payload_json.get("picture") or avatar_url
+        except Exception as e:
+            print("Google token decode xatosi:", e)
+
+    if not email:
+        raise HTTPException(status_code=400, detail="Google akkaunt ma'lumotlari topilmadi / Google email not provided")
+
+    clean_email = str(email).lower().strip()
+    clean_name = str(name).strip() if name else clean_email.split("@")[0]
+
+    # Foydalanuvchi mavjudligini tekshirish
+    db_user = db.query(models.User).filter(func.lower(models.User.email) == clean_email).first()
+    if not db_user:
+        # Yangi foydalanuvchi yaratish
+        random_pass = uuid.uuid4().hex
+        db_user = models.User(
+            name=clean_name,
+            email=clean_email,
+            password_hash=get_password_hash(random_pass),
+            phone="",
+            avatar_url=avatar_url,
+            role="client"
+        )
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+    else:
+        if avatar_url and (not db_user.avatar_url or db_user.avatar_url == "/static/default-avatar.png"):
+            db_user.avatar_url = avatar_url
+            db.commit()
+            db.refresh(db_user)
+
+    # 1 yillik persistent JWT token va Cookie yaratish (qurilmada 365 kun doimiy eslab qolish)
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    token = create_access_token(data={"sub": db_user.email}, expires_delta=access_token_expires)
+    response.set_cookie(
+        key="access_token",
+        value=token,
+        max_age=31536000, # 1 yil (365 kun)
+        expires=31536000,
+        path="/",
+        httponly=False,
+        samesite="lax"
+    )
+
+    out = schemas.UserRegisterOut.model_validate(db_user)
+    out.access_token = token
+    out.token_type = "bearer"
+    return out
+
 @router.get("/me", response_model=schemas.UserOut)
 def read_users_me(current_user: models.User = Depends(get_current_user)):
     return current_user

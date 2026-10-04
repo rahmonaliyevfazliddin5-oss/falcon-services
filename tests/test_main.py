@@ -387,3 +387,29 @@ def test_realtime_statistics(db_session):
 
 
 
+
+# Test 12: Google orqali avtorizatsiya va qurilma eslab qolishi
+def test_google_auth(db_session):
+    # 1. Yangi Google foydalanuvchisi kirishi
+    payload = {
+        "email": "google_user@gmail.com",
+        "name": "Google User",
+        "avatar_url": "https://lh3.googleusercontent.com/test_avatar"
+    }
+    res = client.post("/api/auth/google", json=payload)
+    assert res.status_code == 200
+    data = res.json()
+    assert "access_token" in data
+    assert data["token_type"] == "bearer"
+    assert data["email"] == "google_user@gmail.com"
+    assert data["name"] == "Google User"
+    
+    # Cookie tekshiruvi (device persistence - access_token o'rnatilgan)
+    assert "access_token" in res.cookies
+
+    # 2. Xuddi shu Google foydalanuvchisi qayta kirganda
+    res2 = client.post("/api/auth/google", json=payload)
+    assert res2.status_code == 200
+    data2 = res2.json()
+    assert data2["email"] == "google_user@gmail.com"
+    assert data2["id"] == data["id"]

@@ -31,6 +31,12 @@ class Token(BaseModel):
     access_token: str
     token_type: str
 
+class GoogleAuthIn(BaseModel):
+    credential: Optional[str] = None
+    email: Optional[EmailStr] = None
+    name: Optional[str] = None
+    avatar_url: Optional[str] = None
+
 # --- Categories ---
 class CategoryBase(BaseModel):
     name: str
