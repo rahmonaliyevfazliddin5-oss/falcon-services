@@ -35,7 +35,7 @@ async def login(request: Request, db: Session = Depends(get_db)):
                     return RedirectResponse(url="/admin" if user.role == "admin" else "/profile", status_code=302)
         except Exception:
             pass
-    google_client_id = os.getenv("GOOGLE_CLIENT_ID", "")
+    google_client_id = os.getenv("GOOGLE_CLIENT_ID", "354347783742-g8fsuo6iathr7s7un3dddic44874nid0.apps.googleusercontent.com")
     return templates.TemplateResponse(request=request, name="login.html", context={"google_client_id": google_client_id})
 
 @router.get("/register", response_class=HTMLResponse)
@@ -51,7 +51,7 @@ async def register(request: Request, db: Session = Depends(get_db)):
                     return RedirectResponse(url="/profile", status_code=302)
         except Exception:
             pass
-    google_client_id = os.getenv("GOOGLE_CLIENT_ID", "")
+    google_client_id = os.getenv("GOOGLE_CLIENT_ID", "354347783742-g8fsuo6iathr7s7un3dddic44874nid0.apps.googleusercontent.com")
     return templates.TemplateResponse(request=request, name="register.html", context={"google_client_id": google_client_id})
 
 @router.get("/profile", response_class=HTMLResponse)

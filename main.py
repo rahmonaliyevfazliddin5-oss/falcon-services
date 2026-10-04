@@ -15,7 +15,7 @@ from routers import public, orders, admin, pages
 
 # =========================================================================
 # Qoida (Rule): MAINTENANCE_MODE
-# O'zgartirishlar kiritilmoqda (True) - Ekranga maintenance.png chiqadi!
+# O'zgartirishlar tugatildi (False) - Sayt normal rejimda ishlamoqda
 # =========================================================================
 MAINTENANCE_MODE: bool = False
 
