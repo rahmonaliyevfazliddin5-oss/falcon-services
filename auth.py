@@ -20,7 +20,7 @@ load_dotenv()
 
 SECRET_KEY = os.getenv("SECRET_KEY", "falcon_secure_jwt_secret_key_2026_falconadmin")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", str(60 * 24 * 365))) # 365 kun (1 yil doimiy eslab qolish)
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", str(60 * 24 * 7))) # 7 kun (604800 soniya)
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login", auto_error=False)
@@ -38,7 +38,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(days=365)
+        expire = datetime.utcnow() + timedelta(days=7)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
@@ -109,16 +109,16 @@ def register(user: schemas.UserCreate, response: Response, db: Session = Depends
     db.commit()
     db.refresh(db_user)
 
-    # Avtomatik 1 yillik doimiy token yaratish va cookie o'rnatish (1 marta ro'yxatdan o'tib qayta kirmaslik)
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    # Avtomatik 7 kunlik doimiy token yaratish va HttpOnly cookie o'rnatish (max-age=604800)
+    access_token_expires = timedelta(days=7)
     access_token = create_access_token(data={"sub": db_user.email}, expires_delta=access_token_expires)
     response.set_cookie(
         key="access_token",
         value=access_token,
-        max_age=31536000, # 1 yil (365 kun)
-        expires=31536000,
+        max_age=604800, # 7 kun (604800 soniya)
+        expires=604800,
         path="/",
-        httponly=False,
+        httponly=True,
         samesite="lax"
     )
 
@@ -136,18 +136,18 @@ def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), 
             detail="Elektron pochta yoki parol noto'g'ri",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(days=7)
     access_token = create_access_token(
         data={"sub": user.email}, expires_delta=access_token_expires
     )
-    # Server darajasida 1 yillik persistent cookie o'rnatish (foydalanuvchini 365 kun doimiy eslab qolish)
+    # Server darajasida 7 kunlik persistent HttpOnly cookie o'rnatish (max-age=604800)
     response.set_cookie(
         key="access_token",
         value=access_token,
-        max_age=31536000, # 1 yil (365 kun)
-        expires=31536000,
+        max_age=604800, # 7 kun
+        expires=604800,
         path="/",
-        httponly=False,
+        httponly=True,
         samesite="lax"
     )
     return {"access_token": access_token, "token_type": "bearer"}
@@ -203,16 +203,16 @@ def google_auth(google_in: schemas.GoogleAuthIn, response: Response, db: Session
             db.commit()
             db.refresh(db_user)
 
-    # 1 yillik persistent JWT token va Cookie yaratish (qurilmada 365 kun doimiy eslab qolish)
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    # 7 kunlik persistent JWT token va HttpOnly Cookie yaratish (max-age=604800)
+    access_token_expires = timedelta(days=7)
     token = create_access_token(data={"sub": db_user.email}, expires_delta=access_token_expires)
     response.set_cookie(
         key="access_token",
         value=token,
-        max_age=31536000, # 1 yil (365 kun)
-        expires=31536000,
+        max_age=604800, # 7 kun
+        expires=604800,
         path="/",
-        httponly=False,
+        httponly=True,
         samesite="lax"
     )
 
@@ -220,6 +220,11 @@ def google_auth(google_in: schemas.GoogleAuthIn, response: Response, db: Session
     out.access_token = token
     out.token_type = "bearer"
     return out
+
+@router.post("/logout")
+def logout(response: Response):
+    response.delete_cookie(key="access_token", path="/")
+    return {"message": "Tizimdan muvaffaqiyatli chiqildi"}
 
 @router.get("/me", response_model=schemas.UserOut)
 def read_users_me(current_user: models.User = Depends(get_current_user)):

@@ -9,7 +9,16 @@ def seed_db():
     db = SessionLocal()
     
     try:
-        # 1. Asosiy Falcon Admin akkaunti mavjudligini ta'minlash (agar bo'lmasa yaratish)
+        # 1. Tizim ishga tushganda eski oddiy foydalanuvchilar va buyurtmalarni tozalash (Talab 2)
+        # Barcha buyurtmalar, status tarixi va xabarlar tozalanadi:
+        db.query(models.OrderStatusHistory).delete()
+        db.query(models.Message).delete()
+        db.query(models.Order).delete()
+        # Admin bo'lmagan barcha eski foydalanuvchilar tozalanadi:
+        db.query(models.User).filter(models.User.email != "falcon@admin.com").delete()
+        db.commit()
+
+        # 2. Bitta asosiy Falcon Admin akkauntini o'zgarmasdan saqlash
         admin = db.query(models.User).filter(models.User.email == "falcon@admin.com").first()
         if not admin:
             admin = models.User(
@@ -23,12 +32,13 @@ def seed_db():
             db.add(admin)
         else:
             admin.role = "admin"
+            admin.name = "Falcon Admin"
+            admin.password_hash = get_password_hash("falconadmin777")
             if not admin.avatar_url:
                 admin.avatar_url = "/static/default-avatar.png"
+            if not admin.phone:
+                admin.phone = "+998998967440"
         db.commit()
-
-        # DIQQAT: Ro'yxatdan o'tgan yangi foydalanuvchilar va ularning buyurtmalari
-        # bazada DOIMIY saqlanib qoladi, hech qachon o'chirilmaydi!
 
         # 2. IT Xizmatlari kategoriyalari bo'sh bo'lsa kiritish
         if db.query(models.Category).count() == 0:

@@ -72,3 +72,9 @@ async def admin_panel(request: Request, db: Session = Depends(get_db)):
         return RedirectResponse(url="/login?next=/admin", status_code=302)
         
     return templates.TemplateResponse(request=request, name="admin.html")
+
+@router.get("/logout")
+async def logout_page():
+    res = RedirectResponse(url="/login", status_code=302)
+    res.delete_cookie(key="access_token", path="/")
+    return res

@@ -96,6 +96,9 @@ const translations = {
         "register.have_account": "Akkauntingiz bormi?",
         "register.login_link": "Tizimga kirish",
         "register.profanity_warn": "Ism odobli va haqoratsiz bo'lishi shart",
+        "auth.google_btn": "Google bilan kirish",
+        "auth.or": "YOKI",
+        "auth.remember_me": "Meni eslab qolish (7 kunlik seans)",
         
         // Profile
         "profile.title": "Foydalanuvchi Profili",
@@ -244,6 +247,9 @@ const translations = {
         "register.have_account": "Уже есть аккаунт?",
         "register.login_link": "Войти",
         "register.profanity_warn": "Имя не должно содержать оскорбительных слов",
+        "auth.google_btn": "Войти через Google",
+        "auth.or": "ИЛИ",
+        "auth.remember_me": "Запомнить меня (7-дневная сессия)",
         
         // Profile
         "profile.title": "Профиль пользователя",
@@ -392,6 +398,9 @@ const translations = {
         "register.have_account": "Already have an account?",
         "register.login_link": "Sign In",
         "register.profanity_warn": "Name must be polite and appropriate",
+        "auth.google_btn": "Sign in with Google",
+        "auth.or": "OR",
+        "auth.remember_me": "Remember me (7-day session)",
         
         // Profile
         "profile.title": "User Profile",
@@ -494,10 +503,20 @@ const serviceTranslations = {
             description: "Создание удобных, привлекательных и высококонверсионных интерфейсов для пользователей в Figma.",
             included_items: "Дизайн-система Figma, Wireframes и прототипы, Адаптивность для Mobile и Web, User Flow карты"
         },
+        "UI/UX Dizayn Tizimi va Figma Prototip": {
+            title: "Дизайн-система UI/UX и Прототип в Figma",
+            description: "Создание удобных, привлекательных и конверсионных интерфейсов, мобильного и веб-дизайна для пользователей.",
+            included_items: "Исходные файлы Figma, Библиотека компонентов, Интерактивный кликабельный прототип, Руководство по дизайну"
+        },
         "DevOps, CI/CD va Bulutli Infratuzilma": {
             title: "DevOps, CI/CD и Облачная Инфраструктура",
             description: "Автоматизация серверов, контейнеризация Docker и Kubernetes, непрерывная интеграция (CI/CD).",
             included_items: "Контейнеризация Docker, CI/CD через GitHub Actions, Настройка Nginx, SSL сертификаты, Круглосуточный мониторинг"
+        },
+        "CI/CD va Bulutli Infratuzilma (DevOps)": {
+            title: "CI/CD и Облачная Инфраструктура (DevOps)",
+            description: "Автоматизация серверов, контейнеризация Docker, гарантия круглосуточной работы 24/7 и мониторинг безопасности.",
+            included_items: "Docker & Kubernetes, GitHub Actions CI/CD, Nginx reverse proxy, Мониторинг и Резервное копирование"
         }
     },
     en: {
@@ -526,10 +545,20 @@ const serviceTranslations = {
             description: "Creating intuitive, attractive, and high-converting interfaces for users in Figma.",
             included_items: "Figma Design System, Wireframes & Prototypes, Mobile & Web Responsiveness, User Flow Maps"
         },
+        "UI/UX Dizayn Tizimi va Figma Prototip": {
+            title: "UI/UX Design System & Figma Prototype",
+            description: "Creating intuitive, attractive, and high-converting user interfaces, mobile and web designs in Figma.",
+            included_items: "Figma Source Files, Component Library, Interactive Clickable Prototype, Design Guidelines"
+        },
         "DevOps, CI/CD va Bulutli Infratuzilma": {
             title: "DevOps, CI/CD & Cloud Infrastructure",
             description: "Server automation, Docker and Kubernetes containerization, continuous integration & delivery (CI/CD).",
             included_items: "Docker Containerization, GitHub Actions CI/CD, Nginx Configuration, SSL Certificates, 24/7 Monitoring"
+        },
+        "CI/CD va Bulutli Infratuzilma (DevOps)": {
+            title: "CI/CD & Cloud Infrastructure (DevOps)",
+            description: "Server automation, Docker containerization, 24/7 high availability uptime guarantee, and security monitoring.",
+            included_items: "Docker & Kubernetes, GitHub Actions CI/CD, Nginx reverse proxy, 24/7 Monitoring and Automated Backups"
         }
     }
 };

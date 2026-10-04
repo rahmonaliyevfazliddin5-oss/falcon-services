@@ -413,3 +413,19 @@ def test_google_auth(db_session):
     data2 = res2.json()
     assert data2["email"] == "google_user@gmail.com"
     assert data2["id"] == data["id"]
+
+# Test 13: 7 kunlik HttpOnly Cookie va Logout
+def test_persistent_cookie_and_logout(db_session):
+    # Kirish va cookie tekshirish
+    res = client.post("/api/auth/login", data={"username": "m1@falcon.uz", "password": "mijoz123"})
+    assert res.status_code == 200
+    assert "access_token" in res.cookies
+    
+    # Cookie orqali /api/auth/me chaqirish
+    me_res = client.get("/api/auth/me")
+    assert me_res.status_code == 200
+    assert me_res.json()["email"] == "m1@falcon.uz"
+    
+    # Logout chaqirish
+    logout_res = client.post("/api/auth/logout")
+    assert logout_res.status_code == 200
