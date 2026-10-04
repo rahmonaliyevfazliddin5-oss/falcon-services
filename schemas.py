@@ -23,6 +23,10 @@ class UserOut(UserBase):
     created_at: datetime
     class Config: from_attributes = True
 
+class UserRegisterOut(UserOut):
+    access_token: Optional[str] = None
+    token_type: Optional[str] = "bearer"
+
 class Token(BaseModel):
     access_token: str
     token_type: str

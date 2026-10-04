@@ -3,7 +3,7 @@ from typing import Optional
 import os
 import shutil
 import uuid
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Response
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Response, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -20,10 +20,10 @@ load_dotenv()
 
 SECRET_KEY = os.getenv("SECRET_KEY", "falcon_secure_jwt_secret_key_2026_falconadmin")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", str(60 * 24 * 90))) # 90 kun (eslab qolish)
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", str(60 * 24 * 365))) # 365 kun (1 yil doimiy eslab qolish)
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login", auto_error=False)
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
@@ -38,7 +38,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(days=90)
+        expire = datetime.utcnow() + timedelta(days=365)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
@@ -46,14 +46,22 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
 def get_user(db: Session, email: str):
     return db.query(models.User).filter(models.User.email == email).first()
 
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+def get_current_user(
+    request: Request,
+    token: Optional[str] = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
+):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    auth_token = token or request.cookies.get("access_token")
+    if not auth_token:
+        raise credentials_exception
+
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(auth_token, SECRET_KEY, algorithms=[ALGORITHM])
         email: str = payload.get("sub")
         if email is None:
             raise credentials_exception
@@ -72,8 +80,8 @@ def get_current_admin(current_user: models.User = Depends(get_current_user)):
         )
     return current_user
 
-@router.post("/register", response_model=schemas.UserOut)
-def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
+@router.post("/register", response_model=schemas.UserRegisterOut)
+def register(user: schemas.UserCreate, response: Response, db: Session = Depends(get_db)):
     # 1. Profanity security filter
     profanity.validate_name(user.name)
 
@@ -100,7 +108,24 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
-    return db_user
+
+    # Avtomatik 1 yillik doimiy token yaratish va cookie o'rnatish (1 marta ro'yxatdan o'tib qayta kirmaslik)
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(data={"sub": db_user.email}, expires_delta=access_token_expires)
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        max_age=31536000, # 1 yil (365 kun)
+        expires=31536000,
+        path="/",
+        httponly=False,
+        samesite="lax"
+    )
+
+    out = schemas.UserRegisterOut.model_validate(db_user)
+    out.access_token = access_token
+    out.token_type = "bearer"
+    return out
 
 @router.post("/login", response_model=schemas.Token)
 def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
@@ -115,12 +140,12 @@ def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), 
     access_token = create_access_token(
         data={"sub": user.email}, expires_delta=access_token_expires
     )
-    # Server darajasida 90 kunlik persistent cookie o'rnatish (foydalanuvchini doimiy eslab qolish)
+    # Server darajasida 1 yillik persistent cookie o'rnatish (foydalanuvchini 365 kun doimiy eslab qolish)
     response.set_cookie(
         key="access_token",
         value=access_token,
-        max_age=7776000,
-        expires=7776000,
+        max_age=31536000, # 1 yil (365 kun)
+        expires=31536000,
         path="/",
         httponly=False,
         samesite="lax"

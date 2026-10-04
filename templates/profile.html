@@ -142,14 +142,13 @@
                 if (u.avatar_url) {
                     document.getElementById('p-avatar').src = u.avatar_url;
                 }
-            } else {
+                loadOrders();
+            } else if (res.status === 401) {
                 logout();
                 return;
             }
-
-            loadOrders();
         } catch (e) {
-            console.error(e);
+            console.warn(e);
         }
     }
 

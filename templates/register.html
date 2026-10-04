@@ -70,7 +70,17 @@
             const data = await res.json();
             
             if (res.ok) {
-                // Avtomatik login qilib eslab qolish tokeni va cookie o'rnatish
+                // Avtomatik 1-yillik login qilib eslab qolish tokeni va cookie o'rnatish
+                const token = data.access_token;
+                if (token) {
+                    setToken(token);
+                    document.cookie = `access_token=${token}; path=/; max-age=31536000; SameSite=Lax`;
+                    showToast("Muvaffaqiyatli ro'yxatdan o'tdingiz!");
+                    setTimeout(() => window.location.href = '/profile', 400);
+                    return;
+                }
+                
+                // Zaxira login
                 const params = new URLSearchParams();
                 params.append('username', payload.email);
                 params.append('password', payload.password);
@@ -82,13 +92,13 @@
                 if (loginRes.ok) {
                     const loginData = await loginRes.json();
                     setToken(loginData.access_token);
-                    document.cookie = `access_token=${loginData.access_token}; path=/; max-age=7776000; SameSite=Lax`;
+                    document.cookie = `access_token=${loginData.access_token}; path=/; max-age=31536000; SameSite=Lax`;
                     showToast("Muvaffaqiyatli ro'yxatdan o'tdingiz!");
-                    setTimeout(() => window.location.href = '/profile', 800);
+                    setTimeout(() => window.location.href = '/profile', 400);
                     return;
                 }
                 showToast("Ro'yxatdan o'tdingiz. Tizimga kiring.");
-                setTimeout(() => window.location.href = '/login', 1500);
+                setTimeout(() => window.location.href = '/login', 1000);
             } else {
                 const box = document.getElementById('errorBox');
                 box.classList.remove('hidden');
@@ -104,7 +114,10 @@
         if (token) {
             try {
                 const res = await fetchWithAuth(`${API_URL}/auth/me`);
-                if (res.ok) window.location.href = '/profile';
+                if (res.ok) {
+                    const u = await res.json();
+                    window.location.href = u.role === 'admin' ? '/admin' : '/profile';
+                }
             } catch (e) {}
         }
     }

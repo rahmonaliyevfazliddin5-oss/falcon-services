@@ -207,21 +207,26 @@
     <script>
         const API_URL = '/api';
 
-        // Auth Utilities (Persistent 90-kunlik cookie va localStorage)
+        // Auth Utilities (Doimiy 1-yillik 365 kunlik cookie va localStorage sinxronizatsiyasi)
         function getToken() { 
             let t = localStorage.getItem('token');
-            if (!t) {
-                const match = document.cookie.match(/(?:^|;\s*)access_token=([^;]+)/);
-                if (match) {
-                    t = decodeURIComponent(match[1]);
-                    localStorage.setItem('token', t);
-                }
+            const cookieMatch = document.cookie.match(/(?:^|;\s*)access_token=([^;]+)/);
+            const cToken = cookieMatch ? decodeURIComponent(cookieMatch[1]) : null;
+
+            if (t && !cToken) {
+                // Agar localStorage da bo'lib, cookie da bo'lmasa -> cookieni qayta tiklash
+                document.cookie = `access_token=${t}; path=/; max-age=31536000; SameSite=Lax`;
+            } else if (!t && cToken) {
+                // Agar cookie da bo'lib, localStorage da bo'lmasa -> localStorageni tiklash
+                localStorage.setItem('token', cToken);
+                t = cToken;
             }
             return t;
         }
         function setToken(token) { 
+            if (!token) return;
             localStorage.setItem('token', token); 
-            document.cookie = `access_token=${token}; path=/; max-age=7776000; SameSite=Lax`;
+            document.cookie = `access_token=${token}; path=/; max-age=31536000; SameSite=Lax`;
         }
         function removeToken() { 
             localStorage.removeItem('token'); 
@@ -236,15 +241,21 @@
             };
             if (token) headers['Authorization'] = `Bearer ${token}`;
             
-            const response = await fetch(url, { ...options, headers });
-            if (response.status === 401) {
-                removeToken();
-                document.cookie = "access_token=; path=/; max-age=0";
-                if(window.location.pathname !== '/login' && window.location.pathname !== '/register' && window.location.pathname !== '/') {
-                    window.location.href = '/login?next=' + window.location.pathname;
+            try {
+                const response = await fetch(url, { ...options, headers });
+                // FAQAT va FAQAT token eskirgan/yaroqsiz (401) bo'lsagina tozalansin.
+                // 503 (texnik rejim), 500 yoki tarmoq uzilishlarida tokenni hech qachon o'chirmaslik!
+                if (response.status === 401) {
+                    removeToken();
+                    if(window.location.pathname !== '/login' && window.location.pathname !== '/register' && window.location.pathname !== '/') {
+                        window.location.href = '/login?next=' + encodeURIComponent(window.location.pathname);
+                    }
                 }
+                return response;
+            } catch (err) {
+                console.warn("fetchWithAuth tarmoq xatosi:", err);
+                throw err;
             }
-            return response;
         }
 
         // Dark Mode Functionality

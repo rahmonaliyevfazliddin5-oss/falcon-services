@@ -348,32 +348,30 @@
     async function checkAdmin() {
         const token = getToken();
         if (!token) {
-            document.cookie = "access_token=; path=/; max-age=0";
             window.location.href = '/login?next=/admin';
             return;
         }
         try {
             const userRes = await fetchWithAuth(`${API_URL}/auth/me`);
-            if (!userRes.ok) {
+            if (userRes.status === 401) {
                 removeToken();
-                document.cookie = "access_token=; path=/; max-age=0";
                 window.location.href = '/login?next=/admin';
+                return;
+            }
+            if (!userRes.ok) {
+                // Vaqtinchalik yoki 503 texnik rejimda tokenni o'chirmaslik
                 return;
             }
             const user = await userRes.json();
             if (user.role !== 'admin') {
-                removeToken();
-                document.cookie = "access_token=; path=/; max-age=0";
                 window.location.href = '/profile';
                 return;
             }
             myAdminId = user.id;
             switchTab('dashboard'); // Automatically load dashboard on start
         } catch (e) {
-            console.error(e);
-            removeToken();
-            document.cookie = "access_token=; path=/; max-age=0";
-            window.location.href = '/login?next=/admin';
+            console.warn(e);
+            // Tarmoq xatosida tokenni aslo o'chirmaslik
         }
     }
 

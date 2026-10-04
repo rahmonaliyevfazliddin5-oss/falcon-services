@@ -23,6 +23,12 @@
                     <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1" data-i18n="login.password">Parol</label>
                     <input id="password" type="password" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-blue-500 focus:border-blue-500" placeholder="••••••••">
                 </div>
+                <div class="flex items-center justify-between text-xs pt-1">
+                    <label class="flex items-center text-gray-600 dark:text-gray-300 cursor-pointer select-none">
+                        <input type="checkbox" id="rememberMe" checked class="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-gray-300 mr-2">
+                        <span>Meni eslab qolish (Doimiy kirish)</span>
+                    </label>
+                </div>
             </div>
 
             <div>
@@ -59,8 +65,8 @@
             
             if (res.ok) {
                 setToken(data.access_token);
-                // 90 kunlik persistent cookie (har gal qayta kirmaslik uchun "Meni eslab qolish")
-                document.cookie = `access_token=${data.access_token}; path=/; max-age=7776000; SameSite=Lax`;
+                // 365 kunlik persistent cookie (har gal qayta kirmaslik uchun)
+                document.cookie = `access_token=${data.access_token}; path=/; max-age=31536000; SameSite=Lax`;
                 
                 const urlParams = new URLSearchParams(window.location.search);
                 const next = urlParams.get('next');
