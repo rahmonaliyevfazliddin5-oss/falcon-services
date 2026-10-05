@@ -20,7 +20,8 @@ def admin_get_services(db: Session = Depends(get_db), current_admin: models.User
 
 @router.post("/services", response_model=schemas.ServiceOut)
 def admin_create_service(service_in: schemas.ServiceCreate, db: Session = Depends(get_db), current_admin: models.User = Depends(get_current_admin)):
-    service = models.Service(**service_in.dict())
+    data = service_in.model_dump() if hasattr(service_in, "model_dump") else service_in.dict()
+    service = models.Service(**data)
     db.add(service)
     db.commit()
     db.refresh(service)
@@ -32,7 +33,7 @@ def admin_update_service(id: int, service_in: schemas.ServiceUpdate, db: Session
     if not service:
         raise HTTPException(status_code=404, detail="Xizmat topilmadi")
     
-    update_data = service_in.dict(exclude_unset=True)
+    update_data = service_in.model_dump(exclude_unset=True) if hasattr(service_in, "model_dump") else service_in.dict(exclude_unset=True)
     for k, v in update_data.items():
         setattr(service, k, v)
     

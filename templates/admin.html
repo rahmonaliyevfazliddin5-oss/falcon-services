@@ -283,55 +283,55 @@
 </div>
 
 <!-- Service Form Modal -->
-<div id="serviceModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden">
-        <div class="p-5 border-b border-gray-200 flex justify-between items-center bg-gray-50">
-            <h3 class="text-lg font-bold text-gray-900" id="serviceModalTitle">Yangi Xizmat Qo'shish</h3>
-            <button onclick="closeServiceModal()" class="text-gray-400 hover:text-gray-600">
+<div id="serviceModal" class="fixed inset-0 bg-gray-900 bg-opacity-60 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden border border-gray-100 dark:border-slate-700 transition-colors">
+        <div class="p-5 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-800/80">
+            <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100" id="serviceModalTitle">Yangi Xizmat Qo'shish</h3>
+            <button type="button" onclick="closeServiceModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
-        <form id="serviceForm" class="p-5 space-y-4">
+        <form id="serviceForm" class="p-5 space-y-4 max-h-[80vh] overflow-y-auto">
             <input type="hidden" id="sf-id">
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Kategoriya</label>
-                <select id="sf-category" class="w-full border border-gray-300 rounded-lg p-2 text-sm" required>
+                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Kategoriya</label>
+                <select id="sf-category" class="w-full border border-gray-300 dark:border-slate-600 rounded-lg p-2.5 text-sm dark:bg-slate-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500" required>
                     <!-- Populated dynamically -->
                 </select>
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Nomi</label>
-                <input type="text" id="sf-title" class="w-full border border-gray-300 rounded-lg p-2 text-sm" required>
+                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Xizmat Nomi</label>
+                <input type="text" id="sf-title" class="w-full border border-gray-300 dark:border-slate-600 rounded-lg p-2.5 text-sm dark:bg-slate-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500" required placeholder="Masalan: Zamonaviy Korporativ Web sayt">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Tavsif</label>
-                <textarea id="sf-desc" class="w-full border border-gray-300 rounded-lg p-2 text-sm" required></textarea>
+                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Tavsif (Description)</label>
+                <textarea id="sf-desc" rows="3" class="w-full border border-gray-300 dark:border-slate-600 rounded-lg p-2.5 text-sm dark:bg-slate-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500" required placeholder="Xizmat haqida batafsil ma'lumot..."></textarea>
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Rasm URL (yoki /static/...)</label>
-                <input type="text" id="sf-img" class="w-full border border-gray-300 rounded-lg p-2 text-sm" placeholder="https://... yoki /static/services/..." required>
+                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Rasm URL (yoki /static/services/...)</label>
+                <input type="text" id="sf-img" class="w-full border border-gray-300 dark:border-slate-600 rounded-lg p-2.5 text-sm dark:bg-slate-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500" placeholder="https://... yoki /static/services/..." required>
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Narx (UZS)</label>
-                    <input type="number" id="sf-price" class="w-full border border-gray-300 rounded-lg p-2 text-sm" required>
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Narx (UZS)</label>
+                    <input type="number" id="sf-price" min="0" class="w-full border border-gray-300 dark:border-slate-600 rounded-lg p-2.5 text-sm dark:bg-slate-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500" required placeholder="12500000">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Muddat (Kun)</label>
-                    <input type="number" id="sf-days" class="w-full border border-gray-300 rounded-lg p-2 text-sm" required>
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Muddat (Kun)</label>
+                    <input type="number" id="sf-days" min="1" class="w-full border border-gray-300 dark:border-slate-600 rounded-lg p-2.5 text-sm dark:bg-slate-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500" required placeholder="7">
                 </div>
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Ichidagi xizmatlar (Tarkibi)</label>
-                <input type="text" id="sf-includes" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
+                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Ichidagi xizmatlar (Tarkibi)</label>
+                <input type="text" id="sf-includes" class="w-full border border-gray-300 dark:border-slate-600 rounded-lg p-2.5 text-sm dark:bg-slate-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500" placeholder="Adaptiv dizayn, SEO baza, Admin panel...">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Faol Ishchi Havola (Working Link URL)</label>
-                <input type="url" id="sf-link" class="w-full border border-gray-300 rounded-lg p-2 text-sm" placeholder="https://misol.uz / https://demo.falcon.uz">
+                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Faol Ishchi Havola (Working Link URL)</label>
+                <input type="url" id="sf-link" class="w-full border border-gray-300 dark:border-slate-600 rounded-lg p-2.5 text-sm dark:bg-slate-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500" placeholder="https://www.eventmindai.uz/">
             </div>
-            <div class="pt-4 flex justify-end gap-3">
-                <button type="button" onclick="closeServiceModal()" class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">Bekor qilish</button>
-                <button type="submit" class="px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">Saqlash</button>
+            <div class="pt-4 flex justify-end gap-3 border-t border-gray-100 dark:border-slate-700">
+                <button type="button" onclick="closeServiceModal()" class="px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg text-sm font-semibold text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition">Bekor qilish</button>
+                <button type="submit" id="sf-submit-btn" class="px-5 py-2 border border-transparent rounded-lg shadow-sm text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 transition">Saqlash</button>
             </div>
         </form>
     </div>
@@ -699,13 +699,15 @@
         }
     }
 
+    let adminServicesList = [];
+
     async function loadAdminServices() {
         if(adminCategoriesList.length === 0) await loadAdminCategories();
         const res = await fetchWithAuth(`${API_URL}/admin/services`);
         if(res.ok) {
-            const srvs = await res.json();
+            adminServicesList = await res.json();
             const tb = document.getElementById('adminServicesTbody');
-            tb.innerHTML = srvs.map(s => {
+            tb.innerHTML = adminServicesList.map(s => {
                 const catObj = adminCategoriesList.find(c => c.id === s.category_id);
                 const catName = catObj ? catObj.name : `ID: ${s.category_id}`;
                 return `
@@ -724,8 +726,8 @@
                         <span class="px-2 py-1 rounded-full text-xs font-bold ${s.is_archived ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}">${s.is_archived ? 'Arxivlangan' : 'Faol'}</span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <button onclick='editService(JSON.parse(decodeURIComponent("${encodeURIComponent(JSON.stringify(s))}")))' class="text-blue-600 dark:text-blue-400 hover:underline mr-4 font-semibold">Tahrirlash</button>
-                        <button onclick="toggleArchive(${s.id}, ${!s.is_archived})" class="text-${s.is_archived ? 'green' : 'red'}-600 hover:underline font-semibold">
+                        <button type="button" onclick="editServiceById(${s.id})" class="text-blue-600 dark:text-blue-400 hover:underline mr-4 font-semibold">Tahrirlash</button>
+                        <button type="button" onclick="toggleArchive(${s.id}, ${!s.is_archived})" class="text-${s.is_archived ? 'green' : 'red'}-600 hover:underline font-semibold">
                             ${s.is_archived ? 'Faollashtirish' : 'Arxivlash'}
                         </button>
                     </td>
@@ -744,21 +746,31 @@
         document.getElementById('serviceModal').classList.add('flex');
     }
 
-    async function editService(s) {
+    async function editServiceById(serviceId) {
+        const s = adminServicesList.find(item => item.id === Number(serviceId));
+        if (!s) {
+            showToast("Xizmat ma'lumotlari topilmadi", "error");
+            return;
+        }
         await loadAdminCategories();
         document.getElementById('sf-id').value = s.id;
-        document.getElementById('sf-title').value = s.title;
+        document.getElementById('sf-title').value = s.title || '';
         document.getElementById('sf-category').value = s.category_id;
-        document.getElementById('sf-desc').value = s.description;
-        document.getElementById('sf-img').value = s.image_url;
-        document.getElementById('sf-price').value = s.price;
-        document.getElementById('sf-days').value = s.delivery_days;
+        document.getElementById('sf-desc').value = s.description || '';
+        document.getElementById('sf-img').value = s.image_url || '';
+        document.getElementById('sf-price').value = s.price || 0;
+        document.getElementById('sf-days').value = s.delivery_days || 1;
         document.getElementById('sf-includes').value = s.included_items || '';
         document.getElementById('sf-link').value = s.working_link || '';
-        document.getElementById('serviceModalTitle').innerText = "Xizmatni Tahrirlash";
+        document.getElementById('serviceModalTitle').innerText = "Xizmatni Tahrirlash: " + s.title;
         
         document.getElementById('serviceModal').classList.remove('hidden');
         document.getElementById('serviceModal').classList.add('flex');
+    }
+
+    function editService(s) {
+        if (typeof s === 'number') return editServiceById(s);
+        if (s && s.id) return editServiceById(s.id);
     }
 
     function closeServiceModal() {
@@ -771,29 +783,46 @@
         const id = document.getElementById('sf-id').value;
         const payload = {
             category_id: parseInt(document.getElementById('sf-category').value),
-            title: document.getElementById('sf-title').value,
-            description: document.getElementById('sf-desc').value,
-            image_url: document.getElementById('sf-img').value,
+            title: document.getElementById('sf-title').value.trim(),
+            description: document.getElementById('sf-desc').value.trim(),
+            image_url: document.getElementById('sf-img').value.trim(),
             price: parseInt(document.getElementById('sf-price').value),
             delivery_days: parseInt(document.getElementById('sf-days').value),
-            included_items: document.getElementById('sf-includes').value,
+            included_items: document.getElementById('sf-includes').value.trim() || null,
             working_link: document.getElementById('sf-link').value.trim() || null
         };
+
+        const submitBtn = document.getElementById('sf-submit-btn');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Saqlanmoqda...";
+        }
 
         const method = id ? 'PUT' : 'POST';
         const url = id ? `${API_URL}/admin/services/${id}` : `${API_URL}/admin/services`;
 
-        const res = await fetchWithAuth(url, {
-            method: method,
-            body: JSON.stringify(payload)
-        });
-        
-        if(res.ok) {
-            showToast("Xizmat saqlandi!");
-            closeServiceModal();
-            loadAdminServices();
-        } else {
-            showToast("Xatolik yuz berdi", "error");
+        try {
+            const res = await fetchWithAuth(url, {
+                method: method,
+                body: JSON.stringify(payload)
+            });
+            
+            if(res.ok) {
+                showToast(id ? "Xizmat muvaffaqiyatli tahrirlandi!" : "Yangi xizmat qo'shildi!");
+                closeServiceModal();
+                await loadAdminServices();
+            } else {
+                const errData = await res.json().catch(() => ({}));
+                showToast(errData.detail || "Xatolik yuz berdi", "error");
+            }
+        } catch (err) {
+            console.error("Service save error:", err);
+            showToast("Tarmoq xatosi yuz berdi", "error");
+        } finally {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Saqlash";
+            }
         }
     });
 
