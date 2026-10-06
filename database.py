@@ -55,6 +55,16 @@ def init_db():
             conn.commit()
         except Exception:
             pass
+        try:
+            conn.execute(text("ALTER TABLE users ADD COLUMN reset_token VARCHAR"))
+            conn.commit()
+        except Exception:
+            pass
+        try:
+            conn.execute(text("ALTER TABLE users ADD COLUMN reset_token_expires TIMESTAMP"))
+            conn.commit()
+        except Exception:
+            pass
 
 def get_db():
     db = SessionLocal()

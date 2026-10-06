@@ -110,6 +110,10 @@
                     </div>
                 </div>
                 <p id="charHint" class="text-xs text-red-500 mt-1">Texnik topshiriq kamida 50 ta belgidan iborat bo‘lishi shart.</p>
+                <div class="pt-4 border-t border-gray-100 dark:border-slate-700">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Fayl biriktirish (Texnik topshiriq yoki dizayn - ixtiyoriy)</label>
+                    <input type="file" id="orderAttachmentFile" class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-2.5 text-xs bg-gray-50 dark:bg-slate-900">
+                </div>
             </div>
 
             <div class="flex justify-between pt-4">
@@ -180,6 +184,27 @@
                 </div>
             </div>
 
+            <div class="pt-3">
+                <span class="text-xs font-bold uppercase text-gray-500 block mb-2">To'lov usulini tanlang:</span>
+                <div class="grid grid-cols-3 gap-3">
+                    <label class="flex flex-col items-center p-3 border rounded-xl cursor-pointer hover:border-blue-500 transition bg-white dark:bg-slate-800 border-blue-500 shadow-xs">
+                        <input type="radio" name="paymentMethod" value="payme" checked class="hidden">
+                        <span class="text-sm font-bold text-blue-600 dark:text-blue-400">Payme</span>
+                        <span class="text-[10px] text-gray-400">Onlayn to'lov</span>
+                    </label>
+                    <label class="flex flex-col items-center p-3 border rounded-xl cursor-pointer hover:border-blue-500 transition bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 shadow-xs">
+                        <input type="radio" name="paymentMethod" value="click" class="hidden">
+                        <span class="text-sm font-bold text-blue-500">Click Up</span>
+                        <span class="text-[10px] text-gray-400">Tezkor to'lov</span>
+                    </label>
+                    <label class="flex flex-col items-center p-3 border rounded-xl cursor-pointer hover:border-blue-500 transition bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 shadow-xs">
+                        <input type="radio" name="paymentMethod" value="bank" class="hidden">
+                        <span class="text-sm font-bold text-gray-700 dark:text-gray-300">Bank hisobi</span>
+                        <span class="text-[10px] text-gray-400">Hisob raqam</span>
+                    </label>
+                </div>
+            </div>
+
             <div class="flex items-center gap-3 pt-2">
                 <input type="checkbox" id="termsAgree" required class="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
                 <label for="termsAgree" class="text-xs text-gray-600 dark:text-gray-300 cursor-pointer">
@@ -192,7 +217,7 @@
                     &larr; Ortga
                 </button>
                 <button type="button" id="submitOrderBtn" onclick="submitFinalOrder()" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold text-sm shadow-md transition">
-                    Buyurtmani tasdiqlash va yuborish
+                    Buyurtmani tasdiqlash va to'lovga o'tish
                 </button>
             </div>
         </div>
@@ -414,8 +439,26 @@
 
             if (res.ok) {
                 const order = await res.json();
-                setButtonSuccess(btn, "Buyurtma qabul qilindi!");
-                showToast("Buyurtma muvaffaqiyatli yaratildi!", "success");
+                
+                // If attachment file was selected, upload it
+                const fileInput = document.getElementById('orderAttachmentFile');
+                if (fileInput && fileInput.files && fileInput.files[0]) {
+                    try {
+                        const formData = new FormData();
+                        formData.append('file', fileInput.files[0]);
+                        const token = getToken();
+                        await fetch(`${API_URL}/orders/${order.id}/files`, {
+                            method: 'POST',
+                            headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+                            body: formData
+                        });
+                    } catch(fe) {
+                        console.warn("Fayl yuklashda xatolik:", fe);
+                    }
+                }
+
+                setButtonSuccess(btn, "To'lov qabul qilindi!");
+                showToast("Buyurtma muvaffaqiyatli rasmiylashtirildi!", "success");
                 setTimeout(() => {
                     window.location.href = `/buyurtma/muvaffaqiyat?order_number=${order.order_number}`;
                 }, 800);

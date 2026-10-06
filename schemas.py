@@ -37,6 +37,14 @@ class GoogleAuthIn(BaseModel):
     name: Optional[str] = None
     avatar_url: Optional[str] = None
 
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
+
+
 # --- Categories ---
 class CategoryBase(BaseModel):
     name: str
@@ -97,7 +105,7 @@ class OrderCreate(BaseModel):
     contact_phone: str
 
 class OrderStatusUpdate(BaseModel):
-    status: str
+    status: Optional[str] = "Tahrirlashda"
     note: Optional[str] = None
 
 class OrderStatusHistoryOut(BaseModel):
@@ -135,9 +143,37 @@ class OrderOut(BaseModel):
     created_at: datetime
     class Config: from_attributes = True
 
+class OrderFileOut(BaseModel):
+    id: int
+    order_id: int
+    uploader_id: int
+    filename: str
+    file_url: str
+    file_size: Optional[str] = None
+    created_at: datetime
+    class Config: from_attributes = True
+
+class ReviewCreate(BaseModel):
+    rating: int # 1 - 5
+    comment: str
+
+class ReviewOut(BaseModel):
+    id: int
+    order_id: int
+    user_id: int
+    user_name: Optional[str] = None
+    service_id: Optional[int] = None
+    service_title: Optional[str] = None
+    rating: int
+    comment: str
+    created_at: datetime
+    class Config: from_attributes = True
+
 class OrderDetailOut(OrderOut):
     status_history: List[OrderStatusHistoryOut] = []
     messages: List[MessageOut] = []
+    files: List[OrderFileOut] = []
+    review: Optional[ReviewOut] = None
 
 # --- Notifications ---
 class NotificationOut(BaseModel):
@@ -197,4 +233,109 @@ class UserAdminOut(UserOut):
 
 class UserDetailAdminOut(UserAdminOut):
     orders: List[OrderOut] = []
+
+# --- Portfolio Projects ---
+class PortfolioProjectBase(BaseModel):
+    title: str
+    slug: Optional[str] = None
+    category_name: str
+    short_desc: str
+    full_desc: str
+    image_url: str
+    gallery_json: Optional[str] = "[]"
+    client_name: str
+    technologies: str
+    results_summary: str
+    live_url: Optional[str] = None
+    is_featured: bool = True
+
+class PortfolioProjectCreate(PortfolioProjectBase):
+    pass
+
+class PortfolioProjectUpdate(BaseModel):
+    title: Optional[str] = None
+    slug: Optional[str] = None
+    category_name: Optional[str] = None
+    short_desc: Optional[str] = None
+    full_desc: Optional[str] = None
+    image_url: Optional[str] = None
+    gallery_json: Optional[str] = None
+    client_name: Optional[str] = None
+    technologies: Optional[str] = None
+    results_summary: Optional[str] = None
+    live_url: Optional[str] = None
+    is_featured: Optional[bool] = None
+
+class PortfolioProjectOut(PortfolioProjectBase):
+    id: int
+    created_at: datetime
+    class Config: from_attributes = True
+
+# --- Support Tickets ---
+class SupportTicketCreate(BaseModel):
+    subject: str
+    message: str
+    category: Optional[str] = "Umumiy"
+
+class SupportTicketReply(BaseModel):
+    admin_reply: str
+    status: Optional[str] = "Hal qilindi"
+
+class SupportTicketStatusUpdate(BaseModel):
+    status: str
+
+class SupportTicketOut(BaseModel):
+    id: int
+    ticket_number: str
+    user_id: int
+    user_name: Optional[str] = None
+    user_email: Optional[str] = None
+    subject: str
+    message: str
+    category: str
+    status: str
+    admin_reply: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
+    class Config: from_attributes = True
+
+# --- Team Members ---
+class TeamMemberBase(BaseModel):
+    name: str
+    role: str
+    avatar_url: str
+    bio: Optional[str] = None
+    skills: Optional[str] = None
+    display_order: int = 0
+
+class TeamMemberCreate(TeamMemberBase):
+    pass
+
+class TeamMemberOut(TeamMemberBase):
+    id: int
+    class Config: from_attributes = True
+
+# --- Banners ---
+class BannerBase(BaseModel):
+    title: str
+    subtitle: Optional[str] = None
+    image_url: Optional[str] = None
+    link_url: Optional[str] = None
+    is_active: bool = True
+
+class BannerCreate(BannerBase):
+    pass
+
+class BannerOut(BannerBase):
+    id: int
+    created_at: datetime
+    class Config: from_attributes = True
+
+# --- Notifications Broadcast ---
+class BroadcastNotificationIn(BaseModel):
+    user_id: Optional[int] = None # None means all clients
+    title: str
+    message: str
+    link: Optional[str] = None
+
 

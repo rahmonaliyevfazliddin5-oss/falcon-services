@@ -1,10 +1,11 @@
 from sqlalchemy.orm import Session
-from database import engine, SessionLocal
+from database import engine, SessionLocal, init_db
 import models
 from auth import get_password_hash
 from datetime import datetime
 
 def seed_db():
+    init_db()
     models.Base.metadata.create_all(bind=engine)
     db = SessionLocal()
     
@@ -164,20 +165,107 @@ def seed_db():
                 db.add(models.Setting(key=k, value=v))
         db.commit()
 
-        # 5. Bildirishnomalar (Notifications) tekshiruvi
-        if admin:
-            notif_count = db.query(models.Notification).filter(models.Notification.user_id == admin.id).count()
-            if notif_count == 0:
-                db.add(models.Notification(
-                    user_id=admin.id,
-                    title="Xush kelibsiz!",
-                    message="Falcon Services boshqaruv paneliga xush kelibsiz. Barcha buyurtmalar va statistikalar shu yerda ko'rinadi.",
-                    link="/admin",
-                    is_read=False
-                ))
-                db.commit()
+        # 6. Portfolio Loyihalari bo'sh bo'lsa kiritish
+        if db.query(models.PortfolioProject).count() == 0:
+            portfolio_data = [
+                models.PortfolioProject(
+                    slug="eventmind-ai-platformasi",
+                    title="EventMind AI - Tadbirlar Boshqaruv Tizimi",
+                    category_name="Web & AI",
+                    short_desc="Sun'iy intellektga asoslangan tadbirlar, chiptalar va ishtirokchilar tahlili platformasi.",
+                    full_desc="EventMind AI loyihasi O'zbekistondagi yirik konferensiya va tadbirlarni to'liq avtomatlashtirish, QR-kodli chiptalar orqali tezkor nazorat qilish hamda ishtirokchilar qiziqishini AI orqali tahlil qilish uchun ishlab chiqilgan.",
+                    image_url="/static/services/web-dev.webp",
+                    gallery_json='["/static/services/web-dev.webp", "/static/services/mvp.webp"]',
+                    client_name="EventMind LLC",
+                    technologies="FastAPI, PostgreSQL, React, Docker, OpenAI API",
+                    results_summary="+240% Ro'yxatdan o'tish ko'rsatkichi, 40,000+ faol foydalanuvchi, 99.98% barqarorlik",
+                    live_url="https://www.eventmindai.uz/",
+                    is_featured=True
+                ),
+                models.PortfolioProject(
+                    slug="payfast-mobil-tolov-ilovasi",
+                    title="PayFast - FinTex Mobil To'lov Ilovasi",
+                    category_name="Mobil Ilova",
+                    short_desc="Tezkor P2P o'tkazmalar, kommunal to'lovlar va NFC orqali to'lash imkoniyati.",
+                    full_desc="PayFast zamonaviy fintex ilovasi bo'lib, xavfsiz ikki bosqichli biometrik autentifikatsiya, real-vaqt tranzaksiyalari monitoringi va yuqori darajadagi bank xavfsizlik standartlariga javob beradi.",
+                    image_url="/static/services/mobile.webp",
+                    gallery_json='["/static/services/mobile.webp"]',
+                    client_name="PayFast FinTech",
+                    technologies="Flutter, Node.js, Redis, Click/Payme API, Docker",
+                    results_summary="150,000+ yuklab olish, 4.9 yulduzli reyting App Store va Google Play",
+                    live_url="https://www.eventmindai.uz/",
+                    is_featured=True
+                ),
+                models.PortfolioProject(
+                    slug="agrotrade-b2b-ekotizimi",
+                    title="AgroTrade - B2B Savdo Ekotizimi",
+                    category_name="Web & MVP",
+                    short_desc="Fermerlar va ulgurji xaridorlarni to'g'ridan-to'g'ri bog'lovchi yirik platforma.",
+                    full_desc="AgroTrade platformasi logistika, shartnomalar, elektron to'lovlar va fermerlik mahsulotlari narxlari monitoringini yagona qulay interfeysga birlashtirdi.",
+                    image_url="/static/services/mvp.webp",
+                    gallery_json='["/static/services/mvp.webp"]',
+                    client_name="AgroGroup Global",
+                    technologies="Python FastAPI, Tailwind CSS, PostgreSQL, WebSockets",
+                    results_summary="Savdo hajmi $2.5M+, 1,200+ faol yetkazib beruvchi fermerlar",
+                    live_url="https://www.eventmindai.uz/",
+                    is_featured=True
+                )
+            ]
+            db.add_all(portfolio_data)
+            db.commit()
 
-        print("Database initialized: Admin verified, service slugs, settings and notifications ready.")
+        # 7. Jamoa a'zolari (Team Members)
+        if db.query(models.TeamMember).count() == 0:
+            team_data = [
+                models.TeamMember(
+                    name="Fazliddin Rahmonaliyev",
+                    role="Lead Architect & Fullstack",
+                    avatar_url="/static/default-avatar.png",
+                    bio="7+ yillik tajribaga ega arxitektor va dasturchi. Yuqori yuklamali tizimlar mutaxassisi.",
+                    skills="FastAPI, Python, Vue/React, PostgreSQL, Docker",
+                    display_order=1
+                ),
+                models.TeamMember(
+                    name="Alisher Usmonov",
+                    role="Senior Mobile & Frontend Engineer",
+                    avatar_url="/static/default-avatar.png",
+                    bio="Mobil ilovalar va moslashuvchan veb interfeyslar bo'yicha ekspert.",
+                    skills="Flutter, Dart, React, Tailwind CSS",
+                    display_order=2
+                ),
+                models.TeamMember(
+                    name="Madina Karimova",
+                    role="Senior UI/UX Designer",
+                    avatar_url="/static/default-avatar.png",
+                    bio="Foydalanuvchilar psixologiyasi va zamonaviy minimalistik dizayn tizimlari muallifi.",
+                    skills="Figma, Design Systems, UX Research, Prototyping",
+                    display_order=3
+                ),
+                models.TeamMember(
+                    name="Bobur Mirzayev",
+                    role="DevOps & Cloud Engineer",
+                    avatar_url="/static/default-avatar.png",
+                    bio="24/7 xavfsiz va uzluksiz server infratuzilmasi boshqaruvchisi.",
+                    skills="Docker, Kubernetes, CI/CD, Linux, AWS",
+                    display_order=4
+                )
+            ]
+            db.add_all(team_data)
+            db.commit()
+
+        # 8. Bannerlar
+        if db.query(models.Banner).count() == 0:
+            banner = models.Banner(
+                title="Biznesingizni biz bilan raqamlashtiring!",
+                subtitle="IT xizmatlariga buyurtma bering va bepul texnik konsultatsiyaga ega bo'ling.",
+                image_url="/static/services/web-dev.webp",
+                link_url="/xizmatlar",
+                is_active=True
+            )
+            db.add(banner)
+            db.commit()
+
+        print("Database initialized: Admin verified, service slugs, settings, portfolio, team, banners and notifications ready.")
 
     finally:
         db.close()

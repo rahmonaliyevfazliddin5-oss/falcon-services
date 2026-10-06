@@ -401,3 +401,204 @@ def admin_get_reports(
         "start_date": str(start_date) if start_date else None,
         "end_date": str(end_date) if end_date else None
     }
+
+# --- Admin Portfolio Management ---
+@router.get("/projects", response_model=list[schemas.PortfolioProjectOut])
+def admin_get_projects(db: Session = Depends(get_db), current_admin: models.User = Depends(get_current_admin)):
+    return db.query(models.PortfolioProject).order_by(models.PortfolioProject.created_at.desc()).all()
+
+@router.post("/projects", response_model=schemas.PortfolioProjectOut)
+def admin_create_project(project_in: schemas.PortfolioProjectCreate, db: Session = Depends(get_db), current_admin: models.User = Depends(get_current_admin)):
+    data = project_in.model_dump() if hasattr(project_in, "model_dump") else project_in.dict()
+    if not data.get("slug"):
+        data["slug"] = generate_slug(data["title"])
+    
+    # Ensure unique slug
+    base_slug = data["slug"]
+    count = 1
+    while db.query(models.PortfolioProject).filter(models.PortfolioProject.slug == data["slug"]).first():
+        data["slug"] = f"{base_slug}-{count}"
+        count += 1
+
+    project = models.PortfolioProject(**data)
+    db.add(project)
+    db.commit()
+    db.refresh(project)
+    return project
+
+@router.put("/projects/{id}", response_model=schemas.PortfolioProjectOut)
+def admin_update_project(id: int, project_in: schemas.PortfolioProjectUpdate, db: Session = Depends(get_db), current_admin: models.User = Depends(get_current_admin)):
+    project = db.query(models.PortfolioProject).filter(models.PortfolioProject.id == id).first()
+    if not project:
+        raise HTTPException(status_code=404, detail="Loyiha topilmadi")
+    
+    update_data = project_in.model_dump(exclude_unset=True) if hasattr(project_in, "model_dump") else project_in.dict(exclude_unset=True)
+    for k, v in update_data.items():
+        setattr(project, k, v)
+    
+    db.commit()
+    db.refresh(project)
+    return project
+
+@router.delete("/projects/{id}")
+def admin_delete_project(id: int, db: Session = Depends(get_db), current_admin: models.User = Depends(get_current_admin)):
+    project = db.query(models.PortfolioProject).filter(models.PortfolioProject.id == id).first()
+    if not project:
+        raise HTTPException(status_code=404, detail="Loyiha topilmadi")
+    db.delete(project)
+    db.commit()
+    return {"detail": "Portfolio loyihasi o'chirildi"}
+
+# --- Admin Team Management ---
+@router.post("/team", response_model=schemas.TeamMemberOut)
+def admin_create_team_member(member_in: schemas.TeamMemberCreate, db: Session = Depends(get_db), current_admin: models.User = Depends(get_current_admin)):
+    data = member_in.model_dump() if hasattr(member_in, "model_dump") else member_in.dict()
+    member = models.TeamMember(**data)
+    db.add(member)
+    db.commit()
+    db.refresh(member)
+    return member
+
+@router.put("/team/{id}", response_model=schemas.TeamMemberOut)
+def admin_update_team_member(id: int, member_in: schemas.TeamMemberCreate, db: Session = Depends(get_db), current_admin: models.User = Depends(get_current_admin)):
+    member = db.query(models.TeamMember).filter(models.TeamMember.id == id).first()
+    if not member:
+        raise HTTPException(status_code=404, detail="Jamoa a'zosi topilmadi")
+    data = member_in.model_dump() if hasattr(member_in, "model_dump") else member_in.dict()
+    for k, v in data.items():
+        setattr(member, k, v)
+    db.commit()
+    db.refresh(member)
+    return member
+
+@router.delete("/team/{id}")
+def admin_delete_team_member(id: int, db: Session = Depends(get_db), current_admin: models.User = Depends(get_current_admin)):
+    member = db.query(models.TeamMember).filter(models.TeamMember.id == id).first()
+    if not member:
+        raise HTTPException(status_code=404, detail="Jamoa a'zosi topilmadi")
+    db.delete(member)
+    db.commit()
+    return {"detail": "Jamoa a'zosi o'chirildi"}
+
+# --- Admin Banners Management ---
+@router.get("/banners", response_model=list[schemas.BannerOut])
+def admin_get_banners(db: Session = Depends(get_db), current_admin: models.User = Depends(get_current_admin)):
+    return db.query(models.Banner).order_by(models.Banner.id.desc()).all()
+
+@router.post("/banners", response_model=schemas.BannerOut)
+def admin_create_banner(banner_in: schemas.BannerCreate, db: Session = Depends(get_db), current_admin: models.User = Depends(get_current_admin)):
+    data = banner_in.model_dump() if hasattr(banner_in, "model_dump") else banner_in.dict()
+    banner = models.Banner(**data)
+    db.add(banner)
+    db.commit()
+    db.refresh(banner)
+    return banner
+
+@router.put("/banners/{id}", response_model=schemas.BannerOut)
+def admin_update_banner(id: int, banner_in: schemas.BannerCreate, db: Session = Depends(get_db), current_admin: models.User = Depends(get_current_admin)):
+    banner = db.query(models.Banner).filter(models.Banner.id == id).first()
+    if not banner:
+        raise HTTPException(status_code=404, detail="Banner topilmadi")
+    data = banner_in.model_dump() if hasattr(banner_in, "model_dump") else banner_in.dict()
+    for k, v in data.items():
+        setattr(banner, k, v)
+    db.commit()
+    db.refresh(banner)
+    return banner
+
+@router.delete("/banners/{id}")
+def admin_delete_banner(id: int, db: Session = Depends(get_db), current_admin: models.User = Depends(get_current_admin)):
+    banner = db.query(models.Banner).filter(models.Banner.id == id).first()
+    if not banner:
+        raise HTTPException(status_code=404, detail="Banner topilmadi")
+    db.delete(banner)
+    db.commit()
+    return {"detail": "Banner o'chirildi"}
+
+# --- Admin Support Tickets ---
+@router.get("/support", response_model=list[schemas.SupportTicketOut])
+def admin_get_support_tickets(status: str = None, db: Session = Depends(get_db), current_admin: models.User = Depends(get_current_admin)):
+    query = db.query(models.SupportTicket)
+    if status:
+        query = query.filter(models.SupportTicket.status == status)
+    tickets = query.order_by(models.SupportTicket.created_at.desc()).all()
+    res = []
+    for t in tickets:
+        item = schemas.SupportTicketOut.model_validate(t)
+        item.user_name = t.user.name if t.user else "Foydalanuvchi"
+        item.user_email = t.user.email if t.user else "user@falcon.uz"
+        res.append(item)
+    return res
+
+@router.patch("/support/{id}/reply", response_model=schemas.SupportTicketOut)
+def admin_reply_support_ticket(id: int, reply_in: schemas.SupportTicketReply, db: Session = Depends(get_db), current_admin: models.User = Depends(get_current_admin)):
+    ticket = db.query(models.SupportTicket).filter(models.SupportTicket.id == id).first()
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Murojaat topilmadi")
+    ticket.admin_reply = reply_in.admin_reply
+    if reply_in.status:
+        ticket.status = reply_in.status
+    
+    # Notify user
+    db.add(models.Notification(
+        user_id=ticket.user_id,
+        title="Yordam murojaatiga javob",
+        message=f"{ticket.ticket_number} murojaatingizga javob berildi: '{reply_in.admin_reply[:60]}...'",
+        link="/yordam"
+    ))
+    db.commit()
+    db.refresh(ticket)
+    
+    res = schemas.SupportTicketOut.model_validate(ticket)
+    res.user_name = ticket.user.name if ticket.user else "Foydalanuvchi"
+    res.user_email = ticket.user.email if ticket.user else "user@falcon.uz"
+    return res
+
+# --- Admin Reviews ---
+@router.get("/reviews", response_model=list[schemas.ReviewOut])
+def admin_get_reviews(db: Session = Depends(get_db), current_admin: models.User = Depends(get_current_admin)):
+    reviews = db.query(models.Review).order_by(models.Review.created_at.desc()).all()
+    out = []
+    for r in reviews:
+        user_name = r.user.name if r.user else "Mijoz"
+        service_title = r.service.title if r.service else (r.order.service_title_snapshot if r.order else "IT Xizmat")
+        out.append(schemas.ReviewOut(
+            id=r.id,
+            order_id=r.order_id,
+            user_id=r.user_id,
+            user_name=user_name,
+            service_id=r.service_id,
+            service_title=service_title,
+            rating=r.rating,
+            comment=r.comment,
+            created_at=r.created_at
+        ))
+    return out
+
+@router.delete("/reviews/{id}")
+def admin_delete_review(id: int, db: Session = Depends(get_db), current_admin: models.User = Depends(get_current_admin)):
+    review = db.query(models.Review).filter(models.Review.id == id).first()
+    if not review:
+        raise HTTPException(status_code=404, detail="Sharh topilmadi")
+    db.delete(review)
+    db.commit()
+    return {"detail": "Sharh o'chirildi"}
+
+# --- Admin Broadcast Notification ---
+@router.post("/broadcast")
+def admin_broadcast_notification(b_in: schemas.BroadcastNotificationIn, db: Session = Depends(get_db), current_admin: models.User = Depends(get_current_admin)):
+    if b_in.user_id:
+        target_users = db.query(models.User).filter(models.User.id == b_in.user_id).all()
+    else:
+        target_users = db.query(models.User).filter(models.User.role == "client").all()
+
+    for u in target_users:
+        db.add(models.Notification(
+            user_id=u.id,
+            title=b_in.title,
+            message=b_in.message,
+            link=b_in.link or "/dashboard"
+        ))
+    db.commit()
+    return {"detail": f"{len(target_users)} ta foydalanuvchiga bildirishnoma yuborildi"}
+

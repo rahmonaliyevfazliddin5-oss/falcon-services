@@ -11,3 +11,5 @@ cloudflared.exe
 *.exe
 static/uploads/avatars/*
 !static/uploads/avatars/.gitkeep
+static/uploads/orders/*
+!static/uploads/orders/.gitkeep

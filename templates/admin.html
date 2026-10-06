@@ -13,7 +13,13 @@
             <button onclick="switchTab('orders')" id="tab-orders" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm" data-i18n="admin.tab_orders">Buyurtmalar</button>
             <button onclick="switchTab('services')" id="tab-services" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm" data-i18n="admin.tab_services">Xizmatlar</button>
             <button onclick="switchTab('categories')" id="tab-categories" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">Kategoriyalar</button>
-            <button onclick="switchTab('users')" id="tab-users" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm" data-i18n="admin.tab_users">Foydalanuvchilar</button>
+            <button onclick="switchTab('portfolio')" id="tab-portfolio" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">Portfolio</button>
+            <button onclick="switchTab('team')" id="tab-team" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">Jamoa</button>
+            <button onclick="switchTab('users')" id="tab-users" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm" data-i18n="admin.tab_users">Mijozlar</button>
+            <button onclick="switchTab('support')" id="tab-support" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">Qo'llab-quvvatlash</button>
+            <button onclick="switchTab('reviews')" id="tab-reviews" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">Sharhlar</button>
+            <button onclick="switchTab('banners')" id="tab-banners" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">Bannerlar</button>
+            <button onclick="switchTab('broadcast')" id="tab-broadcast" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">Xabarnoma</button>
             <button onclick="switchTab('reports')" id="tab-reports" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">Hisobotlar</button>
             <button onclick="switchTab('settings')" id="tab-settings" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">Sozlamalar</button>
             <button onclick="switchTab('activity-log')" id="tab-activity-log" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">Faoliyat jurnali</button>
@@ -373,6 +379,179 @@
                     <!-- Populated by JS -->
                 </tbody>
             </table>
+    <!-- PORTFOLIO TAB -->
+    <div id="content-portfolio" class="tab-content hidden">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Portfolio loyihalari</h3>
+                <p class="text-xs text-gray-500">Mijozlarga ko'rsatiladigan eng yaxshi IT ishlar katalogi</p>
+            </div>
+            <button onclick="openPortfolioModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-sm transition flex items-center gap-1.5">
+                + Yangi loyiha qo'shish
+            </button>
+        </div>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
+                <thead class="bg-gray-50 dark:bg-slate-900">
+                    <tr>
+                        <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase">Loyiha</th>
+                        <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase">Kategoriya</th>
+                        <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase">Mijoz</th>
+                        <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase">Texnologiyalar</th>
+                        <th class="px-6 py-3.5 text-right text-xs font-bold text-gray-500 uppercase">Amallar</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-slate-700 text-xs sm:text-sm" id="adminPortfolioTbody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- JAMOA (TEAM) TAB -->
+    <div id="content-team" class="tab-content hidden">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Jamoa a'zolari</h3>
+                <p class="text-xs text-gray-500">Platformadagi mutaxassislar va ularning roli</p>
+            </div>
+            <button onclick="openTeamModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-sm transition flex items-center gap-1.5">
+                + Yangi mutaxassis qo'shish
+            </button>
+        </div>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
+                <thead class="bg-gray-50 dark:bg-slate-900">
+                    <tr>
+                        <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase">Mutaxassis</th>
+                        <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase">Lavozim</th>
+                        <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase">Ko'nikmalar</th>
+                        <th class="px-6 py-3.5 text-right text-xs font-bold text-gray-500 uppercase">Amallar</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-slate-700 text-xs sm:text-sm" id="adminTeamTbody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- SUPPORT TICKETS TAB -->
+    <div id="content-support" class="tab-content hidden">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Qo'llab-quvvatlash murojaatlari</h3>
+                <p class="text-xs text-gray-500">Mijozlar tomonidan yuborilgan so'rov va murojaatlar</p>
+            </div>
+            <button onclick="loadAdminSupport()" class="bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-200 font-semibold text-xs px-3.5 py-2 rounded-xl transition">
+                Yangilash
+            </button>
+        </div>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
+                <thead class="bg-gray-50 dark:bg-slate-900">
+                    <tr>
+                        <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase">Ticket</th>
+                        <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase">Mijoz</th>
+                        <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase">Mavzu</th>
+                        <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase">Toifa</th>
+                        <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase">Holat</th>
+                        <th class="px-6 py-3.5 text-right text-xs font-bold text-gray-500 uppercase">Amallar</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-slate-700 text-xs sm:text-sm" id="adminSupportTbody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- SHARHLAR / REVIEWS TAB -->
+    <div id="content-reviews" class="tab-content hidden">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Sharhlar va Baholar</h3>
+                <p class="text-xs text-gray-500">Mijozlar tomonidan qoldirilgan reyting va fikrlar</p>
+            </div>
+            <button onclick="loadAdminReviews()" class="bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-200 font-semibold text-xs px-3.5 py-2 rounded-xl transition">
+                Yangilash
+            </button>
+        </div>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
+                <thead class="bg-gray-50 dark:bg-slate-900">
+                    <tr>
+                        <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase">Mijoz</th>
+                        <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase">Xizmat</th>
+                        <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase">Baho</th>
+                        <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase">Fikr</th>
+                        <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase">Sana</th>
+                        <th class="px-6 py-3.5 text-right text-xs font-bold text-gray-500 uppercase">O'chirish</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-slate-700 text-xs sm:text-sm" id="adminReviewsTbody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- BANNERLAR TAB -->
+    <div id="content-banners" class="tab-content hidden">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Bannerlar va E'lonlar</h3>
+                <p class="text-xs text-gray-500">Sayt bosh sahifasidagi aksiyalar va e'lonlar</p>
+            </div>
+            <button onclick="openBannerModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-sm transition flex items-center gap-1.5">
+                + Yangi banner qo'shish
+            </button>
+        </div>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
+                <thead class="bg-gray-50 dark:bg-slate-900">
+                    <tr>
+                        <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase">Sarlavha</th>
+                        <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase">Kichik sarlavha</th>
+                        <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase">Havola</th>
+                        <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase">Holat</th>
+                        <th class="px-6 py-3.5 text-right text-xs font-bold text-gray-500 uppercase">Amallar</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-slate-700 text-xs sm:text-sm" id="adminBannersTbody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- BROADCAST TAB -->
+    <div id="content-broadcast" class="tab-content hidden">
+        <div class="max-w-2xl bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 p-6 sm:p-8 space-y-6">
+            <div>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Xabarnoma yuborish (Broadcast)</h3>
+                <p class="text-xs text-gray-500">Mijozlarning shaxsiy kabinetiga bildirishnoma yuborish</p>
+            </div>
+            <form id="broadcastForm" onsubmit="sendAdminBroadcast(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Qabul qiluvchi</label>
+                    <select id="bc-user" class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-3 text-sm dark:bg-slate-900">
+                        <option value="">Barcha faol mijozlar (Hammaga)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Xabar sarlavhasi</label>
+                    <input type="text" id="bc-title" required placeholder="Masalan: Maxsus bayram chegirmasi!" class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-3 text-sm dark:bg-slate-900">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Xabar matni</label>
+                    <textarea id="bc-message" rows="4" required placeholder="Batafsil matnni yozing..." class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-3 text-sm dark:bg-slate-900"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Havola (URL)</label>
+                    <input type="text" id="bc-link" value="/xizmatlar" class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-3 text-sm dark:bg-slate-900">
+                </div>
+                <div class="pt-2 flex justify-end">
+                    <button type="submit" id="bcSubmitBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm px-6 py-2.5 rounded-xl shadow-md transition">
+                        Xabarnomani tarqatish &rarr;
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -543,6 +722,160 @@
     </div>
 </div>
 
+<!-- Portfolio Modal -->
+<div id="portfolioModal" class="fixed inset-0 bg-gray-900/60 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-lg shadow-2xl p-6 border border-gray-100 dark:border-slate-700">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white" id="portModalTitle">Portfolio Loyihasi</h3>
+            <button onclick="closePortfolioModal()" class="text-gray-400 hover:text-gray-600">&times;</button>
+        </div>
+        <form id="portfolioForm" onsubmit="savePortfolio(event)" class="space-y-3 max-h-[80vh] overflow-y-auto pr-1">
+            <input type="hidden" id="pf-id">
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Loyiha sarlavhasi</label>
+                <input type="text" id="pf-title" required placeholder="Masalan: EventMind AI Platformasi" class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-2.5 text-xs sm:text-sm dark:bg-slate-900">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Toifa</label>
+                    <input type="text" id="pf-category" required placeholder="Web & AI" class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-2.5 text-xs sm:text-sm dark:bg-slate-900">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Mijoz / Kompaniya</label>
+                    <input type="text" id="pf-client" required placeholder="EventMind LLC" class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-2.5 text-xs sm:text-sm dark:bg-slate-900">
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Qisqa tavsif</label>
+                <input type="text" id="pf-short" required placeholder="Loyihaning bir jumla tavsifi" class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-2.5 text-xs sm:text-sm dark:bg-slate-900">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">To'liq tavsif</label>
+                <textarea id="pf-full" rows="3" required placeholder="Loyiha haqida to'liq matn..." class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-2.5 text-xs sm:text-sm dark:bg-slate-900"></textarea>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Asosiy Rasm URL</label>
+                <input type="text" id="pf-img" required placeholder="/static/services/web-dev.webp" class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-2.5 text-xs sm:text-sm dark:bg-slate-900">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Texnologiyalar</label>
+                    <input type="text" id="pf-tech" required placeholder="FastAPI, React, Docker" class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-2.5 text-xs sm:text-sm dark:bg-slate-900">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Natijalar</label>
+                    <input type="text" id="pf-results" required placeholder="+240% Savdo o'sishi" class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-2.5 text-xs sm:text-sm dark:bg-slate-900">
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Jonli havola URL</label>
+                <input type="url" id="pf-url" placeholder="https://..." class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-2.5 text-xs sm:text-sm dark:bg-slate-900">
+            </div>
+            <div class="pt-3 flex justify-end gap-2 border-t border-gray-100 dark:border-slate-700">
+                <button type="button" onclick="closePortfolioModal()" class="px-4 py-2 border rounded-xl text-xs font-semibold">Bekor qilish</button>
+                <button type="submit" id="pfSubmitBtn" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition">Saqlash</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Team Modal -->
+<div id="teamModal" class="fixed inset-0 bg-gray-900/60 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-md shadow-2xl p-6 border border-gray-100 dark:border-slate-700">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white" id="teamModalTitle">Jamoa a'zosi</h3>
+            <button onclick="closeTeamModal()" class="text-gray-400 hover:text-gray-600">&times;</button>
+        </div>
+        <form id="teamForm" onsubmit="saveTeamMember(event)" class="space-y-3">
+            <input type="hidden" id="tm-id">
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Ism Familiya</label>
+                <input type="text" id="tm-name" required placeholder="Fazliddin Rahmonaliyev" class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-2.5 text-xs sm:text-sm dark:bg-slate-900">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Lavozim / Mutaxassislik</label>
+                <input type="text" id="tm-role" required placeholder="Lead Architect & Backend" class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-2.5 text-xs sm:text-sm dark:bg-slate-900">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Avatar URL</label>
+                <input type="text" id="tm-avatar" value="/static/default-avatar.png" required class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-2.5 text-xs sm:text-sm dark:bg-slate-900">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Ko'nikmalar</label>
+                <input type="text" id="tm-skills" placeholder="FastAPI, Python, Vue, Docker" class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-2.5 text-xs sm:text-sm dark:bg-slate-900">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Biografiya</label>
+                <textarea id="tm-bio" rows="2" placeholder="Qisqacha ma'lumot..." class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-2.5 text-xs sm:text-sm dark:bg-slate-900"></textarea>
+            </div>
+            <div class="pt-3 flex justify-end gap-2 border-t border-gray-100 dark:border-slate-700">
+                <button type="button" onclick="closeTeamModal()" class="px-4 py-2 border rounded-xl text-xs font-semibold">Bekor qilish</button>
+                <button type="submit" id="tmSubmitBtn" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition">Saqlash</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Support Reply Modal -->
+<div id="supportReplyModal" class="fixed inset-0 bg-gray-900/60 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-md shadow-2xl p-6 border border-gray-100 dark:border-slate-700">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white" id="supReplyTitle">Murojaatga javob</h3>
+            <button onclick="closeSupportReplyModal()" class="text-gray-400 hover:text-gray-600">&times;</button>
+        </div>
+        <form id="supportReplyForm" onsubmit="submitSupportReply(event)" class="space-y-3">
+            <input type="hidden" id="srf-id">
+            <div class="p-3 bg-gray-50 dark:bg-slate-900 rounded-xl text-xs text-gray-600 dark:text-gray-300">
+                <p><strong>Murojaat matni:</strong> <span id="srf-msg">-</span></p>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Javob matni</label>
+                <textarea id="srf-reply" rows="4" required placeholder="Mijozga yo'llangan rasmiy javob..." class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-2.5 text-xs sm:text-sm dark:bg-slate-900"></textarea>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Murojaat holati</label>
+                <select id="srf-status" class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-2.5 text-xs sm:text-sm dark:bg-slate-900">
+                    <option value="Hal qilindi">Hal qilindi</option>
+                    <option value="Jarayonda">Jarayonda</option>
+                </select>
+            </div>
+            <div class="pt-3 flex justify-end gap-2 border-t border-gray-100 dark:border-slate-700">
+                <button type="button" onclick="closeSupportReplyModal()" class="px-4 py-2 border rounded-xl text-xs font-semibold">Yopish</button>
+                <button type="submit" id="srfSubmitBtn" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition">Javobni yuborish</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Banner Modal -->
+<div id="bannerModal" class="fixed inset-0 bg-gray-900/60 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-md shadow-2xl p-6 border border-gray-100 dark:border-slate-700">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white" id="bannerModalTitle">Banner qo'shish</h3>
+            <button onclick="closeBannerModal()" class="text-gray-400 hover:text-gray-600">&times;</button>
+        </div>
+        <form id="bannerForm" onsubmit="saveBanner(event)" class="space-y-3">
+            <input type="hidden" id="bnf-id">
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Sarlavha</label>
+                <input type="text" id="bnf-title" required placeholder="Masalan: Yangi yil aksiyasi!" class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-2.5 text-xs sm:text-sm dark:bg-slate-900">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Kichik sarlavha</label>
+                <input type="text" id="bnf-subtitle" placeholder="Barcha xizmatlarga 15% chegirma" class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-2.5 text-xs sm:text-sm dark:bg-slate-900">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Havola URL</label>
+                <input type="text" id="bnf-link" value="/xizmatlar" class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-2.5 text-xs sm:text-sm dark:bg-slate-900">
+            </div>
+            <div class="pt-3 flex justify-end gap-2 border-t border-gray-100 dark:border-slate-700">
+                <button type="button" onclick="closeBannerModal()" class="px-4 py-2 border rounded-xl text-xs font-semibold">Bekor qilish</button>
+                <button type="submit" id="bnfSubmitBtn" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition">Saqlash</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
@@ -623,7 +956,13 @@
         if(tabId === 'orders') loadAdminOrders();
         if(tabId === 'services') loadAdminServices();
         if(tabId === 'categories') loadAdminCategoriesTab();
+        if(tabId === 'portfolio') loadAdminPortfolio();
+        if(tabId === 'team') loadAdminTeam();
         if(tabId === 'users') loadAdminUsers();
+        if(tabId === 'support') loadAdminSupport();
+        if(tabId === 'reviews') loadAdminReviews();
+        if(tabId === 'banners') loadAdminBanners();
+        if(tabId === 'broadcast') loadAdminBroadcastTab();
         if(tabId === 'reports') loadAdminReports();
         if(tabId === 'settings') loadAdminSettings();
         if(tabId === 'activity-log') loadAdminActivityLog();
@@ -1303,6 +1642,492 @@
             }
         } catch(e) {
             showToast("Faoliyat jurnalini yuklashda xatolik", "error");
+        }
+    }
+
+    // PORTFOLIO MANAGEMENT
+    let adminPortfolioList = [];
+    async function loadAdminPortfolio() {
+        try {
+            const res = await fetchWithAuth(`${API_URL}/admin/projects`);
+            if (res.ok) {
+                adminPortfolioList = await res.json();
+                const tb = document.getElementById('adminPortfolioTbody');
+                if (adminPortfolioList.length === 0) {
+                    tb.innerHTML = `<tr><td colspan="4" class="text-center py-6 text-gray-400">Hech qanday portfolio loyihasi topilmadi</td></tr>`;
+                    return;
+                }
+                tb.innerHTML = adminPortfolioList.map(p => `
+                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-700/30 transition">
+                        <td class="px-6 py-4">
+                            <div class="font-bold text-gray-900 dark:text-white">${p.title}</div>
+                            <div class="text-xs text-gray-400">${p.client_name} &bull; <span class="text-blue-500">${p.category_name}</span></div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <img src="${p.image_url}" alt="${p.title}" class="w-16 h-10 object-cover rounded-lg border border-gray-100 dark:border-slate-600">
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-xs font-mono text-gray-600 dark:text-gray-300 max-w-xs truncate">${p.technologies}</div>
+                            <div class="text-[11px] text-green-600 font-semibold">${p.results_summary}</div>
+                        </td>
+                        <td class="px-6 py-4 text-right space-x-2 whitespace-nowrap">
+                            <button onclick="openPortfolioModal(${p.id})" class="text-blue-600 hover:text-blue-800 text-xs font-bold bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-lg">Tahrirlash</button>
+                            <button onclick="deletePortfolio(${p.id})" class="text-red-600 hover:text-red-800 text-xs font-bold bg-red-50 dark:bg-red-900/30 px-3 py-1.5 rounded-lg">O'chirish</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        } catch(e) {
+            showToast("Portfolio ro'yxatini yuklashda xatolik", "error");
+        }
+    }
+
+    function openPortfolioModal(portId = null) {
+        document.getElementById('portfolioForm').reset();
+        document.getElementById('pf-id').value = portId || '';
+        if (portId) {
+            const p = adminPortfolioList.find(x => x.id === portId);
+            if (p) {
+                document.getElementById('portModalTitle').innerText = "Loyihani tahrirlash";
+                document.getElementById('pf-title').value = p.title;
+                document.getElementById('pf-category').value = p.category_name;
+                document.getElementById('pf-client').value = p.client_name;
+                document.getElementById('pf-short').value = p.short_desc;
+                document.getElementById('pf-full').value = p.full_desc;
+                document.getElementById('pf-img').value = p.image_url;
+                document.getElementById('pf-tech').value = p.technologies;
+                document.getElementById('pf-results').value = p.results_summary;
+                document.getElementById('pf-url').value = p.live_url || '';
+            }
+        } else {
+            document.getElementById('portModalTitle').innerText = "Yangi Portfolio Loyihasi";
+        }
+        openModal('portfolioModal');
+    }
+
+    function closePortfolioModal() {
+        closeModal('portfolioModal');
+    }
+
+    async function savePortfolio(e) {
+        e.preventDefault();
+        const id = document.getElementById('pf-id').value;
+        const payload = {
+            title: document.getElementById('pf-title').value.trim(),
+            category_name: document.getElementById('pf-category').value.trim(),
+            client_name: document.getElementById('pf-client').value.trim(),
+            short_desc: document.getElementById('pf-short').value.trim(),
+            full_desc: document.getElementById('pf-full').value.trim(),
+            image_url: document.getElementById('pf-img').value.trim(),
+            technologies: document.getElementById('pf-tech').value.trim(),
+            results_summary: document.getElementById('pf-results').value.trim(),
+            live_url: document.getElementById('pf-url').value.trim() || null
+        };
+        const method = id ? 'PUT' : 'POST';
+        const url = id ? `${API_URL}/admin/projects/${id}` : `${API_URL}/admin/projects`;
+        const btn = document.getElementById('pfSubmitBtn');
+        setButtonLoading(btn, "Saqlanmoqda...");
+        try {
+            const res = await fetchWithAuth(url, { method, body: JSON.stringify(payload) });
+            if (res.ok) {
+                showToast(id ? "Portfolio loyihasi yangilandi" : "Yangi portfolio qo'shildi", "success");
+                closePortfolioModal();
+                loadAdminPortfolio();
+            } else {
+                showToast("Portfolio saqlashda xatolik", "error");
+            }
+        } catch(err) {
+            showToast("Tarmoq xatosi", "error");
+        } finally {
+            resetButton(btn);
+        }
+    }
+
+    function deletePortfolio(id) {
+        confirmAction("Loyihani o'chirish", "Ushbu portfolio loyihasini o'chirmoqchimisiz?", async () => {
+            const res = await fetchWithAuth(`${API_URL}/admin/projects/${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                showToast("Loyiha o'chirildi", "success");
+                loadAdminPortfolio();
+            } else {
+                showToast("O'chirishda xatolik", "error");
+            }
+        });
+    }
+
+    // TEAM MANAGEMENT
+    let adminTeamList = [];
+    async function loadAdminTeam() {
+        try {
+            const res = await fetch(`${API_URL}/team`);
+            if (res.ok) {
+                adminTeamList = await res.json();
+                const tb = document.getElementById('adminTeamTbody');
+                if (adminTeamList.length === 0) {
+                    tb.innerHTML = `<tr><td colspan="4" class="text-center py-6 text-gray-400">Jamoa a'zolari topilmadi</td></tr>`;
+                    return;
+                }
+                tb.innerHTML = adminTeamList.map(m => `
+                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-700/30 transition">
+                        <td class="px-6 py-4 flex items-center gap-3">
+                            <img src="${m.avatar_url || '/static/default-avatar.png'}" alt="${m.name}" class="w-10 h-10 rounded-full object-cover border border-gray-100 dark:border-slate-600">
+                            <div>
+                                <div class="font-bold text-gray-900 dark:text-white">${m.name}</div>
+                                <div class="text-[11px] text-gray-400">${m.bio ? m.bio.slice(0, 35) + '...' : ''}</div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 font-semibold text-gray-800 dark:text-gray-200">${m.role}</td>
+                        <td class="px-6 py-4 text-xs font-mono text-gray-600 dark:text-gray-300">${m.skills || '-'}</td>
+                        <td class="px-6 py-4 text-right space-x-2 whitespace-nowrap">
+                            <button onclick="openTeamModal(${m.id})" class="text-blue-600 hover:text-blue-800 text-xs font-bold bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-lg">Tahrirlash</button>
+                            <button onclick="deleteTeamMember(${m.id})" class="text-red-600 hover:text-red-800 text-xs font-bold bg-red-50 dark:bg-red-900/30 px-3 py-1.5 rounded-lg">O'chirish</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        } catch(e) {
+            showToast("Jamoa ro'yxatini yuklashda xatolik", "error");
+        }
+    }
+
+    function openTeamModal(memId = null) {
+        document.getElementById('teamForm').reset();
+        document.getElementById('tm-id').value = memId || '';
+        if (memId) {
+            const m = adminTeamList.find(x => x.id === memId);
+            if (m) {
+                document.getElementById('teamModalTitle').innerText = "Mutaxassisni tahrirlash";
+                document.getElementById('tm-name').value = m.name;
+                document.getElementById('tm-role').value = m.role;
+                document.getElementById('tm-avatar').value = m.avatar_url || '/static/default-avatar.png';
+                document.getElementById('tm-skills').value = m.skills || '';
+                document.getElementById('tm-bio').value = m.bio || '';
+            }
+        } else {
+            document.getElementById('teamModalTitle').innerText = "Yangi Mutaxassis";
+            document.getElementById('tm-avatar').value = '/static/default-avatar.png';
+        }
+        openModal('teamModal');
+    }
+
+    function closeTeamModal() {
+        closeModal('teamModal');
+    }
+
+    async function saveTeamMember(e) {
+        e.preventDefault();
+        const id = document.getElementById('tm-id').value;
+        const payload = {
+            name: document.getElementById('tm-name').value.trim(),
+            role: document.getElementById('tm-role').value.trim(),
+            avatar_url: document.getElementById('tm-avatar').value.trim() || '/static/default-avatar.png',
+            skills: document.getElementById('tm-skills').value.trim() || null,
+            bio: document.getElementById('tm-bio').value.trim() || null
+        };
+        const method = id ? 'PUT' : 'POST';
+        const url = id ? `${API_URL}/admin/team/${id}` : `${API_URL}/admin/team`;
+        const btn = document.getElementById('tmSubmitBtn');
+        setButtonLoading(btn, "Saqlanmoqda...");
+        try {
+            const res = await fetchWithAuth(url, { method, body: JSON.stringify(payload) });
+            if (res.ok) {
+                showToast(id ? "Mutaxassis ma'lumotlari yangilandi" : "Yangi mutaxassis qo'shildi", "success");
+                closeTeamModal();
+                loadAdminTeam();
+            } else {
+                showToast("Saqlashda xatolik", "error");
+            }
+        } catch(err) {
+            showToast("Tarmoq xatosi", "error");
+        } finally {
+            resetButton(btn);
+        }
+    }
+
+    function deleteTeamMember(id) {
+        confirmAction("Mutaxassisni o'chirish", "Ushbu mutaxassisni jamoa ro'yxatidan o'chirmoqchimisiz?", async () => {
+            const res = await fetchWithAuth(`${API_URL}/admin/team/${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                showToast("Mutaxassis o'chirildi", "success");
+                loadAdminTeam();
+            } else {
+                showToast("O'chirishda xatolik", "error");
+            }
+        });
+    }
+
+    // SUPPORT TICKETS MANAGEMENT
+    let adminSupportList = [];
+    async function loadAdminSupport() {
+        try {
+            const res = await fetchWithAuth(`${API_URL}/admin/support`);
+            if (res.ok) {
+                adminSupportList = await res.json();
+                const tb = document.getElementById('adminSupportTbody');
+                if (adminSupportList.length === 0) {
+                    tb.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-gray-400">Qo'llab-quvvatlash murojaatlari mavjud emas</td></tr>`;
+                    return;
+                }
+                tb.innerHTML = adminSupportList.map(t => {
+                    let stBadge = "bg-blue-100 text-blue-800";
+                    if (t.status === 'Jarayonda') stBadge = "bg-purple-100 text-purple-800";
+                    if (t.status === 'Hal qilindi') stBadge = "bg-green-100 text-green-800";
+                    return `
+                        <tr class="hover:bg-gray-50 dark:hover:bg-slate-700/30 transition">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="font-bold text-gray-900 dark:text-white block">${t.ticket_number}</span>
+                                <span class="text-[10px] text-gray-400 font-mono">${new Date(t.created_at).toLocaleDateString()}</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="font-semibold text-gray-800 dark:text-gray-200">${t.user_name || 'Mijoz'}</div>
+                                <div class="text-xs text-gray-400">${t.user_email || '-'}</div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-900 dark:text-white line-clamp-1">${t.subject}</div>
+                                <div class="text-xs text-gray-500 line-clamp-1">${t.message}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-xs font-medium text-gray-600 dark:text-gray-300">${t.category}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 py-0.5 rounded-full text-xs font-bold ${stBadge}">${t.status}</span>
+                            </td>
+                            <td class="px-6 py-4 text-right whitespace-nowrap">
+                                <button onclick="openSupportReplyModal(${t.id})" class="text-blue-600 hover:text-blue-800 text-xs font-bold bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-lg">Javob berish &rarr;</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        } catch(e) {
+            showToast("Murojaatlarni yuklashda xatolik", "error");
+        }
+    }
+
+    function openSupportReplyModal(ticketId) {
+        const t = adminSupportList.find(x => x.id === ticketId);
+        if (!t) return;
+        document.getElementById('srf-id').value = t.id;
+        document.getElementById('srf-msg').innerText = t.message;
+        document.getElementById('srf-reply').value = t.admin_reply || '';
+        document.getElementById('srf-status').value = t.status === 'Yangi' ? 'Hal qilindi' : t.status;
+        openModal('supportReplyModal');
+    }
+
+    function closeSupportReplyModal() {
+        closeModal('supportReplyModal');
+    }
+
+    async function submitSupportReply(e) {
+        e.preventDefault();
+        const id = document.getElementById('srf-id').value;
+        const payload = {
+            admin_reply: document.getElementById('srf-reply').value.trim(),
+            status: document.getElementById('srf-status').value
+        };
+        const btn = document.getElementById('srfSubmitBtn');
+        setButtonLoading(btn, "Yuborilmoqda...");
+        try {
+            const res = await fetchWithAuth(`${API_URL}/admin/support/${id}/reply`, {
+                method: 'PATCH',
+                body: JSON.stringify(payload)
+            });
+            if (res.ok) {
+                showToast("Javob yuborildi va mijozga bildirishnoma bordi!", "success");
+                closeSupportReplyModal();
+                loadAdminSupport();
+            } else {
+                showToast("Javob berishda xatolik", "error");
+            }
+        } catch(err) {
+            showToast("Tarmoq xatosi", "error");
+        } finally {
+            resetButton(btn);
+        }
+    }
+
+    // REVIEWS MANAGEMENT
+    async function loadAdminReviews() {
+        try {
+            const res = await fetchWithAuth(`${API_URL}/admin/reviews`);
+            if (res.ok) {
+                const reviews = await res.json();
+                const tb = document.getElementById('adminReviewsTbody');
+                if (reviews.length === 0) {
+                    tb.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-gray-400">Sharhlar va baholar mavjud emas</td></tr>`;
+                    return;
+                }
+                tb.innerHTML = reviews.map(r => `
+                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-700/30 transition">
+                        <td class="px-6 py-4 font-bold text-gray-900 dark:text-white">${r.user_name}</td>
+                        <td class="px-6 py-4 text-xs font-semibold text-blue-600 dark:text-blue-400">${r.service_title}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="text-yellow-500 font-bold">★ ${r.rating}</span><span class="text-gray-400 text-xs">/5</span>
+                        </td>
+                        <td class="px-6 py-4 text-xs text-gray-700 dark:text-gray-300 max-w-sm truncate">${r.comment || '-'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-400">${new Date(r.created_at).toLocaleDateString()}</td>
+                        <td class="px-6 py-4 text-right whitespace-nowrap">
+                            <button onclick="deleteAdminReview(${r.id})" class="text-red-600 hover:text-red-800 text-xs font-bold bg-red-50 dark:bg-red-900/30 px-3 py-1.5 rounded-lg">O'chirish</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        } catch(e) {
+            showToast("Sharhlarni yuklashda xatolik", "error");
+        }
+    }
+
+    function deleteAdminReview(id) {
+        confirmAction("Sharhni o'chirish", "Ushbu sharhni o'chirmoqchimisiz?", async () => {
+            const res = await fetchWithAuth(`${API_URL}/admin/reviews/${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                showToast("Sharh o'chirildi", "success");
+                loadAdminReviews();
+            } else {
+                showToast("O'chirishda xatolik", "error");
+            }
+        });
+    }
+
+    // BANNERS MANAGEMENT
+    let adminBannersList = [];
+    async function loadAdminBanners() {
+        try {
+            const res = await fetchWithAuth(`${API_URL}/admin/banners`);
+            if (res.ok) {
+                adminBannersList = await res.json();
+                const tb = document.getElementById('adminBannersTbody');
+                if (adminBannersList.length === 0) {
+                    tb.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-gray-400">Bannerlar mavjud emas</td></tr>`;
+                    return;
+                }
+                tb.innerHTML = adminBannersList.map(b => `
+                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-700/30 transition">
+                        <td class="px-6 py-4 font-bold text-gray-900 dark:text-white">${b.title}</td>
+                        <td class="px-6 py-4 text-xs text-gray-500">${b.subtitle || '-'}</td>
+                        <td class="px-6 py-4 font-mono text-xs text-blue-600">${b.link_url}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 py-0.5 rounded-full text-xs font-bold ${b.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">
+                                ${b.is_active ? 'Faol' : 'Nofaol'}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-right space-x-2 whitespace-nowrap">
+                            <button onclick="openBannerModal(${b.id})" class="text-blue-600 hover:text-blue-800 text-xs font-bold bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-lg">Tahrirlash</button>
+                            <button onclick="deleteBanner(${b.id})" class="text-red-600 hover:text-red-800 text-xs font-bold bg-red-50 dark:bg-red-900/30 px-3 py-1.5 rounded-lg">O'chirish</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        } catch(e) {
+            showToast("Bannerlarni yuklashda xatolik", "error");
+        }
+    }
+
+    function openBannerModal(banId = null) {
+        document.getElementById('bannerForm').reset();
+        document.getElementById('bnf-id').value = banId || '';
+        if (banId) {
+            const b = adminBannersList.find(x => x.id === banId);
+            if (b) {
+                document.getElementById('bannerModalTitle').innerText = "Bannerni tahrirlash";
+                document.getElementById('bnf-title').value = b.title;
+                document.getElementById('bnf-subtitle').value = b.subtitle || '';
+                document.getElementById('bnf-link').value = b.link_url || '/xizmatlar';
+            }
+        } else {
+            document.getElementById('bannerModalTitle').innerText = "Yangi Banner Qo'shish";
+            document.getElementById('bnf-link').value = '/xizmatlar';
+        }
+        openModal('bannerModal');
+    }
+
+    function closeBannerModal() {
+        closeModal('bannerModal');
+    }
+
+    async function saveBanner(e) {
+        e.preventDefault();
+        const id = document.getElementById('bnf-id').value;
+        const payload = {
+            title: document.getElementById('bnf-title').value.trim(),
+            subtitle: document.getElementById('bnf-subtitle').value.trim() || null,
+            link_url: document.getElementById('bnf-link').value.trim() || '/xizmatlar',
+            is_active: true
+        };
+        const method = id ? 'PUT' : 'POST';
+        const url = id ? `${API_URL}/admin/banners/${id}` : `${API_URL}/admin/banners`;
+        const btn = document.getElementById('bnfSubmitBtn');
+        setButtonLoading(btn, "Saqlanmoqda...");
+        try {
+            const res = await fetchWithAuth(url, { method, body: JSON.stringify(payload) });
+            if (res.ok) {
+                showToast(id ? "Banner yangilandi" : "Banner qo'shildi", "success");
+                closeBannerModal();
+                loadAdminBanners();
+            } else {
+                showToast("Bannerni saqlashda xatolik", "error");
+            }
+        } catch(err) {
+            showToast("Tarmoq xatosi", "error");
+        } finally {
+            resetButton(btn);
+        }
+    }
+
+    function deleteBanner(id) {
+        confirmAction("Bannerni o'chirish", "Ushbu bannerni o'chirmoqchimisiz?", async () => {
+            const res = await fetchWithAuth(`${API_URL}/admin/banners/${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                showToast("Banner o'chirildi", "success");
+                loadAdminBanners();
+            } else {
+                showToast("O'chirishda xatolik", "error");
+            }
+        });
+    }
+
+    // BROADCAST TAB
+    async function loadAdminBroadcastTab() {
+        try {
+            const res = await fetchWithAuth(`${API_URL}/admin/users`);
+            if (res.ok) {
+                const users = await res.json();
+                const sel = document.getElementById('bc-user');
+                const clientUsers = users.filter(u => u.role === 'client');
+                sel.innerHTML = `<option value="">Barcha faol mijozlar (Hammaga - ${clientUsers.length} ta)</option>` +
+                    clientUsers.map(u => `<option value="${u.id}">${u.name} (${u.email})</option>`).join('');
+            }
+        } catch(e) {
+            console.warn("Foydalanuvchilarni yuklashda xatolik:", e);
+        }
+    }
+
+    async function sendAdminBroadcast(e) {
+        e.preventDefault();
+        const rawUser = document.getElementById('bc-user').value;
+        const payload = {
+            user_id: rawUser ? parseInt(rawUser) : null,
+            title: document.getElementById('bc-title').value.trim(),
+            message: document.getElementById('bc-message').value.trim(),
+            link: document.getElementById('bc-link').value.trim() || null
+        };
+        const btn = document.getElementById('bcSubmitBtn');
+        setButtonLoading(btn, "Xabarnoma yuborilmoqda...");
+        try {
+            const res = await fetchWithAuth(`${API_URL}/admin/broadcast`, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            });
+            if (res.ok) {
+                const data = await res.json();
+                showToast(data.detail || "Xabarnoma muvaffaqiyatli yuborildi!", "success");
+                document.getElementById('broadcastForm').reset();
+                document.getElementById('bc-link').value = '/xizmatlar';
+            } else {
+                showToast("Xabarnomani tarqatishda xatolik", "error");
+            }
+        } catch(err) {
+            showToast("Tarmoq xatosi", "error");
+        } finally {
+            resetButton(btn);
         }
     }
 

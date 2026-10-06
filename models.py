@@ -14,6 +14,8 @@ class User(Base):
     role = Column(String, default="client", nullable=False)
     phone = Column(String, nullable=True)
     avatar_url = Column(String, nullable=True, default="/static/default-avatar.png")
+    reset_token = Column(String, nullable=True)
+    reset_token_expires = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     orders = relationship("Order", back_populates="user", foreign_keys="[Order.user_id]")
@@ -69,6 +71,8 @@ class Order(Base):
     service = relationship("Service")
     status_history = relationship("OrderStatusHistory", back_populates="order")
     messages = relationship("Message", back_populates="order")
+    files = relationship("OrderFile", back_populates="order", cascade="all, delete-orphan")
+    review = relationship("Review", back_populates="order", uselist=False, cascade="all, delete-orphan")
 
 class OrderStatusHistory(Base):
     __tablename__ = "order_status_history"
@@ -129,4 +133,90 @@ class Setting(Base):
     key = Column(String, unique=True, index=True, nullable=False)
     value = Column(Text, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow)
+
+class PortfolioProject(Base):
+    __tablename__ = "portfolio_projects"
+
+    id = Column(Integer, primary_key=True, index=True)
+    slug = Column(String, unique=True, index=True, nullable=False)
+    title = Column(String, nullable=False)
+    category_name = Column(String, nullable=False)
+    short_desc = Column(String, nullable=False)
+    full_desc = Column(Text, nullable=False)
+    image_url = Column(String, nullable=False)
+    gallery_json = Column(Text, nullable=True) # JSON array of image URLs
+    client_name = Column(String, nullable=False)
+    technologies = Column(String, nullable=False)
+    results_summary = Column(Text, nullable=False)
+    live_url = Column(String, nullable=True)
+    is_featured = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+class OrderFile(Base):
+    __tablename__ = "order_files"
+
+    id = Column(Integer, primary_key=True, index=True)
+    order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
+    uploader_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    filename = Column(String, nullable=False)
+    file_url = Column(String, nullable=False)
+    file_size = Column(String, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    order = relationship("Order", back_populates="files")
+    uploader = relationship("User")
+
+class Review(Base):
+    __tablename__ = "reviews"
+
+    id = Column(Integer, primary_key=True, index=True)
+    order_id = Column(Integer, ForeignKey("orders.id"), unique=True, nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    service_id = Column(Integer, ForeignKey("services.id"), nullable=True)
+    rating = Column(Integer, nullable=False) # 1 - 5
+    comment = Column(Text, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    order = relationship("Order", back_populates="review")
+    user = relationship("User")
+    service = relationship("Service")
+
+class SupportTicket(Base):
+    __tablename__ = "support_tickets"
+
+    id = Column(Integer, primary_key=True, index=True)
+    ticket_number = Column(String, unique=True, index=True, nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    subject = Column(String, nullable=False)
+    message = Column(Text, nullable=False)
+    category = Column(String, default="Umumiy", nullable=False)
+    status = Column(String, default="Ochiq", nullable=False) # Ochiq, Jarayonda, Hal qilindi
+    admin_reply = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    user = relationship("User")
+
+class TeamMember(Base):
+    __tablename__ = "team_members"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    role = Column(String, nullable=False)
+    avatar_url = Column(String, nullable=False)
+    bio = Column(Text, nullable=True)
+    skills = Column(String, nullable=True)
+    display_order = Column(Integer, default=0)
+
+class Banner(Base):
+    __tablename__ = "banners"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, nullable=False)
+    subtitle = Column(Text, nullable=True)
+    image_url = Column(String, nullable=True)
+    link_url = Column(String, nullable=True)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
 

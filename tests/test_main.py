@@ -571,8 +571,228 @@ def test_page_routes():
         "/aloqa",
         "/kirish",
         "/royxatdan-otish",
-        "/buyurtma/muvaffaqiyat"
+        "/buyurtma/muvaffaqiyat",
+        "/biz-haqimizda",
+        "/yordam",
+        "/parolni-tiklash",
+        "/yangi-parol"
     ]
     for p in pages:
         res = client.get(p)
         assert res.status_code == 200
+
+# Test 19: Parolni tiklash (Password Reset Flow)
+def test_password_reset_flow(db_session):
+    # 1. So'rov yuborish
+    req_res = client.post("/api/auth/forgot-password", json={"email": "m1@falcon.uz"})
+    assert req_res.status_code == 200
+    assert "token" in req_res.json()
+    reset_token = req_res.json()["token"]
+
+    # 2. Yangi parol o'rnatish
+    reset_res = client.post("/api/auth/reset-password", json={
+        "token": reset_token,
+        "new_password": "newpassword123"
+    })
+    assert reset_res.status_code == 200
+
+    # 3. Yangi parol bilan kirish
+    login_res = client.post("/api/auth/login", data={"username": "m1@falcon.uz", "password": "newpassword123"})
+    assert login_res.status_code == 200
+    assert "access_token" in login_res.json()
+
+    # Eski parol ishlamasligi kerak (401 Unauthorized)
+    old_res = client.post("/api/auth/login", data={"username": "m1@falcon.uz", "password": "mijoz123"})
+    assert old_res.status_code == 401
+
+# Test 20: Portfolio, Jamoa va Bannerlar boshqaruvi
+def test_portfolio_team_banners(db_session):
+    admin_token = client.post("/api/auth/login", data={"username": "admin_test@falcon.uz", "password": "admin123"}).json()["access_token"]
+    admin_headers = {"Authorization": f"Bearer {admin_token}"}
+
+    # 1. Portfolio loyihasi qo'shish
+    port_payload = {
+        "title": "Avtomatlashtirilgan CRM Tizimi",
+        "category_name": "Web & CRM",
+        "client_name": "Global Logistika MCHJ",
+        "short_desc": "Katta logistika kompaniyasi uchun buyurtma va to'lovlarni boshqarish tizimi",
+        "full_desc": "To'liq avtomatlashtirilgan arxitektura, real vaqt rejimida yuklarni kuzatish va hisobotlar moduli.",
+        "image_url": "/static/services/web-dev.webp",
+        "technologies": "FastAPI, Vue.js, PostgreSQL",
+        "results_summary": "+180% Ish unumdorligi",
+        "live_url": "https://example.com/crm"
+    }
+    p_create = client.post("/api/admin/projects", json=port_payload, headers=admin_headers)
+    assert p_create.status_code == 200
+    project_data = p_create.json()
+    assert project_data["title"] == port_payload["title"]
+
+    # Public ro'yxat va tafsilot
+    p_list = client.get("/api/projects")
+    assert p_list.status_code == 200
+    assert any(x["id"] == project_data["id"] for x in p_list.json())
+
+    p_detail = client.get(f"/api/projects/{project_data['slug']}")
+    assert p_detail.status_code == 200
+    assert p_detail.json()["slug"] == project_data["slug"]
+
+    # 2. Jamoa a'zosi qo'shish
+    team_payload = {
+        "name": "Alisher Usmonov",
+        "role": "Senior Frontend Developer",
+        "avatar_url": "/static/default-avatar.png",
+        "skills": "React, Tailwind, TypeScript",
+        "bio": "5 yillik tajribaga ega frontend muhandisi",
+        "display_order": 1
+    }
+    t_create = client.post("/api/admin/team", json=team_payload, headers=admin_headers)
+    assert t_create.status_code == 200
+    team_id = t_create.json()["id"]
+
+    t_list = client.get("/api/team")
+    assert t_list.status_code == 200
+    assert any(x["id"] == team_id for x in t_list.json())
+
+    # 3. Banner qo'shish
+    ban_payload = {
+        "title": "Kuzgi chegirmalar mavsumi!",
+        "subtitle": "Barcha web-loyihalarga 20% maxsus chegirma",
+        "link_url": "/xizmatlar",
+        "is_active": True
+    }
+    b_create = client.post("/api/admin/banners", json=ban_payload, headers=admin_headers)
+    assert b_create.status_code == 200
+
+    b_list = client.get("/api/banners")
+    assert b_list.status_code == 200
+    assert len(b_list.json()) > 0
+
+# Test 21: Buyurtma fayllari va Sharh qoldirish
+def test_order_files_and_reviews(db_session):
+    m1_token = client.post("/api/auth/login", data={"username": "m1@falcon.uz", "password": "newpassword123"}).json()["access_token"]
+    m1_headers = {"Authorization": f"Bearer {m1_token}"}
+    admin_token = client.post("/api/auth/login", data={"username": "admin_test@falcon.uz", "password": "admin123"}).json()["access_token"]
+    admin_headers = {"Authorization": f"Bearer {admin_token}"}
+
+    srv = db_session.query(models.Service).first()
+    # 1. Yangi buyurtma yaratish
+    order_payload = {
+        "service_id": srv.id,
+        "project_name": "Fayl va Sharh Loyihasi",
+        "technical_task": "Ushbu buyurtmaga fayllar biriktiriladi va yakunlangach mijoz tomonidan besh yulduzli sharh yoziladi.",
+        "desired_deadline": str(date.today() + timedelta(days=12)),
+        "contact_phone": "+998901234567"
+    }
+    ord_res = client.post("/api/orders", json=order_payload, headers=m1_headers)
+    assert ord_res.status_code == 200
+    order_id = ord_res.json()["id"]
+
+    # 2. Fayl yuklash (Multipart file upload)
+    file_bytes = b"PDF hujjat sinovi uchun fayl mazmuni"
+    file_res = client.post(
+        f"/api/orders/{order_id}/files",
+        files={"file": ("texnik_topshiriq.pdf", file_bytes, "application/pdf")},
+        headers=m1_headers
+    )
+    assert file_res.status_code == 200
+    assert file_res.json()["filename"] == "texnik_topshiriq.pdf"
+
+    files_get = client.get(f"/api/orders/{order_id}/files", headers=m1_headers)
+    assert files_get.status_code == 200
+    assert len(files_get.json()) >= 1
+
+    # 3. Statusni o'zgartirish: Qabul qilindi -> Jarayonda -> Yakunlandi
+    client.patch(f"/api/orders/{order_id}/status", json={"status": "Qabul qilindi"}, headers=admin_headers)
+    client.patch(f"/api/orders/{order_id}/status", json={"status": "Jarayonda"}, headers=admin_headers)
+    client.patch(f"/api/orders/{order_id}/status", json={"status": "Yakunlandi"}, headers=admin_headers)
+
+    # 4. Sharh qoldirish (5 yulduz)
+    review_payload = {
+        "rating": 5,
+        "comment": "A'lo darajada bajarildi, xizmat sifati juda yuqori!"
+    }
+    rev_res = client.post(f"/api/orders/{order_id}/review", json=review_payload, headers=m1_headers)
+    assert rev_res.status_code == 200
+    assert rev_res.json()["rating"] == 5
+
+    # 5. Public sharhlarda ko'rinishi
+    pub_revs = client.get("/api/reviews")
+    assert pub_revs.status_code == 200
+    assert any(r["comment"] == review_payload["comment"] for r in pub_revs.json())
+
+# Test 22: Qabul qilish (Accept) va O'zgartirish so'rash (Revision)
+def test_order_revision_and_accept(db_session):
+    m1_token = client.post("/api/auth/login", data={"username": "m1@falcon.uz", "password": "newpassword123"}).json()["access_token"]
+    m1_headers = {"Authorization": f"Bearer {m1_token}"}
+    admin_token = client.post("/api/auth/login", data={"username": "admin_test@falcon.uz", "password": "admin123"}).json()["access_token"]
+    admin_headers = {"Authorization": f"Bearer {admin_token}"}
+
+    srv = db_session.query(models.Service).first()
+    ord_res = client.post("/api/orders", json={
+        "service_id": srv.id,
+        "project_name": "Tahrirlash va Tasdiqlash",
+        "technical_task": "Ushbu buyurtmada tahrirlash talabi va to'g'ridan-to'g'ri qabul qilish sinovdan o'tkaziladi.",
+        "desired_deadline": str(date.today() + timedelta(days=15)),
+        "contact_phone": "+998901234567"
+    }, headers=m1_headers)
+    order_id = ord_res.json()["id"]
+
+    # Jarayonda holatiga keltirish
+    client.patch(f"/api/orders/{order_id}/status", json={"status": "Qabul qilindi"}, headers=admin_headers)
+    client.patch(f"/api/orders/{order_id}/status", json={"status": "Jarayonda"}, headers=admin_headers)
+
+    # 1. Revision so'rash
+    rev_res = client.post(f"/api/orders/{order_id}/revision", json={"note": "Ranglar sxemasini ko'k rangga moslang"}, headers=m1_headers)
+    assert rev_res.status_code == 200
+    assert rev_res.json()["status"] == "Tahrirlashda"
+
+    # 2. Qabul qilish (Accept)
+    acc_res = client.post(f"/api/orders/{order_id}/accept", headers=m1_headers)
+    assert acc_res.status_code == 200
+    assert acc_res.json()["status"] == "Yakunlandi"
+
+# Test 23: Qo'llab-quvvatlash (Support Ticket) va Admin javobi
+def test_support_ticket_flow(db_session):
+    # 1. Mijoz ticket yaratishi
+    ticket_payload = {
+        "name": "Bekzod Shukurov",
+        "email": "m1@falcon.uz",
+        "phone": "+998901234567",
+        "subject": "To'lov haqida savol",
+        "category": "To'lovlar",
+        "message": "Click orqali hisob-kitob qilishda chek qanday olinadi?"
+    }
+    t_create = client.post("/api/support", json=ticket_payload)
+    assert t_create.status_code == 200
+    ticket_id = t_create.json()["id"]
+
+    # 2. Admin ro'yxatni ko'rishi
+    admin_token = client.post("/api/auth/login", data={"username": "admin_test@falcon.uz", "password": "admin123"}).json()["access_token"]
+    admin_headers = {"Authorization": f"Bearer {admin_token}"}
+
+    t_list = client.get("/api/admin/support", headers=admin_headers)
+    assert t_list.status_code == 200
+    assert any(x["id"] == ticket_id for x in t_list.json())
+
+    # 3. Admin javob berishi
+    reply_payload = {
+        "admin_reply": "Chek profilingizdagi 'To'lovlar' bo'limida avtomatik shakllanadi.",
+        "status": "Hal qilindi"
+    }
+    reply_res = client.patch(f"/api/admin/support/{ticket_id}/reply", json=reply_payload, headers=admin_headers)
+    assert reply_res.status_code == 200
+    assert reply_res.json()["status"] == "Hal qilindi"
+    assert reply_res.json()["admin_reply"] == reply_payload["admin_reply"]
+
+# Test 24: Admin Broadcast bildirishnomasi
+def test_admin_broadcast(db_session):
+    admin_token = client.post("/api/auth/login", data={"username": "admin_test@falcon.uz", "password": "admin123"}).json()["access_token"]
+    admin_headers = {"Authorization": f"Bearer {admin_token}"}
+
+    bc_res = client.post("/api/admin/broadcast", json={
+        "title": "Yangi Funksiya Ishga Tushdi!",
+        "message": "Endi barcha buyurtmalaringizga to'g'ridan-to'g'ri fayllar yuklashingiz mumkin.",
+        "link": "/dashboard"
+    }, headers=admin_headers)
+    assert bc_res.status_code == 200
+    assert "foydalanuvchiga bildirishnoma yuborildi" in bc_res.json()["detail"]

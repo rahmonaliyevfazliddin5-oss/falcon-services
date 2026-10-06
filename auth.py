@@ -270,6 +270,50 @@ def logout(response: Response):
     response.delete_cookie(key="access_token", path="/")
     return {"message": "Tizimdan muvaffaqiyatli chiqildi"}
 
+@router.post("/forgot-password")
+def forgot_password(req: schemas.ForgotPasswordRequest, db: Session = Depends(get_db)):
+    clean_email = str(req.email).lower().strip()
+    user = db.query(models.User).filter(func.lower(models.User.email) == clean_email).first()
+    if not user:
+        # Xavfsizlik maqsadida foydalanuvchi mavjud emasligini bildirmaymiz
+        return {
+            "message": "Agar ushbu elektron pochta bazada mavjud bo'lsa, parolni tiklash havolasi yuborildi.",
+            "status": "ok"
+        }
+    
+    token = uuid.uuid4().hex
+    user.reset_token = token
+    user.reset_token_expires = datetime.utcnow() + timedelta(hours=2)
+    db.commit()
+
+    reset_url = f"/yangi-parol?token={token}"
+    return {
+        "message": "Parolni tiklash bo'yicha ko'rsatma yuborildi.",
+        "status": "ok",
+        "reset_url": reset_url,
+        "token": token
+    }
+
+@router.post("/reset-password")
+def reset_password(req: schemas.ResetPasswordRequest, db: Session = Depends(get_db)):
+    if not req.token or not req.new_password:
+        raise HTTPException(status_code=400, detail="Token va yangi parol kiritilishi shart")
+    
+    if len(req.new_password) < 6:
+        raise HTTPException(status_code=400, detail="Parol kamida 6 ta belgidan iborat bo'lishi kerak")
+
+    user = db.query(models.User).filter(models.User.reset_token == req.token).first()
+    if not user or not user.reset_token_expires or user.reset_token_expires < datetime.utcnow():
+        raise HTTPException(status_code=400, detail="Parolni tiklash havolasi eskirgan yoki yaroqsiz")
+
+    user.password_hash = get_password_hash(req.new_password)
+    user.reset_token = None
+    user.reset_token_expires = None
+    db.commit()
+
+    return {"message": "Parol muvaffaqiyatli yangilandi. Yangi parol bilan tizimga kirishingiz mumkin."}
+
+
 @router.get("/me", response_model=schemas.UserOut)
 def read_users_me(current_user: models.User = Depends(get_current_user)):
     return current_user

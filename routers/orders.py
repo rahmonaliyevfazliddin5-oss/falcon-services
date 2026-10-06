@@ -1,7 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 from datetime import date, datetime, timedelta
 import json
+import os
+import uuid
 
 from database import get_db
 import models
@@ -123,8 +125,10 @@ def change_order_status(id: int, status_update: schemas.OrderStatusUpdate, curre
     valid_transitions = {
         "Yangi": ["Qabul qilindi", "Bekor qilindi"],
         "Qabul qilindi": ["Jarayonda", "Bekor qilindi"],
-        "Jarayonda": ["Yakunlandi"],
-        "Yakunlandi": [],
+        "Jarayonda": ["Yakunlandi", "Tahrirlashda", "Bekor qilindi"],
+        "Tahrirlashda": ["Jarayonda", "Yakunlandi"],
+        "Yakunlandi": ["Qabul qilindi (Mijoz)", "Tahrirlashda"],
+        "Qabul qilindi (Mijoz)": [],
         "Bekor qilindi": []
     }
 
@@ -194,3 +198,213 @@ def send_message(id: int, msg_in: schemas.MessageCreate, current_user: models.Us
     db.commit()
     db.refresh(msg)
     return msg
+
+# --- Order Acceptance (Mijoz natijani qabul qilishi) ---
+@router.post("/{id}/accept", response_model=schemas.OrderOut)
+def accept_order(id: int, current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+    order = db.query(models.Order).filter(models.Order.id == id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Buyurtma topilmadi")
+    if current_user.role != "admin" and order.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Sizda bu buyurtmani qabul qilish huquqi yo'q")
+    
+    old_status = order.status
+    order.status = "Yakunlandi"
+    
+    history = models.OrderStatusHistory(
+        order_id=order.id,
+        old_status=old_status,
+        new_status="Yakunlandi",
+        note="Mijoz topshirilgan loyihani to'liq qabul qildi",
+        changed_by_user_id=current_user.id
+    )
+    db.add(history)
+    
+    # Notify admin
+    admin_user = db.query(models.User).filter(models.User.role == "admin").first()
+    if admin_user:
+        db.add(models.Notification(
+            user_id=admin_user.id,
+            title="Loyiha qabul qilindi!",
+            message=f"{order.order_number}: Mijoz loyihani muvaffaqiyatli qabul qildi.",
+            link=f"/admin?tab=orders"
+        ))
+    db.commit()
+    db.refresh(order)
+    return order
+
+# --- Revision Request (O'zgartirish so'rash) ---
+@router.post("/{id}/revision", response_model=schemas.OrderOut)
+def request_order_revision(id: int, payload: schemas.OrderStatusUpdate, current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+    order = db.query(models.Order).filter(models.Order.id == id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Buyurtma topilmadi")
+    if current_user.role != "admin" and order.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Sizda o'zgartirish so'rash huquqi yo'q")
+
+    note_text = payload.note or "Mijoz loyihaga tahrir va o'zgartirish kiritishni so'radi"
+    old_status = order.status
+    order.status = "Tahrirlashda"
+
+    history = models.OrderStatusHistory(
+        order_id=order.id,
+        old_status=old_status,
+        new_status="Tahrirlashda",
+        note=note_text,
+        changed_by_user_id=current_user.id
+    )
+    db.add(history)
+
+    # Chatga ham tahrir so'rovi xabarini qo'shish
+    db.add(models.Message(
+        order_id=order.id,
+        sender_id=current_user.id,
+        text=f"🔄 [O'zgartirish so'rovi]: {note_text}"
+    ))
+
+    # Notify admin
+    admin_user = db.query(models.User).filter(models.User.role == "admin").first()
+    if admin_user:
+        db.add(models.Notification(
+            user_id=admin_user.id,
+            title="O'zgartirish so'rovi",
+            message=f"{order.order_number}: Mijoz loyiha bo'yicha tahrir kiritishni so'radi.",
+            link=f"/admin?tab=orders"
+        ))
+
+    db.commit()
+    db.refresh(order)
+    return order
+
+# --- Order Files (Loyiha fayllari) ---
+@router.get("/{id}/files", response_model=list[schemas.OrderFileOut])
+def get_order_files(id: int, current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+    order = db.query(models.Order).filter(models.Order.id == id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Buyurtma topilmadi")
+    if current_user.role != "admin" and order.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Sizda boshqa mijozning buyurtma fayllarini ko'rish huquqi yo'q")
+    
+    return db.query(models.OrderFile).filter(models.OrderFile.order_id == id).order_by(models.OrderFile.created_at.desc()).all()
+
+@router.post("/{id}/files", response_model=schemas.OrderFileOut)
+async def upload_order_file(id: int, file: UploadFile = File(...), current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+    order = db.query(models.Order).filter(models.Order.id == id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Buyurtma topilmadi")
+    if current_user.role != "admin" and order.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Sizda fayl yuklash huquqi yo'q")
+
+    upload_dir = os.path.join("static", "uploads", "orders")
+    os.makedirs(upload_dir, exist_ok=True)
+    
+    clean_filename = os.path.basename(file.filename or "fayl")
+    ext = os.path.splitext(clean_filename)[1]
+    unique_name = f"order_{order.id}_{uuid.uuid4().hex[:8]}{ext}"
+    file_path = os.path.join(upload_dir, unique_name)
+
+    content = await file.read()
+    with open(file_path, "wb") as f:
+        f.write(content)
+    
+    size_kb = len(content) / 1024
+    size_str = f"{size_kb:.1f} KB" if size_kb < 1024 else f"{(size_kb/1024):.1f} MB"
+
+    order_file = models.OrderFile(
+        order_id=order.id,
+        uploader_id=current_user.id,
+        filename=clean_filename,
+        file_url=f"/static/uploads/orders/{unique_name}",
+        file_size=size_str
+    )
+    db.add(order_file)
+    
+    # Notify other party
+    target_user_id = order.user_id if current_user.role == "admin" else (
+        db.query(models.User).filter(models.User.role == "admin").first().id
+    )
+    db.add(models.Notification(
+        user_id=target_user_id,
+        title="Yangi fayl yuklandi",
+        message=f"{order.order_number}: {clean_filename} fayli biriktirildi.",
+        link=f"/buyurtmalar/{order.id}"
+    ))
+
+    db.commit()
+    db.refresh(order_file)
+    return order_file
+
+# --- Reviews & Ratings (Baholash) ---
+@router.post("/{id}/review", response_model=schemas.ReviewOut)
+def create_order_review(id: int, review_in: schemas.ReviewCreate, current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+    order = db.query(models.Order).filter(models.Order.id == id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Buyurtma topilmadi")
+    if current_user.role != "admin" and order.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Sizda bu buyurtmaga sharh yozish huquqi yo'q")
+
+    if review_in.rating < 1 or review_in.rating > 5:
+        raise HTTPException(status_code=400, detail="Baholash 1 dan 5 yulduzgacha bo'lishi kerak")
+
+    existing_review = db.query(models.Review).filter(models.Review.order_id == id).first()
+    if existing_review:
+        existing_review.rating = review_in.rating
+        existing_review.comment = review_in.comment
+        db.commit()
+        db.refresh(existing_review)
+        rev = existing_review
+    else:
+        rev = models.Review(
+            order_id=order.id,
+            user_id=current_user.id,
+            service_id=order.service_id,
+            rating=review_in.rating,
+            comment=review_in.comment
+        )
+        db.add(rev)
+        db.commit()
+        db.refresh(rev)
+
+    # Notify admin
+    admin_user = db.query(models.User).filter(models.User.role == "admin").first()
+    if admin_user:
+        db.add(models.Notification(
+            user_id=admin_user.id,
+            title="Yangi sharh va baho!",
+            message=f"{order.order_number} uchun {review_in.rating} ⭐ baho qoldirildi: '{review_in.comment[:50]}...'",
+            link="/admin?tab=reviews"
+        ))
+        db.commit()
+
+    return schemas.ReviewOut(
+        id=rev.id,
+        order_id=rev.order_id,
+        user_id=rev.user_id,
+        user_name=current_user.name,
+        service_id=rev.service_id,
+        service_title=order.service_title_snapshot,
+        rating=rev.rating,
+        comment=rev.comment,
+        created_at=rev.created_at
+    )
+
+@router.get("/{id}/review", response_model=schemas.ReviewOut)
+def get_order_review(id: int, current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+    order = db.query(models.Order).filter(models.Order.id == id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Buyurtma topilmadi")
+    rev = db.query(models.Review).filter(models.Review.order_id == id).first()
+    if not rev:
+        raise HTTPException(status_code=404, detail="Ushbu buyurtmaga sharh topilmadi")
+    return schemas.ReviewOut(
+        id=rev.id,
+        order_id=rev.order_id,
+        user_id=rev.user_id,
+        user_name=rev.user.name if rev.user else "Mijoz",
+        service_id=rev.service_id,
+        service_title=order.service_title_snapshot,
+        rating=rev.rating,
+        comment=rev.comment,
+        created_at=rev.created_at
+    )
+

@@ -70,9 +70,28 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 def get_maintenance_status():
     return {"maintenance": MAINTENANCE_MODE}
 
+from starlette.exceptions import HTTPException as StarletteHTTPException
+
+@app.exception_handler(StarletteHTTPException)
+async def custom_http_exception_handler(request: Request, exc: StarletteHTTPException):
+    if request.url.path.startswith("/api/"):
+        return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+    if exc.status_code == 404:
+        return templates.TemplateResponse(request=request, name="404.html", status_code=404)
+    if exc.status_code == 403:
+        return templates.TemplateResponse(request=request, name="403.html", status_code=403)
+    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+
+@app.exception_handler(Exception)
+async def custom_500_exception_handler(request: Request, exc: Exception):
+    if request.url.path.startswith("/api/"):
+        return JSONResponse(status_code=500, content={"detail": "Server ichki xatoligi"})
+    return templates.TemplateResponse(request=request, name="500.html", status_code=500)
+
 app.include_router(auth.router)
 app.include_router(public.router)
 app.include_router(orders.router)
 app.include_router(notifications.router)
 app.include_router(admin.router)
 app.include_router(pages.router)
+

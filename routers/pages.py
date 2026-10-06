@@ -64,6 +64,23 @@ async def service_detail_legacy(request: Request, id: int, db: Session = Depends
 async def portfolio_page(request: Request):
     return templates.TemplateResponse(request=request, name="portfolio.html")
 
+@router.get("/portfolio/{slug_or_id}", response_class=HTMLResponse)
+async def portfolio_detail_page(request: Request, slug_or_id: str, db: Session = Depends(get_db)):
+    project = None
+    if slug_or_id.isdigit():
+        project = db.query(models.PortfolioProject).filter(models.PortfolioProject.id == int(slug_or_id)).first()
+    if not project:
+        project = db.query(models.PortfolioProject).filter(models.PortfolioProject.slug == slug_or_id).first()
+    return templates.TemplateResponse(request=request, name="portfolio_detail.html", context={"project": project, "slug_or_id": slug_or_id})
+
+@router.get("/biz-haqimizda", response_class=HTMLResponse)
+async def about_page(request: Request):
+    return templates.TemplateResponse(request=request, name="about.html")
+
+@router.get("/about", response_class=HTMLResponse)
+async def about_legacy(request: Request):
+    return RedirectResponse(url="/biz-haqimizda", status_code=301)
+
 @router.get("/narxlar", response_class=HTMLResponse)
 async def pricing_page(request: Request):
     return templates.TemplateResponse(request=request, name="pricing.html")
@@ -75,6 +92,16 @@ async def faq_page(request: Request):
 @router.get("/aloqa", response_class=HTMLResponse)
 async def contact_page(request: Request):
     return templates.TemplateResponse(request=request, name="contact.html")
+
+@router.get("/yordam", response_class=HTMLResponse)
+async def support_page(request: Request, db: Session = Depends(get_db)):
+    user = get_optional_user(request, db)
+    return templates.TemplateResponse(request=request, name="support.html", context={"user": user})
+
+@router.get("/support", response_class=HTMLResponse)
+async def support_legacy(request: Request):
+    return RedirectResponse(url="/yordam", status_code=301)
+
 
 # =========================================================================
 # 2. AUTHENTICATION PAGES
@@ -115,6 +142,23 @@ async def logout_page():
     res = RedirectResponse(url="/kirish", status_code=302)
     res.delete_cookie(key="access_token", path="/")
     return res
+
+@router.get("/parolni-tiklash", response_class=HTMLResponse)
+async def forgot_password_page(request: Request):
+    return templates.TemplateResponse(request=request, name="forgot_password.html")
+
+@router.get("/forgot-password", response_class=HTMLResponse)
+async def forgot_password_legacy():
+    return RedirectResponse(url="/parolni-tiklash", status_code=301)
+
+@router.get("/yangi-parol", response_class=HTMLResponse)
+async def reset_password_page(request: Request, token: str = Query("")):
+    return templates.TemplateResponse(request=request, name="reset_password.html", context={"token": token})
+
+@router.get("/reset-password", response_class=HTMLResponse)
+async def reset_password_legacy(token: str = Query("")):
+    return RedirectResponse(url=f"/yangi-parol?token={token}" if token else "/yangi-parol", status_code=301)
+
 
 # =========================================================================
 # 3. CLIENT PORTAL PAGES
