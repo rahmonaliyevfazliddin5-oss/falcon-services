@@ -31,6 +31,11 @@ def init_db():
         except Exception:
             pass
         try:
+            conn.execute(text("ALTER TABLE users ADD COLUMN google_id VARCHAR"))
+            conn.commit()
+        except Exception:
+            pass
+        try:
             conn.execute(text("ALTER TABLE services ADD COLUMN working_link VARCHAR"))
             conn.commit()
         except Exception:

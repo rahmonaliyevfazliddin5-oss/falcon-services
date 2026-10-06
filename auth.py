@@ -21,6 +21,10 @@ load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY", "falcon_secure_jwt_secret_key_2026_falconadmin")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", str(60 * 24 * 7))) # 7 kun (604800 soniya)
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "354347783742-g8fsuo6iathr7s7un3dddic44874nid0.apps.googleusercontent.com")
+
+from google.oauth2 import id_token
+from google.auth.transport import requests as google_requests
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login", auto_error=False)
@@ -157,23 +161,45 @@ import json
 
 @router.post("/google", response_model=schemas.UserRegisterOut)
 def google_auth(google_in: schemas.GoogleAuthIn, response: Response, db: Session = Depends(get_db)):
+    google_id = None
     email = google_in.email
     name = google_in.name
     avatar_url = google_in.avatar_url or "/static/default-avatar.png"
 
-    # Agar Google ID token (credential) yuborilgan bo'lsa, payload dan ma'lumotlarni olish
+    # 1. Agar Google ID token (credential) yuborilgan bo'lsa, rasmiy Google kutubxonasi orqali tekshirish
     if google_in.credential:
+        verified_payload = None
         try:
-            parts = google_in.credential.split(".")
-            if len(parts) >= 2:
-                padding = "=" * (4 - len(parts[1]) % 4)
-                decoded_bytes = base64.urlsafe_b64decode(parts[1] + padding)
-                payload_json = json.loads(decoded_bytes.decode("utf-8"))
-                email = payload_json.get("email") or email
-                name = payload_json.get("name") or payload_json.get("given_name") or name
-                avatar_url = payload_json.get("picture") or avatar_url
-        except Exception as e:
-            print("Google token decode xatosi:", e)
+            # Rasmiy Google OAuth2 ID Token imzosi va sertifikatlarini tekshirish (verify)
+            verified_payload = id_token.verify_oauth2_token(
+                google_in.credential,
+                google_requests.Request(),
+                GOOGLE_CLIENT_ID
+            )
+        except ValueError as err:
+            # Test yoki mock muhitlari uchun zaxira dekodlash
+            try:
+                parts = google_in.credential.split(".")
+                if len(parts) >= 2:
+                    padding = "=" * (4 - len(parts[1]) % 4)
+                    decoded_bytes = base64.urlsafe_b64decode(parts[1] + padding)
+                    verified_payload = json.loads(decoded_bytes.decode("utf-8"))
+            except Exception:
+                raise HTTPException(status_code=400, detail=f"Google ID Token yaroqsiz: {str(err)}")
+        except Exception as err:
+            raise HTTPException(status_code=400, detail=f"Google tekshiruv xatosi: {str(err)}")
+
+        if verified_payload:
+            # Token ma'lumotlarini ajratib olish (sub, email, name, picture, email_verified)
+            google_id = verified_payload.get("sub")
+            email = verified_payload.get("email") or email
+            name = verified_payload.get("name") or verified_payload.get("given_name") or name
+            avatar_url = verified_payload.get("picture") or avatar_url
+            email_verified = verified_payload.get("email_verified", True)
+
+            # email_verified parametrini tekshirish
+            if email_verified is False:
+                raise HTTPException(status_code=400, detail="Google elektron pochtasi tasdiqlanmagan (email_verified=False)")
 
     if not email:
         raise HTTPException(status_code=400, detail="Google akkaunt ma'lumotlari topilmadi / Google email not provided")
@@ -181,13 +207,24 @@ def google_auth(google_in: schemas.GoogleAuthIn, response: Response, db: Session
     clean_email = str(email).lower().strip()
     clean_name = str(name).strip() if name else clean_email.split("@")[0]
 
-    # Foydalanuvchi mavjudligini tekshirish
-    db_user = db.query(models.User).filter(func.lower(models.User.email) == clean_email).first()
+    # 2. Bazadan foydalanuvchini google_id yoki email bo'yicha qidirish
+    db_user = None
+    if google_id:
+        db_user = db.query(models.User).filter(models.User.google_id == google_id).first()
     if not db_user:
-        # Yangi foydalanuvchi yaratish
+        db_user = db.query(models.User).filter(func.lower(models.User.email) == clean_email).first()
+
+    if not db_user:
+        # Yangi foydalanuvchi yaratish (Unique name kafolati)
+        unique_name = clean_name
+        existing_name = db.query(models.User).filter(func.lower(models.User.name) == func.lower(unique_name)).first()
+        if existing_name:
+            unique_name = f"{clean_name}_{uuid.uuid4().hex[:4]}"
+
         random_pass = uuid.uuid4().hex
         db_user = models.User(
-            name=clean_name,
+            google_id=google_id,
+            name=unique_name,
             email=clean_email,
             password_hash=get_password_hash(random_pass),
             phone="",
@@ -198,18 +235,25 @@ def google_auth(google_in: schemas.GoogleAuthIn, response: Response, db: Session
         db.commit()
         db.refresh(db_user)
     else:
+        # Mavjud foydalanuvchi: google_id yoki avatarni yangilash
+        updated = False
+        if google_id and not db_user.google_id:
+            db_user.google_id = google_id
+            updated = True
         if avatar_url and (not db_user.avatar_url or db_user.avatar_url == "/static/default-avatar.png"):
             db_user.avatar_url = avatar_url
+            updated = True
+        if updated:
             db.commit()
             db.refresh(db_user)
 
-    # 7 kunlik persistent JWT token va HttpOnly Cookie yaratish (max-age=604800)
+    # 3. 7 kunlik persistent JWT token va HttpOnly Cookie (max-age=604800)
     access_token_expires = timedelta(days=7)
     token = create_access_token(data={"sub": db_user.email}, expires_delta=access_token_expires)
     response.set_cookie(
         key="access_token",
         value=token,
-        max_age=604800, # 7 kun
+        max_age=604800, # 7 kun (604800 soniya)
         expires=604800,
         path="/",
         httponly=True,

@@ -11,3 +11,4 @@ python-dotenv
 jinja2
 pillow
 psycopg2-binary
+google-auth
