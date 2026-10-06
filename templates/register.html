@@ -189,7 +189,7 @@
         modal.classList.remove('flex');
     }
 
-    const GOOGLE_CLIENT_ID = "{{ google_client_id | default('') }}";
+    const GOOGLE_CLIENT_ID = "{{ google_client_id | default('') }}" || "354347783742-g8fsuo6iathr7s7un3dddic44874nid0.apps.googleusercontent.com";
 
     function initGoogleGsi() {
         if (!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID === 'your_google_client_id_here') return;
