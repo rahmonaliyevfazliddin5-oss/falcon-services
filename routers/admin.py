@@ -13,6 +13,13 @@ from auth import get_current_admin
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 
+import re
+import json
+
+def generate_slug(text: str) -> str:
+    cleaned = re.sub(r'[^a-z0-9]+', '-', text.lower()).strip('-')
+    return cleaned or "xizmat"
+
 # --- Services Management ---
 @router.get("/services", response_model=list[schemas.ServiceOut])
 def admin_get_services(db: Session = Depends(get_db), current_admin: models.User = Depends(get_current_admin)):
@@ -21,10 +28,29 @@ def admin_get_services(db: Session = Depends(get_db), current_admin: models.User
 @router.post("/services", response_model=schemas.ServiceOut)
 def admin_create_service(service_in: schemas.ServiceCreate, db: Session = Depends(get_db), current_admin: models.User = Depends(get_current_admin)):
     data = service_in.model_dump() if hasattr(service_in, "model_dump") else service_in.dict()
+    if not data.get("slug"):
+        base_slug = generate_slug(data.get("title", "xizmat"))
+        slug = base_slug
+        count = 1
+        while db.query(models.Service).filter(models.Service.slug == slug).first():
+            slug = f"{base_slug}-{count}"
+            count += 1
+        data["slug"] = slug
+
     service = models.Service(**data)
     db.add(service)
     db.commit()
     db.refresh(service)
+
+    db.add(models.ActivityLog(
+        admin_id=current_admin.id,
+        action="Yangi xizmat yaratildi",
+        entity="Service",
+        entity_id=service.id,
+        metadata_json=json.dumps({"title": service.title, "price": service.price})
+    ))
+    db.commit()
+
     return service
 
 @router.put("/services/{id}", response_model=schemas.ServiceOut)
@@ -34,11 +60,24 @@ def admin_update_service(id: int, service_in: schemas.ServiceUpdate, db: Session
         raise HTTPException(status_code=404, detail="Xizmat topilmadi")
     
     update_data = service_in.model_dump(exclude_unset=True) if hasattr(service_in, "model_dump") else service_in.dict(exclude_unset=True)
+    if "title" in update_data and not update_data.get("slug"):
+        update_data["slug"] = generate_slug(update_data["title"])
+
     for k, v in update_data.items():
         setattr(service, k, v)
     
     db.commit()
     db.refresh(service)
+
+    db.add(models.ActivityLog(
+        admin_id=current_admin.id,
+        action="Xizmat tahrirlandi",
+        entity="Service",
+        entity_id=service.id,
+        metadata_json=json.dumps({"title": service.title, "price": service.price})
+    ))
+    db.commit()
+
     return service
 
 @router.patch("/services/{id}/archive", response_model=schemas.ServiceOut)
@@ -49,6 +88,16 @@ def admin_archive_service(id: int, is_archived: bool = Query(...), db: Session =
     service.is_archived = is_archived
     db.commit()
     db.refresh(service)
+
+    db.add(models.ActivityLog(
+        admin_id=current_admin.id,
+        action="Xizmat arxivlandi" if is_archived else "Xizmat faollashtirildi",
+        entity="Service",
+        entity_id=service.id,
+        metadata_json=json.dumps({"is_archived": is_archived})
+    ))
+    db.commit()
+
     return service
 
 # --- Categories Management ---
@@ -238,3 +287,117 @@ def export_orders_csv(
         media_type="text/csv", 
         headers={"Content-Disposition": "attachment; filename=orders.csv"}
     )
+
+# --- Activity Log ---
+@router.get("/activity-log", response_model=list[schemas.ActivityLogOut])
+def admin_get_activity_log(
+    limit: int = 50, 
+    db: Session = Depends(get_db), 
+    current_admin: models.User = Depends(get_current_admin)
+):
+    logs = db.query(models.ActivityLog).order_by(desc(models.ActivityLog.created_at)).limit(limit).all()
+    res = []
+    for l in logs:
+        admin_user = db.query(models.User).filter(models.User.id == l.admin_id).first() if l.admin_id else None
+        res.append({
+            "id": l.id,
+            "admin_id": l.admin_id,
+            "admin_name": admin_user.name if admin_user else "Tizim",
+            "action": l.action,
+            "entity": l.entity,
+            "entity_id": l.entity_id,
+            "metadata_json": l.metadata_json,
+            "created_at": l.created_at
+        })
+    return res
+
+# --- Settings ---
+@router.get("/settings", response_model=list[schemas.SettingOut])
+def admin_get_settings(
+    db: Session = Depends(get_db), 
+    current_admin: models.User = Depends(get_current_admin)
+):
+    return db.query(models.Setting).all()
+
+@router.put("/settings")
+def admin_update_setting(
+    payload: schemas.SettingUpdate, 
+    db: Session = Depends(get_db), 
+    current_admin: models.User = Depends(get_current_admin)
+):
+    setting = db.query(models.Setting).filter(models.Setting.key == payload.key).first()
+    if not setting:
+        setting = models.Setting(key=payload.key, value=payload.value)
+        db.add(setting)
+    else:
+        setting.value = payload.value
+    db.commit()
+
+    db.add(models.ActivityLog(
+        admin_id=current_admin.id,
+        action=f"Sozlama o'zgartirildi: {payload.key}",
+        entity="Setting",
+        entity_id=setting.id,
+        metadata_json=json.dumps({"key": payload.key, "value": payload.value})
+    ))
+    db.commit()
+
+    return {"detail": "Sozlama yangilandi", "key": payload.key, "value": payload.value}
+
+# --- User Detail with Orders ---
+@router.get("/users/{id}", response_model=schemas.UserDetailAdminOut)
+def admin_get_user_detail(
+    id: int, 
+    db: Session = Depends(get_db), 
+    current_admin: models.User = Depends(get_current_admin)
+):
+    user = db.query(models.User).filter(models.User.id == id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Foydalanuvchi topilmadi")
+    orders = db.query(models.Order).filter(models.Order.user_id == id).order_by(desc(models.Order.created_at)).all()
+    return {
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
+        "phone": user.phone,
+        "role": user.role,
+        "created_at": user.created_at,
+        "orders_count": len(orders),
+        "orders": orders
+    }
+
+# --- Reports ---
+@router.get("/reports")
+def admin_get_reports(
+    start_date: date = None,
+    end_date: date = None,
+    db: Session = Depends(get_db),
+    current_admin: models.User = Depends(get_current_admin)
+):
+    query = db.query(models.Order)
+    if start_date:
+        query = query.filter(models.Order.created_at >= start_date)
+    if end_date:
+        query = query.filter(models.Order.created_at <= end_date)
+
+    orders = query.all()
+    total_count = len(orders)
+    completed_count = sum(1 for o in orders if o.status == "Yakunlandi")
+    total_revenue = sum(o.price_snapshot for o in orders if o.status == "Yakunlandi")
+    potential_revenue = sum(o.price_snapshot for o in orders if o.status != "Bekor qilindi")
+    cancelled_count = sum(1 for o in orders if o.status == "Bekor qilindi")
+
+    status_counts = {}
+    for o in orders:
+        status_counts[o.status] = status_counts.get(o.status, 0) + 1
+
+    return {
+        "total_orders": total_count,
+        "completed_orders": completed_count,
+        "cancelled_orders": cancelled_count,
+        "total_revenue": total_revenue,
+        "potential_revenue": potential_revenue,
+        "status_counts": status_counts,
+        "start_date": str(start_date) if start_date else None,
+        "end_date": str(end_date) if end_date else None
+    }

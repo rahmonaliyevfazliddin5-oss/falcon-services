@@ -1,0 +1,438 @@
+{% extends "base.html" %}
+
+{% block title %}Buyurtma berish | Falcon Services{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+    <!-- Wizard Header -->
+    <div class="text-center mb-8">
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white">Xizmat buyurtma qilish</h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Loyihangiz tafsilotlarini kiriting va 5 bosqichda rasmiylashtiring</p>
+    </div>
+
+    <!-- Stepper Navigation -->
+    <div class="mb-10">
+        <div class="flex items-center justify-between relative">
+            <div class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-gray-200 dark:bg-slate-700 w-full z-0"></div>
+            <div id="stepProgressBar" class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-blue-600 w-0 transition-all duration-300 z-0"></div>
+
+            <!-- Step 1 -->
+            <div class="step-indicator relative z-10 flex flex-col items-center cursor-pointer" onclick="goToStep(1)">
+                <div class="step-circle w-10 h-10 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-sm shadow-md transition">1</div>
+                <span class="text-xs font-semibold text-gray-700 dark:text-gray-300 mt-2 hidden sm:block">Xizmat</span>
+            </div>
+            <!-- Step 2 -->
+            <div class="step-indicator relative z-10 flex flex-col items-center cursor-pointer" onclick="goToStep(2)">
+                <div class="step-circle w-10 h-10 rounded-full bg-gray-200 dark:bg-slate-700 text-gray-500 font-bold flex items-center justify-center text-sm transition">2</div>
+                <span class="text-xs font-semibold text-gray-400 mt-2 hidden sm:block">Loyiha</span>
+            </div>
+            <!-- Step 3 -->
+            <div class="step-indicator relative z-10 flex flex-col items-center cursor-pointer" onclick="goToStep(3)">
+                <div class="step-circle w-10 h-10 rounded-full bg-gray-200 dark:bg-slate-700 text-gray-500 font-bold flex items-center justify-center text-sm transition">3</div>
+                <span class="text-xs font-semibold text-gray-400 mt-2 hidden sm:block">Topshiriq</span>
+            </div>
+            <!-- Step 4 -->
+            <div class="step-indicator relative z-10 flex flex-col items-center cursor-pointer" onclick="goToStep(4)">
+                <div class="step-circle w-10 h-10 rounded-full bg-gray-200 dark:bg-slate-700 text-gray-500 font-bold flex items-center justify-center text-sm transition">4</div>
+                <span class="text-xs font-semibold text-gray-400 mt-2 hidden sm:block">Muddat</span>
+            </div>
+            <!-- Step 5 -->
+            <div class="step-indicator relative z-10 flex flex-col items-center cursor-pointer" onclick="goToStep(5)">
+                <div class="step-circle w-10 h-10 rounded-full bg-gray-200 dark:bg-slate-700 text-gray-500 font-bold flex items-center justify-center text-sm transition">5</div>
+                <span class="text-xs font-semibold text-gray-400 mt-2 hidden sm:block">Tasdiqlash</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wizard Card Form -->
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 p-6 sm:p-8">
+        
+        <!-- STEP 1: Xizmat tanlash -->
+        <div id="step1" class="wizard-step space-y-6">
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white border-b border-gray-100 dark:border-slate-700 pb-3">1-bosqich: Tanlangan xizmat</h2>
+            
+            <div id="serviceSummaryBox" class="bg-blue-50/50 dark:bg-slate-700/50 rounded-2xl p-6 border border-blue-100 dark:border-slate-600 flex flex-col sm:flex-row items-center gap-6">
+                <img id="wizardServiceImage" src="/static/placeholder.jpg" alt="Service" class="w-32 h-24 object-cover rounded-xl shadow-sm">
+                <div class="space-y-1.5 flex-1 text-center sm:text-left">
+                    <span id="wizardServiceCategory" class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Kategoriya</span>
+                    <h3 id="wizardServiceTitle" class="text-xl font-extrabold text-gray-900 dark:text-white">Xizmat nomi yuklanmoqda...</h3>
+                    <p id="wizardServiceDesc" class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2"></p>
+                    <div class="flex items-center justify-center sm:justify-start gap-4 pt-2">
+                        <span class="text-sm font-semibold text-gray-500">Narxi: <strong id="wizardServicePrice" class="text-blue-600 dark:text-blue-400 text-lg font-extrabold">0 UZS</strong></span>
+                        <span class="text-sm font-semibold text-gray-500">Muddati: <strong id="wizardServiceDuration" class="text-gray-900 dark:text-white font-bold">0 kun</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end pt-4">
+                <button type="button" onclick="nextStep()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow transition">
+                    Davom etish &rarr;
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 2: Loyiha nomi -->
+        <div id="step2" class="wizard-step hidden space-y-6">
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white border-b border-gray-100 dark:border-slate-700 pb-3">2-bosqich: Loyiha haqida ma'lumot</h2>
+            
+            <div>
+                <label for="projectNameInput" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Loyiha nomi / Sarlavhasi <span class="text-red-500">*</span></label>
+                <input type="text" id="projectNameInput" required placeholder="Masalan: Falcon Onlayn Do'kon loyihasi" class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                <p class="text-xs text-gray-400 mt-1.5">Loyiha uchun qisqa va tushunarli nom bering.</p>
+            </div>
+
+            <div class="flex justify-between pt-4">
+                <button type="button" onclick="prevStep()" class="px-5 py-2.5 rounded-xl font-semibold text-sm text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 transition">
+                    &larr; Ortga
+                </button>
+                <button type="button" onclick="validateStep2() && nextStep()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow transition">
+                    Davom etish &rarr;
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 3: Texnik topshiriq (Validation: >= 50 characters) -->
+        <div id="step3" class="wizard-step hidden space-y-6">
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white border-b border-gray-100 dark:border-slate-700 pb-3">3-bosqich: Texnik topshiriq</h2>
+            
+            <div>
+                <div class="flex items-center justify-between mb-2">
+                    <label for="technicalTaskInput" class="block text-xs font-bold text-gray-500 uppercase tracking-wider">
+                        Batafsil talablar va texnik topshiriq <span class="text-red-500">*</span>
+                    </label>
+                    <span id="charCounter" class="text-xs font-bold text-red-500">0 / 50 ta belgi</span>
+                </div>
+                <textarea id="technicalTaskInput" rows="6" oninput="updateCharCount()" placeholder="Loyihangiz qanday vazifalarni bajarishi kerak, qanday sahifalar va funksiyalar kerakligini batafsil yozing (kamida 50 ta belgi)..." class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-4 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
+                <div class="flex items-center gap-2 mt-2">
+                    <div class="w-full bg-gray-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                        <div id="charProgressBar" class="bg-red-500 h-full w-0 transition-all duration-200"></div>
+                    </div>
+                </div>
+                <p id="charHint" class="text-xs text-red-500 mt-1">Texnik topshiriq kamida 50 ta belgidan iborat bo‘lishi shart.</p>
+            </div>
+
+            <div class="flex justify-between pt-4">
+                <button type="button" onclick="prevStep()" class="px-5 py-2.5 rounded-xl font-semibold text-sm text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 transition">
+                    &larr; Ortga
+                </button>
+                <button type="button" onclick="validateStep3() && nextStep()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow transition">
+                    Davom etish &rarr;
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 4: Muddat va Bog'lanish -->
+        <div id="step4" class="wizard-step hidden space-y-6">
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white border-b border-gray-100 dark:border-slate-700 pb-3">4-bosqich: Muddat va bog'lanish</h2>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                    <label for="desiredDeadlineInput" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Kutilayotgan topshirish muddati <span class="text-red-500">*</span></label>
+                    <input type="date" id="desiredDeadlineInput" required class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <p class="text-xs text-gray-400 mt-1.5" id="minDeadlineNotice">Minimal muddat: bugundan boshlab hisoblanadi.</p>
+                </div>
+                <div>
+                    <label for="contactPhoneInput" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Bog'lanish uchun telefon raqam <span class="text-red-500">*</span></label>
+                    <input type="tel" id="contactPhoneInput" required placeholder="+998 90 123 45 67" class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <p class="text-xs text-gray-400 mt-1.5">Menejerimiz siz bilan bog'lanishi uchun.</p>
+                </div>
+            </div>
+
+            <div class="flex justify-between pt-4">
+                <button type="button" onclick="prevStep()" class="px-5 py-2.5 rounded-xl font-semibold text-sm text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 transition">
+                    &larr; Ortga
+                </button>
+                <button type="button" onclick="validateStep4() && nextStep()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow transition">
+                    Davom etish &rarr;
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 5: Yakuniy tasdiqlash -->
+        <div id="step5" class="wizard-step hidden space-y-6">
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white border-b border-gray-100 dark:border-slate-700 pb-3">5-bosqich: Yakuniy ko'rib chiqish va tasdiqlash</h2>
+            
+            <div class="bg-gray-50 dark:bg-slate-700/40 rounded-2xl p-6 border border-gray-200 dark:border-slate-700 space-y-4">
+                <div class="flex justify-between items-center pb-3 border-b border-gray-200 dark:border-slate-600">
+                    <span class="text-xs font-bold uppercase text-gray-500">Tanlangan xizmat</span>
+                    <span class="font-bold text-gray-900 dark:text-white" id="reviewServiceTitle">-</span>
+                </div>
+                <div class="flex justify-between items-center pb-3 border-b border-gray-200 dark:border-slate-600">
+                    <span class="text-xs font-bold uppercase text-gray-500">Loyiha nomi</span>
+                    <span class="font-bold text-gray-900 dark:text-white" id="reviewProjectName">-</span>
+                </div>
+                <div class="flex justify-between items-center pb-3 border-b border-gray-200 dark:border-slate-600">
+                    <span class="text-xs font-bold uppercase text-gray-500">Narxi</span>
+                    <span class="font-extrabold text-blue-600 dark:text-blue-400 text-lg" id="reviewPrice">-</span>
+                </div>
+                <div class="flex justify-between items-center pb-3 border-b border-gray-200 dark:border-slate-600">
+                    <span class="text-xs font-bold uppercase text-gray-500">Topshirish muddati</span>
+                    <span class="font-bold text-gray-900 dark:text-white" id="reviewDeadline">-</span>
+                </div>
+                <div class="flex justify-between items-center pb-3 border-b border-gray-200 dark:border-slate-600">
+                    <span class="text-xs font-bold uppercase text-gray-500">Telefon raqam</span>
+                    <span class="font-bold text-gray-900 dark:text-white" id="reviewPhone">-</span>
+                </div>
+                <div>
+                    <span class="text-xs font-bold uppercase text-gray-500 block mb-1">Texnik topshiriq:</span>
+                    <p class="text-xs text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-800 p-3 rounded-xl border border-gray-200 dark:border-slate-600 whitespace-pre-wrap" id="reviewTT">-</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3 pt-2">
+                <input type="checkbox" id="termsAgree" required class="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
+                <label for="termsAgree" class="text-xs text-gray-600 dark:text-gray-300 cursor-pointer">
+                    Xizmat ko'rsatish shartlariga va loyiha topshiriqlariga roziman.
+                </label>
+            </div>
+
+            <div class="flex justify-between pt-4">
+                <button type="button" onclick="prevStep()" class="px-5 py-2.5 rounded-xl font-semibold text-sm text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 transition">
+                    &larr; Ortga
+                </button>
+                <button type="button" id="submitOrderBtn" onclick="submitFinalOrder()" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold text-sm shadow-md transition">
+                    Buyurtmani tasdiqlash va yuborish
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const serviceIdentifier = "{{ service_identifier }}";
+    let loadedService = null;
+    let currentStep = 1;
+
+    async function loadServiceData() {
+        try {
+            const res = await fetch(`${API_URL}/services/${serviceIdentifier}`);
+            if (!res.ok) {
+                showToast("Xizmat ma'lumotlari topilmadi", "error");
+                setTimeout(() => window.location.href = '/xizmatlar', 1500);
+                return;
+            }
+            loadedService = await res.json();
+            
+            document.getElementById('wizardServiceImage').src = loadedService.image_url || '/static/placeholder.jpg';
+            document.getElementById('wizardServiceCategory').innerText = loadedService.category ? loadedService.category.name : 'Xizmat';
+            document.getElementById('wizardServiceTitle').innerText = loadedService.title;
+            document.getElementById('wizardServiceDesc').innerText = loadedService.short_description || loadedService.description;
+            document.getElementById('wizardServicePrice').innerText = loadedService.price.toLocaleString() + ' UZS';
+            document.getElementById('wizardServiceDuration').innerText = loadedService.delivery_days + ' kun';
+
+            // Set minimum deadline date
+            const today = new Date();
+            today.setDate(today.getDate() + (loadedService.delivery_days || 1));
+            const minStr = today.toISOString().split('T')[0];
+            const deadlineInput = document.getElementById('desiredDeadlineInput');
+            deadlineInput.min = minStr;
+            deadlineInput.value = minStr;
+            document.getElementById('minDeadlineNotice').innerText = `Minimal muddat: ${minStr} (${loadedService.delivery_days} ish kuni)`;
+
+            // Pre-fill user phone if available
+            try {
+                const userRes = await fetchWithAuth(`${API_URL}/auth/me`);
+                if (userRes.ok) {
+                    const u = await userRes.json();
+                    if (u.phone) document.getElementById('contactPhoneInput').value = u.phone;
+                }
+            } catch(e) {}
+
+        } catch(e) {
+            console.error(e);
+            showToast("Xatolik yuz berdi", "error");
+        }
+    }
+
+    function updateStepUI() {
+        // Hide all steps
+        for (let i = 1; i <= 5; i++) {
+            const s = document.getElementById(`step${i}`);
+            if (s) s.classList.toggle('hidden', i !== currentStep);
+        }
+
+        // Stepper dots & bar
+        const indicators = document.querySelectorAll('.step-indicator');
+        indicators.forEach((ind, idx) => {
+            const circle = ind.querySelector('.step-circle');
+            const stepNum = idx + 1;
+            if (stepNum < currentStep) {
+                circle.className = "step-circle w-10 h-10 rounded-full bg-green-500 text-white font-bold flex items-center justify-center text-sm shadow-md transition";
+                circle.innerHTML = "✓";
+            } else if (stepNum === currentStep) {
+                circle.className = "step-circle w-10 h-10 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-sm shadow-md transition";
+                circle.innerHTML = stepNum;
+            } else {
+                circle.className = "step-circle w-10 h-10 rounded-full bg-gray-200 dark:bg-slate-700 text-gray-500 font-bold flex items-center justify-center text-sm transition";
+                circle.innerHTML = stepNum;
+            }
+        });
+
+        const progressPercent = ((currentStep - 1) / 4) * 100;
+        document.getElementById('stepProgressBar').style.width = `${progressPercent}%`;
+
+        // Populate step 5 review
+        if (currentStep === 5 && loadedService) {
+            document.getElementById('reviewServiceTitle').innerText = loadedService.title;
+            document.getElementById('reviewProjectName').innerText = document.getElementById('projectNameInput').value;
+            document.getElementById('reviewPrice').innerText = loadedService.price.toLocaleString() + ' UZS';
+            document.getElementById('reviewDeadline').innerText = document.getElementById('desiredDeadlineInput').value;
+            document.getElementById('reviewPhone').innerText = document.getElementById('contactPhoneInput').value;
+            document.getElementById('reviewTT').innerText = document.getElementById('technicalTaskInput').value;
+        }
+    }
+
+    function goToStep(s) {
+        if (s < currentStep) {
+            currentStep = s;
+            updateStepUI();
+        } else if (s === 2 && validateStep1()) {
+            currentStep = 2;
+            updateStepUI();
+        } else if (s === 3 && validateStep1() && validateStep2()) {
+            currentStep = 3;
+            updateStepUI();
+        } else if (s === 4 && validateStep1() && validateStep2() && validateStep3()) {
+            currentStep = 4;
+            updateStepUI();
+        } else if (s === 5 && validateStep1() && validateStep2() && validateStep3() && validateStep4()) {
+            currentStep = 5;
+            updateStepUI();
+        }
+    }
+
+    function nextStep() {
+        if (currentStep === 1 && !validateStep1()) return;
+        if (currentStep === 2 && !validateStep2()) return;
+        if (currentStep === 3 && !validateStep3()) return;
+        if (currentStep === 4 && !validateStep4()) return;
+
+        if (currentStep < 5) {
+            currentStep++;
+            updateStepUI();
+        }
+    }
+
+    function prevStep() {
+        if (currentStep > 1) {
+            currentStep--;
+            updateStepUI();
+        }
+    }
+
+    function validateStep1() {
+        return !!loadedService;
+    }
+
+    function validateStep2() {
+        const val = document.getElementById('projectNameInput').value.trim();
+        if (!val) {
+            showToast("Iltimos, loyiha nomini kiriting", "warning");
+            return false;
+        }
+        return true;
+    }
+
+    function updateCharCount() {
+        const val = document.getElementById('technicalTaskInput').value;
+        const noSpaces = val.replace(/\s/g, '');
+        const count = noSpaces.length;
+
+        const counter = document.getElementById('charCounter');
+        const bar = document.getElementById('charProgressBar');
+        const hint = document.getElementById('charHint');
+
+        counter.innerText = `${count} / 50 ta belgi`;
+        const pct = Math.min(100, (count / 50) * 100);
+        bar.style.width = `${pct}%`;
+
+        if (count >= 50) {
+            counter.className = "text-xs font-bold text-green-600 dark:text-green-400";
+            bar.className = "bg-green-500 h-full transition-all duration-200";
+            hint.className = "text-xs text-green-600 dark:text-green-400 mt-1";
+            hint.innerText = "✓ Yetarli belgi kiritildi.";
+        } else {
+            counter.className = "text-xs font-bold text-red-500";
+            bar.className = "bg-red-500 h-full transition-all duration-200";
+            hint.className = "text-xs text-red-500 mt-1";
+            hint.innerText = `Kamida yana ${50 - count} ta belgi kiritishingiz kerak.`;
+        }
+    }
+
+    function validateStep3() {
+        const val = document.getElementById('technicalTaskInput').value;
+        const count = val.replace(/\s/g, '').length;
+        if (count < 50) {
+            showToast("Texnik topshiriq kamida 50 ta belgidan iborat bo‘lishi kerak", "warning");
+            return false;
+        }
+        return true;
+    }
+
+    function validateStep4() {
+        const deadline = document.getElementById('desiredDeadlineInput').value;
+        const phone = document.getElementById('contactPhoneInput').value.trim();
+
+        if (!deadline) {
+            showToast("Iltimos, topshirish muddatini tanlang", "warning");
+            return false;
+        }
+        if (!phone) {
+            showToast("Iltimos, bog'lanish telefon raqamini kiriting", "warning");
+            return false;
+        }
+        return true;
+    }
+
+    async function submitFinalOrder() {
+        const agree = document.getElementById('termsAgree').checked;
+        if (!agree) {
+            showToast("Iltimos, xizmat shartlariga rozilik bildiring", "warning");
+            return;
+        }
+
+        const btn = document.getElementById('submitOrderBtn');
+        setButtonLoading(btn, "Buyurtma yuborilmoqda...");
+
+        const payload = {
+            service_id: loadedService.id,
+            project_name: document.getElementById('projectNameInput').value.trim(),
+            technical_task: document.getElementById('technicalTaskInput').value.trim(),
+            desired_deadline: document.getElementById('desiredDeadlineInput').value,
+            contact_phone: document.getElementById('contactPhoneInput').value.trim()
+        };
+
+        try {
+            const res = await fetchWithAuth(`${API_URL}/orders`, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                const order = await res.json();
+                setButtonSuccess(btn, "Buyurtma qabul qilindi!");
+                showToast("Buyurtma muvaffaqiyatli yaratildi!", "success");
+                setTimeout(() => {
+                    window.location.href = `/buyurtma/muvaffaqiyat?order_number=${order.order_number}`;
+                }, 800);
+            } else {
+                const err = await res.json();
+                setButtonError(btn, err.detail || "Xatolik yuz berdi");
+                showToast(err.detail || "Buyurtma yaratishda xatolik yuz berdi", "error");
+            }
+        } catch(e) {
+            setButtonError(btn, "Tarmoq xatosi");
+            showToast("Tarmoq xatosi", "error");
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadServiceData();
+        updateStepUI();
+    });
+</script>
+{% endblock %}

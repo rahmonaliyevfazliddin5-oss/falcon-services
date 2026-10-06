@@ -429,3 +429,150 @@ def test_persistent_cookie_and_logout(db_session):
     # Logout chaqirish
     logout_res = client.post("/api/auth/logout")
     assert logout_res.status_code == 200
+
+# Test 14: Slug bo'yicha xizmatni olish
+def test_service_slug_retrieval(db_session):
+    srv = db_session.query(models.Service).first()
+    srv.slug = "test-xizmat-slug"
+    db_session.commit()
+
+    # ID bo'yicha olish
+    res_id = client.get(f"/api/services/{srv.id}")
+    assert res_id.status_code == 200
+    assert res_id.json()["id"] == srv.id
+
+    # Slug bo'yicha olish
+    res_slug = client.get(f"/api/services/{srv.slug}")
+    assert res_slug.status_code == 200
+    assert res_slug.json()["title"] == srv.title
+
+# Test 15: Bildirishnomalar (Notifications) API
+def test_notifications_flow(db_session):
+    user = db_session.query(models.User).filter(models.User.email == "m1@falcon.uz").first()
+    login_res = client.post("/api/auth/login", data={"username": "m1@falcon.uz", "password": "mijoz123"})
+    token = login_res.json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    # Yangi bildirishnoma qo'shamiz
+    notif = models.Notification(
+        user_id=user.id,
+        title="Test xabarnoma",
+        message="Sizning buyurtmangiz qabul qilindi",
+        link="/dashboard",
+        is_read=False
+    )
+    db_session.add(notif)
+    db_session.commit()
+
+    # Unread count
+    count_res = client.get("/api/notifications/unread-count", headers=headers)
+    assert count_res.status_code == 200
+    assert count_res.json()["unread_count"] >= 1
+
+    # Get notifications list
+    list_res = client.get("/api/notifications", headers=headers)
+    assert list_res.status_code == 200
+    assert len(list_res.json()) >= 1
+
+    # Mark as read
+    patch_res = client.patch(f"/api/notifications/{notif.id}/read", headers=headers)
+    assert patch_res.status_code == 200
+    assert patch_res.json()["is_read"] is True
+
+    # Mark all read
+    all_res = client.patch("/api/notifications/read-all", headers=headers)
+    assert all_res.status_code == 200
+
+# Test 16: Texnik topshiriq 50 belgi va Bekor qilish sababi
+def test_tt_length_and_cancel_reason(db_session):
+    srv = db_session.query(models.Service).first()
+    srv.is_archived = False
+    db_session.commit()
+    user = db_session.query(models.User).filter(models.User.email == "m1@falcon.uz").first()
+    token = client.post("/api/auth/login", data={"username": "m1@falcon.uz", "password": "mijoz123"}).json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    # 1. 50 belgidan kam topshiriq xatolik berishi kerak
+    short_tt_payload = {
+        "service_id": srv.id,
+        "project_name": "Test Qisqa TT",
+        "technical_task": "Bu juda qisqa matn",
+        "desired_deadline": str(date.today() + timedelta(days=srv.delivery_days + 1)),
+        "contact_phone": "+998901234567"
+    }
+    short_res = client.post("/api/orders", json=short_tt_payload, headers=headers)
+    assert short_res.status_code == 400
+    assert "kamida 50 ta" in short_res.json()["detail"]
+
+    # 2. To'g'ri topshiriq bilan yaratish
+    valid_tt_payload = {
+        "service_id": srv.id,
+        "project_name": "Test Valid TT",
+        "technical_task": "Ushbu loyiha uchun to'liq texnik topshiriq matni kamida ellikta belgidan oshiq bo'lishi kerak.",
+        "desired_deadline": str(date.today() + timedelta(days=srv.delivery_days + 2)),
+        "contact_phone": "+998901234567"
+    }
+    create_res = client.post("/api/orders", json=valid_tt_payload, headers=headers)
+    assert create_res.status_code == 200
+    created_order = create_res.json()
+
+    # 3. Bekor qilish sababi bilan bekor qilish
+    cancel_res = client.patch(
+        f"/api/orders/{created_order['id']}/status",
+        json={"status": "Bekor qilindi", "note": "Rejalar o'zgardi va loyiha to'xtatildi"},
+        headers=headers
+    )
+    assert cancel_res.status_code == 200
+    assert cancel_res.json()["status"] == "Bekor qilindi"
+    assert cancel_res.json()["cancel_reason"] == "Rejalar o'zgardi va loyiha to'xtatildi"
+
+# Test 17: Admin Activity Log, Settings, Reports, User Detail
+def test_admin_new_features(db_session):
+    admin_token = client.post("/api/auth/login", data={"username": "admin_test@falcon.uz", "password": "admin123"}).json()["access_token"]
+    headers = {"Authorization": f"Bearer {admin_token}"}
+
+    # 1. Activity log
+    act_res = client.get("/api/admin/activity-log", headers=headers)
+    assert act_res.status_code == 200
+    assert isinstance(act_res.json(), list)
+
+    # 2. Settings update
+    set_res = client.put("/api/admin/settings", json={"key": "site_name", "value": "Falcon Pro Platform"}, headers=headers)
+    assert set_res.status_code == 200
+    assert set_res.json()["value"] == "Falcon Pro Platform"
+
+    get_set = client.get("/api/admin/settings", headers=headers)
+    assert get_set.status_code == 200
+    assert any(s["key"] == "site_name" for s in get_set.json())
+
+    # 3. Reports
+    rep_res = client.get("/api/admin/reports", headers=headers)
+    assert rep_res.status_code == 200
+    rep_data = rep_res.json()
+    assert "total_orders" in rep_data
+    assert "completed_orders" in rep_data
+
+    # 4. User detail with orders
+    user = db_session.query(models.User).filter(models.User.email == "m1@falcon.uz").first()
+    user_detail_res = client.get(f"/api/admin/users/{user.id}", headers=headers)
+    assert user_detail_res.status_code == 200
+    ud_data = user_detail_res.json()
+    assert ud_data["id"] == user.id
+    assert "orders" in ud_data
+
+# Test 18: Sahifalar (Pages) marshrutlari yuklanishi
+def test_page_routes():
+    pages = [
+        "/",
+        "/xizmatlar",
+        "/portfolio",
+        "/narxlar",
+        "/faq",
+        "/aloqa",
+        "/kirish",
+        "/royxatdan-otish",
+        "/buyurtma/muvaffaqiyat"
+    ]
+    for p in pages:
+        res = client.get(p)
+        assert res.status_code == 200

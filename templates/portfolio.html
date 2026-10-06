@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Portfolio | Falcon Services{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Header -->
+    <div class="text-center max-w-3xl mx-auto mb-12">
+        <span class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 py-1 rounded-full">Bizning ishlarimiz</span>
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white mt-3">Muvaffaqiyatli amalga oshirilgan loyihalar</h1>
+        <p class="text-sm sm:text-base text-gray-500 dark:text-gray-400 mt-2">Falcon Services jamoasi tomonidan mijozlarimiz uchun tayyorlangan so'nggi zamonaviy veb-saytlar va tizimlar.</p>
+    </div>
+
+    <!-- Portfolio Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Project 1 -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-slate-700 hover:shadow-xl transition group">
+            <div class="h-56 bg-gray-100 dark:bg-slate-900 overflow-hidden relative">
+                <img src="/static/placeholder.jpg" alt="E-Commerce Platform" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                <span class="absolute top-3 left-3 bg-blue-600 text-white text-xs font-bold px-2.5 py-1 rounded-lg">Onlayn Do'kon</span>
+            </div>
+            <div class="p-6">
+                <h3 class="font-extrabold text-lg text-gray-900 dark:text-white mb-2">SmartMarket Onlayn Do'koni</h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed mb-4">Payme va Click to'lov tizimlari bilan integratsiya qilingan, 10 000+ mahsulotga mo'ljallangan yirik internet-do'kon.</p>
+                <div class="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-slate-700 text-xs">
+                    <span class="text-gray-400">Texnologiyalar: Python, Vue.js</span>
+                    <a href="/xizmatlar" class="font-bold text-blue-600 hover:underline">Shunga o'xshash xizmat &rarr;</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project 2 -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-slate-700 hover:shadow-xl transition group">
+            <div class="h-56 bg-gray-100 dark:bg-slate-900 overflow-hidden relative">
+                <img src="/static/placeholder.jpg" alt="Corporate Website" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                <span class="absolute top-3 left-3 bg-purple-600 text-white text-xs font-bold px-2.5 py-1 rounded-lg">Korporativ Sayt</span>
+            </div>
+            <div class="p-6">
+                <h3 class="font-extrabold text-lg text-gray-900 dark:text-white mb-2">Alpha Logistic Korporativ Sayti</h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed mb-4">Xalqaro yuk tashish kompaniyasi uchun ko'p tilli (UZ/RU/EN) zamonaviy portal va onlayn narx kalkulyatori.</p>
+                <div class="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-slate-700 text-xs">
+                    <span class="text-gray-400">Texnologiyalar: FastAPI, Tailwind</span>
+                    <a href="/xizmatlar" class="font-bold text-blue-600 hover:underline">Shunga o'xshash xizmat &rarr;</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project 3 -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-slate-700 hover:shadow-xl transition group">
+            <div class="h-56 bg-gray-100 dark:bg-slate-900 overflow-hidden relative">
+                <img src="/static/placeholder.jpg" alt="CRM System" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                <span class="absolute top-3 left-3 bg-green-600 text-white text-xs font-bold px-2.5 py-1 rounded-lg">CRM / ERP</span>
+            </div>
+            <div class="p-6">
+                <h3 class="font-extrabold text-lg text-gray-900 dark:text-white mb-2">Apex Education O'quv Markazi CRM</h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed mb-4">Talabalar davomati, to'lovlar, guruhlar va SMS xabarnomalarini boshqarish uchun avtomatlashtirilgan ichki tizim.</p>
+                <div class="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-slate-700 text-xs">
+                    <span class="text-gray-400">Texnologiyalar: PostgreSQL, API</span>
+                    <a href="/xizmatlar" class="font-bold text-blue-600 hover:underline">Shunga o'xshash xizmat &rarr;</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="mt-16 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-8 sm:p-12 text-center text-white shadow-xl">
+        <h2 class="text-2xl sm:text-3xl font-extrabold">Siz ham o'z loyihangizni boshlamoqchimisiz?</h2>
+        <p class="text-blue-100 text-sm max-w-xl mx-auto mt-2">Falcon Services sizga eng maqbul narx va yuqori sifatda xizmat ko'rsatishga tayyor.</p>
+        <div class="mt-6 flex flex-wrap justify-center gap-4">
+            <a href="/xizmatlar" class="bg-white text-blue-600 hover:bg-blue-50 font-bold px-6 py-3 rounded-xl text-sm shadow transition">
+                Xizmatlarni tanlash
+            </a>
+            <a href="/aloqa" class="bg-blue-800 hover:bg-blue-900 text-white font-semibold px-6 py-3 rounded-xl text-sm transition">
+                Biz bilan bog'lanish
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

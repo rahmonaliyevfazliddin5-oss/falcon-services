@@ -14,11 +14,11 @@
             Veb-saytlar, MVP dasturlash, mobil ilovalar va SEO xizmatlarini bir joydan tez va sifatli buyurtma qiling.
         </p>
         <div class="mt-8 flex justify-center gap-3 sm:gap-4 flex-wrap">
-            <a href="/services" class="px-6 py-3 border border-transparent text-sm sm:text-base font-bold rounded-xl text-blue-700 bg-white hover:bg-gray-50 shadow-md transition" data-i18n="hero.btn_catalog">
-                Xizmatlarga buyurtma berish
+            <a href="/xizmatlar" class="px-6 py-3 border border-transparent text-sm sm:text-base font-bold rounded-xl text-blue-700 bg-white hover:bg-gray-50 shadow-md transition">
+                Xizmat buyurtma qilish
             </a>
-            <a href="/services" class="px-6 py-3 border border-white/30 text-sm sm:text-base font-semibold rounded-xl text-white bg-blue-700/60 hover:bg-blue-700 transition" data-i18n="hero.btn_explore">
-                Katalogni ko'rish
+            <a href="/xizmatlar" class="px-6 py-3 border border-white/30 text-sm sm:text-base font-semibold rounded-xl text-white bg-blue-700/60 hover:bg-blue-700 transition">
+                Xizmatlarni ko'rish
             </a>
         </div>
     </div>
@@ -46,45 +46,125 @@
     </div>
 </div>
 
-<!-- Process Section -->
-<div class="py-16 bg-white transition-colors">
+<!-- Why Falcon Services -->
+<div class="py-16 bg-white dark:bg-slate-900 transition-colors">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 text-center mb-12" data-i18n="hero.process_title">Ishlash jarayoni</h2>
+        <div class="text-center max-w-3xl mx-auto mb-12">
+            <span class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 py-1 rounded-full">Afzalliklarimiz</span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white mt-3">Nega aynan Falcon Services?</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Biz mijozlarimizga tezkor, ishonchli va shaffof IT xizmatlarini taqdim etamiz.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="p-6 rounded-2xl bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700">
+                <div class="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xl mb-4">⚡</div>
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Tezkor topshirish</h3>
+                <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 leading-relaxed">Loyihalar qat'iy muddatlarda, ortiqcha kechikishlarsiz topshiriladi.</p>
+            </div>
+            <div class="p-6 rounded-2xl bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700">
+                <div class="w-12 h-12 rounded-xl bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 flex items-center justify-center font-bold text-xl mb-4">🛡️</div>
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">100% Sifat kafolati</h3>
+                <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 leading-relaxed">Har bir loyiha rasmiy shartnoma va bepul texnik qo'llab-quvvatlash bilan ta'minlanadi.</p>
+            </div>
+            <div class="p-6 rounded-2xl bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700">
+                <div class="w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-xl mb-4">📱</div>
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Shaxsiy kabinet & Chat</h3>
+                <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 leading-relaxed">Buyurtmangizning real-vaqt holatini kabinetingizda kuzatib boring va mutaxassis bilan to'g'ridan-to'g'ri muloqot qiling.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Process Section -->
+<div class="py-16 bg-gray-50 dark:bg-slate-900/50 transition-colors">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white text-center mb-12" data-i18n="hero.process_title">Ishlash jarayoni</h2>
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
-            <div class="p-4 rounded-xl bg-gray-50/50 dark:bg-slate-800/50 border border-gray-100 dark:border-slate-700/50">
-                <div class="bg-blue-100 dark:bg-blue-950 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold text-blue-600 dark:text-blue-400">1</div>
-                <h3 class="text-base font-bold text-gray-900" data-i18n="hero.step1_title">Xizmatni tanlash</h3>
-                <p class="text-gray-500 text-sm mt-2" data-i18n="hero.step1_desc">Katalogdan o'zingizga kerakli IT xizmatini tanlang</p>
+            <div class="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 shadow-sm">
+                <div class="bg-blue-100 dark:bg-blue-950 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-lg font-bold text-blue-600 dark:text-blue-400">1</div>
+                <h3 class="text-base font-bold text-gray-900 dark:text-white" data-i18n="hero.step1_title">Xizmatni tanlash</h3>
+                <p class="text-gray-500 dark:text-gray-400 text-xs mt-2" data-i18n="hero.step1_desc">Katalogdan o'zingizga kerakli IT xizmatini tanlang</p>
             </div>
-            <div class="p-4 rounded-xl bg-gray-50/50 dark:bg-slate-800/50 border border-gray-100 dark:border-slate-700/50">
-                <div class="bg-blue-100 dark:bg-blue-950 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold text-blue-600 dark:text-blue-400">2</div>
-                <h3 class="text-base font-bold text-gray-900" data-i18n="hero.step2_title">Texnik topshiriq</h3>
-                <p class="text-gray-500 text-sm mt-2" data-i18n="hero.step2_desc">Loyihangiz va talablaringiz haqida ma'lumot yuboring</p>
+            <div class="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 shadow-sm">
+                <div class="bg-blue-100 dark:bg-blue-950 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-lg font-bold text-blue-600 dark:text-blue-400">2</div>
+                <h3 class="text-base font-bold text-gray-900 dark:text-white" data-i18n="hero.step2_title">Texnik topshiriq</h3>
+                <p class="text-gray-500 dark:text-gray-400 text-xs mt-2" data-i18n="hero.step2_desc">Loyihangiz va talablaringiz haqida ma'lumot yuboring</p>
             </div>
-            <div class="p-4 rounded-xl bg-gray-50/50 dark:bg-slate-800/50 border border-gray-100 dark:border-slate-700/50">
-                <div class="bg-blue-100 dark:bg-blue-950 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold text-blue-600 dark:text-blue-400">3</div>
-                <h3 class="text-base font-bold text-gray-900" data-i18n="hero.step3_title">Jarayonni kuzatish</h3>
-                <p class="text-gray-500 text-sm mt-2" data-i18n="hero.step3_desc">Shaxsiy kabinet orqali ish holatini kuzatib boring</p>
+            <div class="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 shadow-sm">
+                <div class="bg-blue-100 dark:bg-blue-950 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-lg font-bold text-blue-600 dark:text-blue-400">3</div>
+                <h3 class="text-base font-bold text-gray-900 dark:text-white" data-i18n="hero.step3_title">Jarayonni kuzatish</h3>
+                <p class="text-gray-500 dark:text-gray-400 text-xs mt-2" data-i18n="hero.step3_desc">Shaxsiy kabinet orqali ish holatini kuzatib boring</p>
             </div>
-            <div class="p-4 rounded-xl bg-gray-50/50 dark:bg-slate-800/50 border border-gray-100 dark:border-slate-700/50">
-                <div class="bg-blue-100 dark:bg-blue-950 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold text-blue-600 dark:text-blue-400">4</div>
-                <h3 class="text-base font-bold text-gray-900" data-i18n="hero.step4_title">Natijani qabul qilish</h3>
-                <p class="text-gray-500 text-sm mt-2" data-i18n="hero.step4_desc">Tayyor bo'lgan yuqori sifatli natijani qabul qilib oling</p>
+            <div class="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 shadow-sm">
+                <div class="bg-blue-100 dark:bg-blue-950 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-lg font-bold text-blue-600 dark:text-blue-400">4</div>
+                <h3 class="text-base font-bold text-gray-900 dark:text-white" data-i18n="hero.step4_title">Natijani qabul qilish</h3>
+                <p class="text-gray-500 dark:text-gray-400 text-xs mt-2" data-i18n="hero.step4_desc">Tayyor bo'lgan yuqori sifatli natijani qabul qilib oling</p>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Recommended Services -->
-<div class="py-16 bg-gray-50 transition-colors">
+<div class="py-16 bg-white dark:bg-slate-900 transition-colors">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center mb-8">
-            <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900" data-i18n="hero.recommended_title">Tavsiya etilgan IT xizmatlar</h2>
-            <a href="/services" class="text-blue-600 dark:text-blue-400 text-sm font-bold hover:underline" data-i18n="hero.btn_explore">Barchasini ko'rish &rarr;</a>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white" data-i18n="hero.recommended_title">Tavsiya etilgan IT xizmatlar</h2>
+            <a href="/xizmatlar" class="text-blue-600 dark:text-blue-400 text-sm font-bold hover:underline" data-i18n="hero.btn_explore">Barchasini ko'rish &rarr;</a>
         </div>
         <div id="loading" class="flex justify-center py-12"><div class="spinner"></div></div>
         <div id="servicesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
             <!-- Populated by JS -->
+        </div>
+    </div>
+</div>
+
+<!-- Portfolio Preview Section -->
+<div class="py-16 bg-gray-50 dark:bg-slate-900/50 transition-colors">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white">Portfolio namunalari</h2>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">So'nggi muvaffaqiyatli topshirilgan ishlarimiz</p>
+            </div>
+            <a href="/portfolio" class="text-blue-600 dark:text-blue-400 text-sm font-bold hover:underline">Barcha ishlar &rarr;</a>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-slate-700">
+                <img src="/static/placeholder.jpg" class="h-44 w-full object-cover">
+                <div class="p-5">
+                    <h3 class="font-bold text-gray-900 dark:text-white text-base">SmartMarket Do'koni</h3>
+                    <p class="text-xs text-gray-500 mt-1">To'liq to'lov integratsiyasi bilan onlayn do'kon.</p>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-slate-700">
+                <img src="/static/placeholder.jpg" class="h-44 w-full object-cover">
+                <div class="p-5">
+                    <h3 class="font-bold text-gray-900 dark:text-white text-base">Alpha Logistic Portali</h3>
+                    <p class="text-xs text-gray-500 mt-1">Yuk tashish kompaniyasi korporativ veb-sayti.</p>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-slate-700">
+                <img src="/static/placeholder.jpg" class="h-44 w-full object-cover">
+                <div class="p-5">
+                    <h3 class="font-bold text-gray-900 dark:text-white text-base">Apex Education CRM</h3>
+                    <p class="text-xs text-gray-500 mt-1">Talabalar va o'quv markazlari avtomatizatsiyasi.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Banner -->
+<div class="py-16 bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-center">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl sm:text-4xl font-extrabold">Loyihangizni bugunoq boshlang!</h2>
+        <p class="text-blue-100 text-sm sm:text-base mt-2 max-w-xl mx-auto">Falcon Services bilan biznesingizni yangi bosqichga olib chiqing.</p>
+        <div class="mt-8 flex justify-center gap-4">
+            <a href="/xizmatlar" class="bg-white text-blue-600 font-bold px-6 py-3 rounded-xl shadow-lg hover:bg-blue-50 transition">
+                Xizmat buyurtma qilish
+            </a>
+            <a href="/aloqa" class="bg-blue-800/80 hover:bg-blue-800 text-white font-semibold px-6 py-3 rounded-xl transition">
+                Biz bilan bog'lanish
+            </a>
         </div>
     </div>
 </div>
@@ -123,27 +203,36 @@
 
         grid.innerHTML = rawServices.map(raw => {
             const s = localizeService(raw);
-            const workingLinkText = t('services.working_link');
             const daysText = formatDays(s.delivery_days);
+            const detailUrl = `/xizmatlar/${s.slug || s.id}`;
+            const orderUrl = `/buyurtma/${s.slug || s.id}`;
             
             return `
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all cursor-pointer flex flex-col group" onclick="window.location.href='/services/${s.id}'">
-                    <div class="relative overflow-hidden h-48 bg-gray-100">
+                <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden hover:shadow-xl transition-all flex flex-col group">
+                    <div class="relative overflow-hidden h-48 bg-gray-100 dark:bg-slate-900 cursor-pointer" onclick="window.location.href='${detailUrl}'">
                         <img src="${s.image_url}" alt="${s.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://placehold.co/600x400/2563eb/ffffff?text=Falcon+Services'">
+                        ${s.category ? `
+                            <span class="absolute top-3 left-3 bg-blue-600/90 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider backdrop-blur-sm">
+                                ${s.category.name}
+                            </span>
+                        ` : ''}
                     </div>
                     <div class="p-5 flex-grow flex flex-col">
-                        <h3 class="text-base sm:text-lg font-bold text-gray-900 group-hover:text-blue-600 transition line-clamp-1">${s.title}</h3>
-                        <p class="text-xs sm:text-sm text-gray-500 mt-2 line-clamp-2">${s.description}</p>
-                        ${s.working_link ? `
-                            <div class="mt-3">
-                                <a href="${s.working_link}" target="_blank" onclick="event.stopPropagation()" class="inline-flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 font-bold hover:underline bg-blue-50 dark:bg-slate-700/80 px-2.5 py-1 rounded-md">
-                                    ${workingLinkText}
-                                </a>
-                            </div>
-                        ` : ''}
+                        <h3 class="text-base sm:text-lg font-bold text-gray-900 dark:text-white group-hover:text-blue-600 transition line-clamp-1 cursor-pointer" onclick="window.location.href='${detailUrl}'">${s.title}</h3>
+                        <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-2 line-clamp-2">${s.short_description || s.description}</p>
+                        
                         <div class="mt-auto pt-4 flex justify-between items-center border-t border-gray-100 dark:border-slate-700">
                             <span class="text-base sm:text-lg font-extrabold text-blue-600 dark:text-blue-400">${s.price.toLocaleString()} UZS</span>
                             <span class="text-xs text-gray-500 font-medium">${daysText}</span>
+                        </div>
+
+                        <div class="mt-4 pt-2 flex items-center gap-2">
+                            <a href="${detailUrl}" class="flex-1 text-center bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-200 py-2 rounded-xl text-xs font-bold transition">
+                                Batafsil
+                            </a>
+                            <a href="${orderUrl}" class="flex-1 text-center bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-xl text-xs font-bold shadow-sm transition">
+                                Buyurtma berish
+                            </a>
                         </div>
                     </div>
                 </div>

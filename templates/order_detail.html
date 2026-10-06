@@ -1,0 +1,366 @@
+{% extends "base.html" %}
+
+{% block title %}Buyurtma tafsilotlari | Falcon Services{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Top Bar with Back Link & Title -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div class="flex items-center gap-3">
+            <a href="/buyurtmalarim" class="p-2 text-gray-500 hover:text-gray-800 dark:hover:text-white bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            </a>
+            <div>
+                <div class="flex items-center gap-2">
+                    <h1 class="text-xl sm:text-2xl font-extrabold text-gray-900 dark:text-white" id="odOrderNumber">Buyurtma...</h1>
+                    <span id="odStatusBadge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-gray-100 text-gray-600">Yuklanmoqda...</span>
+                </div>
+                <p class="text-xs text-gray-400" id="odCreatedAt">Yaratilgan sana: -</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3" id="odActions">
+            <!-- Dynamically populated, e.g. Cancel button -->
+        </div>
+    </div>
+
+    <div id="odLoading" class="py-20 flex justify-center">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div id="odContent" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Left: Details & Timeline -->
+        <div class="lg:col-span-2 space-y-6">
+            
+            <!-- Progress Tracker -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-slate-700">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-4">Buyurtma bosqichlari</h3>
+                <div class="grid grid-cols-4 gap-2 text-center" id="odProgressSteps">
+                    <div class="step-box p-3 rounded-xl bg-gray-50 dark:bg-slate-700" id="progStep1">
+                        <div class="w-7 h-7 mx-auto rounded-full bg-gray-200 dark:bg-slate-600 text-xs font-bold flex items-center justify-center mb-1 step-num">1</div>
+                        <span class="text-[11px] font-bold block">Yangi</span>
+                    </div>
+                    <div class="step-box p-3 rounded-xl bg-gray-50 dark:bg-slate-700" id="progStep2">
+                        <div class="w-7 h-7 mx-auto rounded-full bg-gray-200 dark:bg-slate-600 text-xs font-bold flex items-center justify-center mb-1 step-num">2</div>
+                        <span class="text-[11px] font-bold block">Qabul qilindi</span>
+                    </div>
+                    <div class="step-box p-3 rounded-xl bg-gray-50 dark:bg-slate-700" id="progStep3">
+                        <div class="w-7 h-7 mx-auto rounded-full bg-gray-200 dark:bg-slate-600 text-xs font-bold flex items-center justify-center mb-1 step-num">3</div>
+                        <span class="text-[11px] font-bold block">Jarayonda</span>
+                    </div>
+                    <div class="step-box p-3 rounded-xl bg-gray-50 dark:bg-slate-700" id="progStep4">
+                        <div class="w-7 h-7 mx-auto rounded-full bg-gray-200 dark:bg-slate-600 text-xs font-bold flex items-center justify-center mb-1 step-num">4</div>
+                        <span class="text-[11px] font-bold block">Yakunlandi</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cancel Warning if cancelled -->
+            <div id="odCancelNotice" class="hidden bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-4 text-sm text-red-700 dark:text-red-300">
+                <strong class="font-bold">Buyurtma bekor qilingan!</strong>
+                <p class="text-xs mt-1" id="odCancelReasonText"></p>
+            </div>
+
+            <!-- Project Details Card -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-slate-700 space-y-4">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400">Loyiha tafsilotlari</h3>
+                
+                <div>
+                    <h2 class="text-lg font-bold text-gray-900 dark:text-white" id="odProjectName">-</h2>
+                    <p class="text-xs text-blue-600 dark:text-blue-400 font-semibold mt-0.5" id="odServiceTitle">-</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                    <div class="bg-gray-50 dark:bg-slate-900/50 p-3.5 rounded-xl border border-gray-100 dark:border-slate-700">
+                        <span class="text-xs text-gray-400 block font-medium">Kelishilgan narx</span>
+                        <strong class="text-sm font-extrabold text-blue-600 dark:text-blue-400" id="odPrice">-</strong>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-slate-900/50 p-3.5 rounded-xl border border-gray-100 dark:border-slate-700">
+                        <span class="text-xs text-gray-400 block font-medium">Topshirish muddati</span>
+                        <strong class="text-sm font-bold text-gray-800 dark:text-gray-200" id="odDeadline">-</strong>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-slate-900/50 p-3.5 rounded-xl border border-gray-100 dark:border-slate-700">
+                        <span class="text-xs text-gray-400 block font-medium">Bog'lanish telefoni</span>
+                        <strong class="text-sm font-bold text-gray-800 dark:text-gray-200" id="odPhone">-</strong>
+                    </div>
+                </div>
+
+                <div>
+                    <span class="text-xs font-bold uppercase text-gray-400 block mb-2">Texnik topshiriq:</span>
+                    <div class="bg-gray-50 dark:bg-slate-900/60 p-4 rounded-xl text-xs text-gray-700 dark:text-gray-300 leading-relaxed border border-gray-100 dark:border-slate-700 whitespace-pre-wrap" id="odTechnicalTask">-</div>
+                </div>
+            </div>
+
+            <!-- History Timeline -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-slate-700">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-4">Holatlar o'zgarishi tarixi</h3>
+                <div class="space-y-4" id="odTimeline">
+                    <!-- Javascript populates -->
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right: Live Messages / Order Chat -->
+        <div class="lg:col-span-1">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col h-[600px] sticky top-24" id="chat">
+                
+                <div class="p-4 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
+                        <h3 class="text-sm font-bold text-gray-900 dark:text-white">Loyiha bo'yicha chat</h3>
+                    </div>
+                    <span class="text-[10px] text-gray-400">Onlayn</span>
+                </div>
+
+                <!-- Messages container -->
+                <div class="flex-grow p-4 overflow-y-auto space-y-3" id="odChatMessages">
+                    <!-- Populated by JavaScript -->
+                </div>
+
+                <!-- Chat input form -->
+                <form id="odChatForm" onsubmit="sendChatMessage(event)" class="p-3 border-t border-gray-100 dark:border-slate-700 flex items-center gap-2">
+                    <input type="text" id="odChatInput" required placeholder="Xabar yozing..." class="flex-grow bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button type="submit" id="odChatSendBtn" class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-xl transition flex-shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                    </button>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const orderId = {{ order_id }};
+    let currentOrder = null;
+
+    async function loadOrderDetail() {
+        try {
+            const res = await fetchWithAuth(`${API_URL}/orders/${orderId}`);
+            document.getElementById('odLoading').classList.add('hidden');
+
+            if (!res.ok) {
+                showToast("Buyurtma topilmadi yoki ruxsat yo'q", "error");
+                setTimeout(() => window.location.href = '/buyurtmalarim', 1500);
+                return;
+            }
+
+            currentOrder = await res.json();
+            document.getElementById('odContent').classList.remove('hidden');
+
+            // Render Header
+            document.getElementById('odOrderNumber').innerText = currentOrder.order_number;
+            document.getElementById('odCreatedAt').innerText = "Yaratilgan: " + new Date(currentOrder.created_at).toLocaleString('uz-UZ');
+            
+            const statusBadges = {
+                'Yangi': 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-200',
+                'Qabul qilindi': 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 border border-amber-200',
+                'Jarayonda': 'bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 border border-purple-200',
+                'Yakunlandi': 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-300 border border-green-200',
+                'Bekor qilindi': 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300 border border-red-200'
+            };
+
+            const badge = document.getElementById('odStatusBadge');
+            badge.innerText = currentOrder.status;
+            badge.className = `px-2.5 py-0.5 rounded-full text-xs font-bold ${statusBadges[currentOrder.status] || 'bg-gray-100 text-gray-600'}`;
+
+            // Cancel Action button (Strict: visible only if status === 'Yangi')
+            const actions = document.getElementById('odActions');
+            if (currentOrder.status === 'Yangi') {
+                actions.innerHTML = `
+                    <button onclick="promptCancelOrder(${currentOrder.id})" class="px-4 py-2 text-xs font-bold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 rounded-xl transition">
+                        Buyurtmani bekor qilish
+                    </button>
+                `;
+            } else {
+                actions.innerHTML = '';
+            }
+
+            // Project Details
+            document.getElementById('odProjectName').innerText = currentOrder.project_name;
+            document.getElementById('odServiceTitle').innerText = currentOrder.service_title_snapshot;
+            document.getElementById('odPrice').innerText = currentOrder.price_snapshot.toLocaleString() + ' UZS';
+            document.getElementById('odDeadline').innerText = currentOrder.desired_deadline;
+            document.getElementById('odPhone').innerText = currentOrder.contact_phone;
+            document.getElementById('odTechnicalTask').innerText = currentOrder.technical_task;
+
+            // Cancel Box
+            const cancelNotice = document.getElementById('odCancelNotice');
+            if (currentOrder.status === 'Bekor qilindi') {
+                cancelNotice.classList.remove('hidden');
+                document.getElementById('odCancelReasonText').innerText = currentOrder.cancel_reason ? `Sabab: ${currentOrder.cancel_reason}` : "Sabab ko'rsatilmagan";
+            } else {
+                cancelNotice.classList.add('hidden');
+            }
+
+            // Progress Steps
+            updateProgressSteps(currentOrder.status);
+
+            // History Timeline
+            renderTimeline(currentOrder.status_history || []);
+
+            // Load Chat Messages
+            loadChatMessages();
+
+        } catch(e) {
+            console.error(e);
+            showToast("Tarmoq xatosi", "error");
+        }
+    }
+
+    function updateProgressSteps(status) {
+        const steps = ['Yangi', 'Qabul qilindi', 'Jarayonda', 'Yakunlandi'];
+        const currentIdx = steps.indexOf(status);
+
+        for (let i = 0; i < 4; i++) {
+            const stepEl = document.getElementById(`progStep${i + 1}`);
+            const numEl = stepEl.querySelector('.step-num');
+
+            if (status === 'Bekor qilindi') {
+                stepEl.className = "step-box p-3 rounded-xl bg-gray-50 dark:bg-slate-700/50 opacity-50";
+            } else if (i <= currentIdx) {
+                stepEl.className = "step-box p-3 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 font-bold border border-blue-200 dark:border-blue-800";
+                numEl.className = "w-7 h-7 mx-auto rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center mb-1 step-num";
+                if (i < currentIdx) numEl.innerText = "✓";
+            } else {
+                stepEl.className = "step-box p-3 rounded-xl bg-gray-50 dark:bg-slate-700/50 text-gray-400";
+                numEl.className = "w-7 h-7 mx-auto rounded-full bg-gray-200 dark:bg-slate-600 text-gray-500 text-xs font-bold flex items-center justify-center mb-1 step-num";
+            }
+        }
+    }
+
+    function renderTimeline(history) {
+        const cont = document.getElementById('odTimeline');
+        if (!history || history.length === 0) {
+            cont.innerHTML = `<p class="text-xs text-gray-400">Tarix ma'lumotlari mavjud emas.</p>`;
+            return;
+        }
+
+        cont.innerHTML = history.map(h => `
+            <div class="flex items-start gap-3 text-xs">
+                <div class="w-2 h-2 rounded-full bg-blue-600 mt-1.5"></div>
+                <div>
+                    <span class="font-bold text-gray-800 dark:text-gray-200">${h.new_status}</span>
+                    ${h.note ? `<p class="text-gray-500 dark:text-gray-400 mt-0.5">${h.note}</p>` : ''}
+                    <span class="text-[10px] text-gray-400">${new Date(h.changed_at).toLocaleString('uz-UZ')}</span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    async function loadChatMessages() {
+        try {
+            const res = await fetchWithAuth(`${API_URL}/orders/${orderId}/messages`);
+            if (res.ok) {
+                const messages = await res.json();
+                const container = document.getElementById('odChatMessages');
+                
+                if (messages.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-12 text-gray-400 text-xs">
+                            Hozircha xabarlar yo'q.<br>Savollaringiz bo'lsa, bu yerda yozishingiz mumkin.
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = messages.map(m => {
+                    const isMe = m.sender_id === currentOrder.user_id;
+                    return `
+                        <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}">
+                            <div class="max-w-[80%] rounded-2xl px-3.5 py-2 text-xs ${isMe ? 'bg-blue-600 text-white rounded-br-none' : 'bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-white rounded-bl-none'}">
+                                <p class="whitespace-pre-wrap">${m.text}</p>
+                            </div>
+                            <span class="text-[9px] text-gray-400 mt-0.5 px-1">${new Date(m.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                        </div>
+                    `;
+                }).join('');
+
+                container.scrollTop = container.scrollHeight;
+            }
+        } catch(e) {
+            console.error(e);
+        }
+    }
+
+    async function sendChatMessage(e) {
+        e.preventDefault();
+        const input = document.getElementById('odChatInput');
+        const text = input.value.trim();
+        if (!text) return;
+
+        const btn = document.getElementById('odChatSendBtn');
+        btn.disabled = true;
+
+        try {
+            const res = await fetchWithAuth(`${API_URL}/orders/${orderId}/messages`, {
+                method: 'POST',
+                body: JSON.stringify({ text })
+            });
+
+            if (res.ok) {
+                input.value = '';
+                loadChatMessages();
+            } else {
+                showToast("Xabar yuborishda xatolik", "error");
+            }
+        } catch(e) {
+            showToast("Tarmoq xatosi", "error");
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    function promptCancelOrder(id) {
+        document.getElementById('cancelOrderReason').value = '';
+        openModal('cancelOrderModal');
+    }
+
+    document.getElementById('cancelOrderSubmitBtn').addEventListener('click', async function() {
+        const reason = document.getElementById('cancelOrderReason').value.trim();
+        if (!reason) {
+            showToast("Iltimos, bekor qilish sababini yozing", "warning");
+            return;
+        }
+
+        const btn = this;
+        setButtonLoading(btn, "Bekor qilinmoqda...");
+
+        try {
+            const res = await fetchWithAuth(`${API_URL}/orders/${orderId}/status`, {
+                method: 'PATCH',
+                body: JSON.stringify({ status: "Bekor qilindi", note: reason })
+            });
+
+            if (res.ok) {
+                setButtonSuccess(btn, "Bekor qilindi");
+                showToast("Buyurtma bekor qilindi", "success");
+                closeModal('cancelOrderModal');
+                loadOrderDetail();
+            } else {
+                const err = await res.json();
+                setButtonError(btn, err.detail || "Xatolik");
+                showToast(err.detail || "Bekor qilishda xatolik", "error");
+            }
+        } catch(e) {
+            setButtonError(btn, "Tarmoq xatosi");
+            showToast("Tarmoq xatosi", "error");
+        } finally {
+            setTimeout(() => resetButton(btn), 2000);
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadOrderDetail();
+        // Poll for chat messages every 10 seconds
+        setInterval(loadChatMessages, 10000);
+    });
+</script>
+{% endblock %}

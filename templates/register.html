@@ -69,7 +69,7 @@
             
             <div class="text-sm text-center text-gray-500 pt-1">
                 <span data-i18n="register.have_account">Akkauntingiz bormi?</span> 
-                <a href="/login" class="font-bold text-blue-600 hover:text-blue-500" data-i18n="register.login_link">Tizimga kirish</a>
+                <a href="/kirish" class="font-bold text-blue-600 hover:text-blue-500" data-i18n="register.login_link">Tizimga kirish</a>
             </div>
         </form>
     </div>
@@ -154,17 +154,18 @@
             if (res.ok) {
                 // Avtomatik 365 kunlik token va cookie o'rnatish
                 const token = data.access_token;
+                const urlParams = new URLSearchParams(window.location.search);
+                const next = urlParams.get('next') || urlParams.get('redirect') || '/dashboard';
                 if (token) {
                     setToken(token);
                     document.cookie = `access_token=${token}; path=/; max-age=31536000; SameSite=Lax`;
                     showToast("Muvaffaqiyatli ro'yxatdan o'tdingiz!");
-                    setTimeout(() => window.location.href = '/profile', 400);
+                    setTimeout(() => window.location.href = next, 400);
                     return;
                 }
                 
-                // Fallback
                 showToast("Muvaffaqiyatli ro'yxatdan o'tdingiz!");
-                setTimeout(() => window.location.href = '/profile', 400);
+                setTimeout(() => window.location.href = next, 400);
             } else {
                 const box = document.getElementById('errorBox');
                 box.classList.remove('hidden');

@@ -150,7 +150,7 @@
                 document.cookie = `access_token=${data.access_token}; path=/; max-age=31536000; SameSite=Lax`;
                 
                 const urlParams = new URLSearchParams(window.location.search);
-                const next = urlParams.get('next');
+                const next = urlParams.get('next') || urlParams.get('redirect');
                 
                 const userRes = await fetchWithAuth(`${API_URL}/auth/me`);
                 const userData = await userRes.json();
@@ -160,7 +160,7 @@
                 } else if(userData.role === 'admin') {
                     window.location.href = '/admin';
                 } else {
-                    window.location.href = '/profile';
+                    window.location.href = '/dashboard';
                 }
             } else {
                 const box = document.getElementById('errorBox');
@@ -273,13 +273,13 @@
                 showToast("Google orqali muvaffaqiyatli kirdingiz!");
                 
                 const urlParams = new URLSearchParams(window.location.search);
-                const next = urlParams.get('next');
+                const next = urlParams.get('next') || urlParams.get('redirect');
                 if (next) {
                     window.location.href = next;
                 } else if (data.role === 'admin') {
                     window.location.href = '/admin';
                 } else {
-                    window.location.href = '/profile';
+                    window.location.href = '/dashboard';
                 }
             } else {
                 showToast(data.detail || "Google orqali kirishda xatolik yuz berdi", "error");

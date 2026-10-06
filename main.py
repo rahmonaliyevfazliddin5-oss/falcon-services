@@ -11,11 +11,12 @@ import models
 import auth
 from seed import seed_db
 
-from routers import public, orders, admin, pages
+from routers import public, orders, admin, pages, notifications
 
 # =========================================================================
 # Qoida (Rule): MAINTENANCE_MODE
-# O'zgartirishlar tugatildi (False) - Sayt normal rejimda ishlamoqda
+# O'zgartirishlar kiritilmoqda (True) - Ekranga maintenance.png chiqadi!
+# Ish yakunlandi va testlar muvaffaqiyatli o'tdi: False
 # =========================================================================
 MAINTENANCE_MODE: bool = False
 
@@ -72,5 +73,6 @@ def get_maintenance_status():
 app.include_router(auth.router)
 app.include_router(public.router)
 app.include_router(orders.router)
+app.include_router(notifications.router)
 app.include_router(admin.router)
 app.include_router(pages.router)

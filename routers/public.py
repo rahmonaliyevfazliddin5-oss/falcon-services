@@ -54,21 +54,30 @@ def get_services(
         "pages": pages
     }
 
-@router.get("/services/{id}", response_model=schemas.ServiceDetailOut)
-def get_service_detail(id: int, db: Session = Depends(get_db)):
-    service = db.query(models.Service).filter(models.Service.id == id).first()
+@router.get("/services/{slug_or_id}", response_model=schemas.ServiceDetailOut)
+def get_service_detail(slug_or_id: str, db: Session = Depends(get_db)):
+    service = None
+    if slug_or_id.isdigit():
+        service = db.query(models.Service).filter(models.Service.id == int(slug_or_id)).first()
+    if not service:
+        service = db.query(models.Service).filter(models.Service.slug == slug_or_id).first()
     if not service:
         raise HTTPException(status_code=404, detail="Xizmat topilmadi")
 
     related = db.query(models.Service).filter(
         models.Service.category_id == service.category_id,
-        models.Service.id != id,
+        models.Service.id != service.id,
         models.Service.is_archived == False
     ).limit(4).all()
 
     response = schemas.ServiceDetailOut.model_validate(service)
     response.related_services = [schemas.ServiceOut.model_validate(r) for r in related]
     return response
+
+@router.get("/settings")
+def get_public_settings(db: Session = Depends(get_db)):
+    settings_list = db.query(models.Setting).all()
+    return {s.key: s.value for s in settings_list}
 
 @router.get("/stats")
 def get_public_platform_stats(db: Session = Depends(get_db)):

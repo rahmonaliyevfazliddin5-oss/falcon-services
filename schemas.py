@@ -50,6 +50,7 @@ class CategoryOut(CategoryBase):
 # --- Services ---
 class ServiceBase(BaseModel):
     category_id: int
+    slug: Optional[str] = None
     title: str
     description: str
     image_url: str
@@ -64,6 +65,7 @@ class ServiceCreate(ServiceBase):
 
 class ServiceUpdate(BaseModel):
     category_id: Optional[int] = None
+    slug: Optional[str] = None
     title: Optional[str] = None
     description: Optional[str] = None
     image_url: Optional[str] = None
@@ -96,11 +98,13 @@ class OrderCreate(BaseModel):
 
 class OrderStatusUpdate(BaseModel):
     status: str
+    note: Optional[str] = None
 
 class OrderStatusHistoryOut(BaseModel):
     id: int
     old_status: Optional[str]
     new_status: str
+    note: Optional[str] = None
     changed_by_user_id: int
     changed_at: datetime
     class Config: from_attributes = True
@@ -127,12 +131,46 @@ class OrderOut(BaseModel):
     desired_deadline: date
     contact_phone: str
     status: str
+    cancel_reason: Optional[str] = None
     created_at: datetime
     class Config: from_attributes = True
 
 class OrderDetailOut(OrderOut):
     status_history: List[OrderStatusHistoryOut] = []
     messages: List[MessageOut] = []
+
+# --- Notifications ---
+class NotificationOut(BaseModel):
+    id: int
+    user_id: int
+    title: str
+    message: str
+    link: Optional[str] = None
+    is_read: bool
+    created_at: datetime
+    class Config: from_attributes = True
+
+# --- Activity Log & Settings ---
+class ActivityLogOut(BaseModel):
+    id: int
+    admin_id: Optional[int] = None
+    admin_name: Optional[str] = None
+    action: str
+    entity: str
+    entity_id: Optional[int] = None
+    metadata_json: Optional[str] = None
+    created_at: datetime
+    class Config: from_attributes = True
+
+class SettingOut(BaseModel):
+    key: str
+    value: str
+    updated_at: datetime
+    class Config: from_attributes = True
+
+class SettingUpdate(BaseModel):
+    key: str
+    value: str
 
 # --- Admin ---
 class DashboardStats(BaseModel):
@@ -156,4 +194,7 @@ class OrderAdminOut(OrderOut):
 
 class UserAdminOut(UserOut):
     orders_count: int
+
+class UserDetailAdminOut(UserAdminOut):
+    orders: List[OrderOut] = []
 

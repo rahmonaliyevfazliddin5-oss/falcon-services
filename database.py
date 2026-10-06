@@ -40,6 +40,21 @@ def init_db():
             conn.commit()
         except Exception:
             pass
+        try:
+            conn.execute(text("ALTER TABLE services ADD COLUMN slug VARCHAR"))
+            conn.commit()
+        except Exception:
+            pass
+        try:
+            conn.execute(text("ALTER TABLE orders ADD COLUMN cancel_reason TEXT"))
+            conn.commit()
+        except Exception:
+            pass
+        try:
+            conn.execute(text("ALTER TABLE order_status_history ADD COLUMN note TEXT"))
+            conn.commit()
+        except Exception:
+            pass
 
 def get_db():
     db = SessionLocal()

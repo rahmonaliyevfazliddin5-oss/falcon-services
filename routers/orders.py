@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from datetime import date, datetime, timedelta
+import json
 
 from database import get_db
 import models
@@ -64,16 +65,35 @@ def create_order(order_in: schemas.OrderCreate, current_user: models.User = Depe
         order_id=new_order.id,
         old_status=None,
         new_status="Yangi",
+        note="Buyurtma mijoz tomonidan muvaffaqiyatli topshirildi",
         changed_by_user_id=current_user.id
     )
     db.add(history)
+
+    # 8. Create Client Notification
+    db.add(models.Notification(
+        user_id=current_user.id,
+        title="Buyurtma yaratildi",
+        message=f"{order_number} raqamli buyurtmangiz muvaffaqiyatli qabul qilindi. Tez orada mutaxassislarimiz bog'lanishadi.",
+        link=f"/buyurtmalar/{new_order.id}"
+    ))
+
+    # 9. Notify Admin
+    admin_user = db.query(models.User).filter(models.User.role == "admin").first()
+    if admin_user:
+        db.add(models.Notification(
+            user_id=admin_user.id,
+            title="Yangi buyurtma!",
+            message=f"{order_number}: '{new_order.project_name}' bo'yicha yangi buyurtma qabul qilindi.",
+            link=f"/admin"
+        ))
     db.commit()
 
     return new_order
 
 @router.get("/my", response_model=list[schemas.OrderOut])
 def get_my_orders(current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
-    return db.query(models.Order).filter(models.Order.user_id == current_user.id).all()
+    return db.query(models.Order).filter(models.Order.user_id == current_user.id).order_by(models.Order.created_at.desc()).all()
 
 @router.get("/{id}", response_model=schemas.OrderDetailOut)
 def get_order_detail(id: int, current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
@@ -113,14 +133,36 @@ def change_order_status(id: int, status_update: schemas.OrderStatusUpdate, curre
 
     old_status = order.status
     order.status = status_update.status
+    if status_update.status == "Bekor qilindi" and status_update.note:
+        order.cancel_reason = status_update.note
     
     history = models.OrderStatusHistory(
         order_id=order.id,
         old_status=old_status,
         new_status=order.status,
+        note=status_update.note,
         changed_by_user_id=current_user.id
     )
     db.add(history)
+
+    # Bildirishnoma (Mijozga)
+    if current_user.id != order.user_id:
+        db.add(models.Notification(
+            user_id=order.user_id,
+            title="Buyurtma holati yangilandi",
+            message=f"{order.order_number} buyurtmangiz holati '{order.status}' ga o'zgardi.",
+            link=f"/buyurtmalar/{order.id}"
+        ))
+
+    if current_user.role == "admin":
+        db.add(models.ActivityLog(
+            admin_id=current_user.id,
+            action=f"Buyurtma holati: {old_status} -> {order.status}",
+            entity="Order",
+            entity_id=order.id,
+            metadata_json=json.dumps({"order_number": order.order_number, "old_status": old_status, "new_status": order.status, "note": status_update.note})
+        ))
+
     db.commit()
     db.refresh(order)
     return order

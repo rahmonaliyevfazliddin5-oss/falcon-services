@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Ko'p beriladigan savollar (FAQ) | Falcon Services{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Header -->
+    <div class="text-center mb-12">
+        <span class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 py-1 rounded-full">Savol-Javob</span>
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white mt-3">Ko'p beriladigan savollar</h1>
+        <p class="text-sm sm:text-base text-gray-500 dark:text-gray-400 mt-2">Falcon Services xizmatlaridan foydalanish bo'yicha eng muhim ma'lumotlar.</p>
+    </div>
+
+    <!-- FAQ Accordions -->
+    <div class="space-y-4">
+        <!-- Q1 -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
+            <button onclick="toggleFaq(this)" class="w-full p-5 text-left font-bold text-gray-900 dark:text-white flex items-center justify-between gap-4">
+                <span>Buyurtma berish uchun nimalar talab qilinadi?</span>
+                <span class="faq-icon text-blue-600 font-extrabold text-lg">+</span>
+            </button>
+            <div class="faq-content hidden px-5 pb-5 text-xs sm:text-sm text-gray-600 dark:text-gray-300 border-t border-gray-50 dark:border-slate-700/50 pt-3">
+                Xizmat turini tanlab, loyiha nomi va kamida 50 ta belgidan iborat qisqacha texnik topshiriqni kiritsangiz yetarli. Shundan so'ng menejerimiz siz bilan bog'lanib barcha tafsilotlarni tasdiqlaydi.
+            </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
+            <button onclick="toggleFaq(this)" class="w-full p-5 text-left font-bold text-gray-900 dark:text-white flex items-center justify-between gap-4">
+                <span>Loyiha tayyor bo'lish muddatlari qanday?</span>
+                <span class="faq-icon text-blue-600 font-extrabold text-lg">+</span>
+            </button>
+            <div class="faq-content hidden px-5 pb-5 text-xs sm:text-sm text-gray-600 dark:text-gray-300 border-t border-gray-50 dark:border-slate-700/50 pt-3">
+                Har bir xizmat kartochkasida uning standart bajarilish muddati ko'rsatilgan (masalan, Landing page uchun 3 kun, korporativ sayt uchun 7 kun). Buyurtma berish paytida o'zingiz xohlagan sanani ham belgilashingiz mumkin.
+            </div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
+            <button onclick="toggleFaq(this)" class="w-full p-5 text-left font-bold text-gray-900 dark:text-white flex items-center justify-between gap-4">
+                <span>To'lov qanday amalga oshiriladi?</span>
+                <span class="faq-icon text-blue-600 font-extrabold text-lg">+</span>
+            </button>
+            <div class="faq-content hidden px-5 pb-5 text-xs sm:text-sm text-gray-600 dark:text-gray-300 border-t border-gray-50 dark:border-slate-700/50 pt-3">
+                Biz to'lovlarni rasmiy shartnoma, hisob-raqam orqali pul ko'chirish yoki Payme / Click / bank kartalari orqali qabul qilamiz. Odatda dastlabki 50% bo'nak (avans), qolgan 50% esa loyiha to'liq topshirilgach to'lanadi.
+            </div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
+            <button onclick="toggleFaq(this)" class="w-full p-5 text-left font-bold text-gray-900 dark:text-white flex items-center justify-between gap-4">
+                <span>Sayt tayyor bo'lgach qo'llab-quvvatlash bormi?</span>
+                <span class="faq-icon text-blue-600 font-extrabold text-lg">+</span>
+            </button>
+            <div class="faq-content hidden px-5 pb-5 text-xs sm:text-sm text-gray-600 dark:text-gray-300 border-t border-gray-50 dark:border-slate-700/50 pt-3">
+                Ha, har bir loyiha topshirilgandan keyin kamida 1 oylik bepul texnik kafolat va qo'llab-quvvatlash xizmati beriladi. Shu muddat ichida aniqlangan kamchiliklar bepul bartaraf etiladi.
+            </div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
+            <button onclick="toggleFaq(this)" class="w-full p-5 text-left font-bold text-gray-900 dark:text-white flex items-center justify-between gap-4">
+                <span>Buyurtmani bekor qilish mumkinmi?</span>
+                <span class="faq-icon text-blue-600 font-extrabold text-lg">+</span>
+            </button>
+            <div class="faq-content hidden px-5 pb-5 text-xs sm:text-sm text-gray-600 dark:text-gray-300 border-t border-gray-50 dark:border-slate-700/50 pt-3">
+                Buyurtmangiz "Yangi" holatida turganda, uni istalgan vaqtda shaxsiy kabinetingizdan bir tugma orqali bekor qilishingiz mumkin.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function toggleFaq(btn) {
+        const content = btn.nextElementSibling;
+        const icon = btn.querySelector('.faq-icon');
+        const isOpen = !content.classList.contains('hidden');
+        
+        document.querySelectorAll('.faq-content').forEach(c => c.classList.add('hidden'));
+        document.querySelectorAll('.faq-icon').forEach(i => i.innerText = '+');
+
+        if (!isOpen) {
+            content.classList.remove('hidden');
+            icon.innerText = '−';
+        }
+    }
+</script>
+{% endblock %}

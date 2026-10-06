@@ -35,6 +35,7 @@ class Service(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     category_id = Column(Integer, ForeignKey("categories.id"), nullable=False)
+    slug = Column(String, unique=True, index=True, nullable=True)
     title = Column(String, nullable=False)
     description = Column(Text, nullable=False)
     image_url = Column(String, nullable=False)
@@ -61,6 +62,7 @@ class Order(Base):
     desired_deadline = Column(Date, nullable=False)
     contact_phone = Column(String, nullable=False)
     status = Column(String, default="Yangi", nullable=False)
+    cancel_reason = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     user = relationship("User", back_populates="orders", foreign_keys=[user_id])
@@ -75,6 +77,7 @@ class OrderStatusHistory(Base):
     order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
     old_status = Column(String, nullable=True)
     new_status = Column(String, nullable=False)
+    note = Column(Text, nullable=True)
     changed_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     changed_at = Column(DateTime, default=datetime.utcnow)
 
@@ -92,4 +95,38 @@ class Message(Base):
 
     order = relationship("Order", back_populates="messages")
     sender = relationship("User", back_populates="messages")
+
+class Notification(Base):
+    __tablename__ = "notifications"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    title = Column(String, nullable=False)
+    message = Column(Text, nullable=False)
+    link = Column(String, nullable=True)
+    is_read = Column(Boolean, default=False, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User")
+
+class ActivityLog(Base):
+    __tablename__ = "activity_logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    admin_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    action = Column(String, nullable=False)
+    entity = Column(String, nullable=False)
+    entity_id = Column(Integer, nullable=True)
+    metadata_json = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    admin = relationship("User")
+
+class Setting(Base):
+    __tablename__ = "settings"
+
+    id = Column(Integer, primary_key=True, index=True)
+    key = Column(String, unique=True, index=True, nullable=False)
+    value = Column(Text, nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow)
 

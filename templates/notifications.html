@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Bildirishnomalar | Falcon Services{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white">Bildirishnomalar markazi</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Buyurtmalaringiz va hisobingizga oid barcha yangiliklar</p>
+        </div>
+        <div>
+            <button id="markAllReadBtn" onclick="markAllNotificationsRead()" class="bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 text-blue-600 dark:text-blue-400 font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl transition inline-flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                <span>Barchasini o'qilgan deb belgilash</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="notifLoading" class="py-16 flex justify-center">
+        <div class="spinner"></div>
+    </div>
+
+    <div id="notifEmpty" class="hidden bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 p-12 text-center shadow-sm">
+        <div class="w-16 h-16 bg-blue-50 dark:bg-slate-700 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+        </div>
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1">Yangi bildirishnomalar yo'q</h3>
+        <p class="text-sm text-gray-400">Sizda hozircha barcha xabarlar o'qilgan yoki yangi xabarlar mavjud emas.</p>
+    </div>
+
+    <div id="notifList" class="space-y-3 hidden">
+        <!-- Rendered by JavaScript -->
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    async function loadNotifications() {
+        try {
+            const res = await fetchWithAuth(`${API_URL}/notifications`);
+            document.getElementById('notifLoading').classList.add('hidden');
+
+            if (!res.ok) {
+                showToast("Bildirishnomalarni yuklashda xatolik", "error");
+                return;
+            }
+
+            const notifs = await res.json();
+            const empty = document.getElementById('notifEmpty');
+            const list = document.getElementById('notifList');
+
+            if (notifs.length === 0) {
+                empty.classList.remove('hidden');
+                list.classList.add('hidden');
+                return;
+            }
+
+            empty.classList.add('hidden');
+            list.classList.remove('hidden');
+
+            list.innerHTML = notifs.map(n => `
+                <div onclick="handleNotificationClick(${n.id}, '${n.link || ''}')" class="cursor-pointer bg-white dark:bg-slate-800 rounded-2xl p-4 sm:p-5 shadow-sm border transition hover:shadow-md ${n.is_read ? 'border-gray-100 dark:border-slate-700 opacity-80' : 'border-blue-300 dark:border-blue-600 bg-blue-50/20 dark:bg-blue-900/10'} flex items-start gap-4">
+                    <div class="mt-1 flex-shrink-0">
+                        ${n.is_read ? `
+                            <div class="w-2.5 h-2.5 rounded-full bg-gray-300 dark:bg-slate-600"></div>
+                        ` : `
+                            <div class="w-2.5 h-2.5 rounded-full bg-blue-600 ring-4 ring-blue-100 dark:ring-blue-900"></div>
+                        `}
+                    </div>
+                    <div class="flex-grow space-y-1">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-sm font-bold ${n.is_read ? 'text-gray-800 dark:text-gray-200' : 'text-blue-600 dark:text-blue-400'}">${n.title}</h4>
+                            <span class="text-[10px] text-gray-400">${new Date(n.created_at).toLocaleString('uz-UZ')}</span>
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-300">${n.message}</p>
+                    </div>
+                </div>
+            `).join('');
+
+        } catch(e) {
+            console.error(e);
+            showToast("Tarmoq xatosi", "error");
+        }
+    }
+
+    async function handleNotificationClick(id, link) {
+        try {
+            await fetchWithAuth(`${API_URL}/notifications/${id}/read`, { method: 'PATCH' });
+            updateNotificationBadge();
+        } catch(e) {}
+        
+        if (link) {
+            window.location.href = link;
+        } else {
+            loadNotifications();
+        }
+    }
+
+    async function markAllNotificationsRead() {
+        const btn = document.getElementById('markAllReadBtn');
+        setButtonLoading(btn, "Belgilanmoqda...");
+
+        try {
+            const res = await fetchWithAuth(`${API_URL}/notifications/read-all`, { method: 'PATCH' });
+            if (res.ok) {
+                setButtonSuccess(btn, "Barchasi o'qildi");
+                showToast("Barcha bildirishnomalar o'qilgan deb belgilandi", "success");
+                updateNotificationBadge();
+                loadNotifications();
+            } else {
+                setButtonError(btn, "Xatolik");
+            }
+        } catch(e) {
+            setButtonError(btn, "Tarmoq xatosi");
+        } finally {
+            setTimeout(() => resetButton(btn), 2000);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadNotifications();
+    });
+</script>
+{% endblock %}

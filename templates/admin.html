@@ -7,12 +7,16 @@
     </div>
 
     <!-- Tabs Navigation -->
-    <div class="border-b border-gray-200 mb-6">
-        <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-            <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn border-blue-500 text-blue-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" data-i18n="admin.tab_dash">Dashboard</button>
-            <button onclick="switchTab('orders')" id="tab-orders" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" data-i18n="admin.tab_orders">Buyurtmalar</button>
-            <button onclick="switchTab('services')" id="tab-services" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" data-i18n="admin.tab_services">Xizmatlar</button>
-            <button onclick="switchTab('users')" id="tab-users" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" data-i18n="admin.tab_users">Foydalanuvchilar</button>
+    <div class="border-b border-gray-200 dark:border-slate-700 mb-6 overflow-x-auto">
+        <nav class="-mb-px flex space-x-6 sm:space-x-8 min-w-max" aria-label="Tabs">
+            <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn border-blue-500 text-blue-600 whitespace-nowrap py-3 px-1 border-b-2 font-bold text-sm" data-i18n="admin.tab_dash">Dashboard</button>
+            <button onclick="switchTab('orders')" id="tab-orders" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm" data-i18n="admin.tab_orders">Buyurtmalar</button>
+            <button onclick="switchTab('services')" id="tab-services" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm" data-i18n="admin.tab_services">Xizmatlar</button>
+            <button onclick="switchTab('categories')" id="tab-categories" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">Kategoriyalar</button>
+            <button onclick="switchTab('users')" id="tab-users" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm" data-i18n="admin.tab_users">Foydalanuvchilar</button>
+            <button onclick="switchTab('reports')" id="tab-reports" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">Hisobotlar</button>
+            <button onclick="switchTab('settings')" id="tab-settings" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">Sozlamalar</button>
+            <button onclick="switchTab('activity-log')" id="tab-activity-log" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">Faoliyat jurnali</button>
         </nav>
     </div>
 
@@ -214,6 +218,208 @@
             </table>
         </div>
     </div>
+
+    <!-- KATEGORIYALAR TAB -->
+    <div id="content-categories" class="tab-content hidden">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Kategoriyalar boshqaruvi</h3>
+                <p class="text-xs text-gray-500">Xizmatlar bo'limlari va guruhlari</p>
+            </div>
+            <button onclick="openCategoryModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-sm transition flex items-center gap-1.5">
+                <span>+ Yangi kategoriya</span>
+            </button>
+        </div>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
+                <thead class="bg-gray-50 dark:bg-slate-900">
+                    <tr>
+                        <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase">ID</th>
+                        <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase">Kategoriya Nomi</th>
+                        <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase">Slug</th>
+                        <th class="px-6 py-3.5 text-right text-xs font-bold text-gray-500 uppercase">Amallar</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-slate-700 text-sm" id="adminCategoriesTbody">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- HISOBOTLAR TAB -->
+    <div id="content-reports" class="tab-content hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-slate-700 mb-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">Moliyaviy va statistik hisobotlar</h3>
+                    <p class="text-xs text-gray-500">Buyurtmalar va daromadlar dinamikasi</p>
+                </div>
+                <div class="flex flex-wrap items-end gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Boshlanish</label>
+                        <input type="date" id="rep_start" class="border border-gray-300 dark:border-slate-600 rounded-xl p-2 text-xs bg-gray-50 dark:bg-slate-900">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Tugash</label>
+                        <input type="date" id="rep_end" class="border border-gray-300 dark:border-slate-600 rounded-xl p-2 text-xs bg-gray-50 dark:bg-slate-900">
+                    </div>
+                    <button onclick="loadAdminReports()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-sm transition">Ko'rish</button>
+                    <button onclick="exportCSV()" class="bg-green-600 hover:bg-green-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-sm transition">CSV Yuklash</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700">
+                <span class="text-xs font-bold text-gray-400 uppercase">Jami buyurtmalar</span>
+                <p class="text-2xl font-black text-gray-900 dark:text-white mt-1" id="repTotalOrders">0</p>
+            </div>
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700">
+                <span class="text-xs font-bold text-green-500 uppercase">Muvaffaqiyatli topshirilgan</span>
+                <p class="text-2xl font-black text-green-600 mt-1" id="repCompletedOrders">0</p>
+            </div>
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700">
+                <span class="text-xs font-bold text-emerald-500 uppercase">Haqiqiy Tushum</span>
+                <p class="text-2xl font-black text-emerald-600 mt-1" id="repTotalRevenue">0 UZS</p>
+            </div>
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700">
+                <span class="text-xs font-bold text-red-500 uppercase">Bekor qilingan</span>
+                <p class="text-2xl font-black text-red-600 mt-1" id="repCancelledOrders">0</p>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-slate-700">
+            <h4 class="font-bold text-sm text-gray-900 dark:text-white mb-4">Holatlar bo'yicha taqsimot</h4>
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-3" id="repStatusBreakdown">
+                <!-- JS populated -->
+            </div>
+        </div>
+    </div>
+
+    <!-- SOZLAMALAR TAB -->
+    <div id="content-settings" class="tab-content hidden">
+        <div class="max-w-2xl bg-white dark:bg-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-100 dark:border-slate-700 space-y-6">
+            <div>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Platforma sozlamalari</h3>
+                <p class="text-xs text-gray-500">Tizim holati va global parametrlarni boshqarish</p>
+            </div>
+
+            <form id="adminSettingsForm" onsubmit="saveAllSettings(event)" class="space-y-6">
+                <!-- Maintenance Toggle -->
+                <div class="p-4 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 flex items-center justify-between">
+                    <div>
+                        <h4 class="text-sm font-bold text-amber-900 dark:text-amber-200">Texnik xizmat ko'rsatish rejimi (Maintenance Mode)</h4>
+                        <p class="text-xs text-amber-700 dark:text-amber-300">Faollashtirilganda tashrif buyuruvchilarga sozlash ishlari haqida xabar chiqadi.</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="setting_maintenance" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
+                    </label>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Platforma nomi</label>
+                    <input type="text" id="setting_site_name" class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-3 text-sm dark:bg-slate-900">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Aloqa telefon raqami</label>
+                    <input type="text" id="setting_contact_phone" class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-3 text-sm dark:bg-slate-900">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Aloqa elektron pochtasi</label>
+                    <input type="email" id="setting_contact_email" class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-3 text-sm dark:bg-slate-900">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Minimal Texnik topshiriq uzunligi (belgi)</label>
+                    <input type="number" id="setting_min_tt_length" class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-3 text-sm dark:bg-slate-900" value="50">
+                </div>
+
+                <div class="pt-4 border-t border-gray-100 dark:border-slate-700 flex justify-end">
+                    <button type="submit" id="saveSettingsBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm px-6 py-2.5 rounded-xl shadow-md transition">
+                        Sozlamalarni saqlash
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- FAOLIYAT JURNALI TAB -->
+    <div id="content-activity-log" class="tab-content hidden">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Admin faoliyat jurnali (Activity Log)</h3>
+                <p class="text-xs text-gray-500">Tizimda amalga oshirilgan barcha muhim harakatlar qaydi</p>
+            </div>
+            <button onclick="loadAdminActivityLog()" class="bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-200 font-semibold text-xs px-3.5 py-2 rounded-xl transition">
+                Yangilash
+            </button>
+        </div>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
+                <thead class="bg-gray-50 dark:bg-slate-900">
+                    <tr>
+                        <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase">Vaqt</th>
+                        <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase">Administrator</th>
+                        <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase">Amal</th>
+                        <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase">Obyekt</th>
+                        <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase">Tafsilot</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-slate-700 text-xs sm:text-sm" id="adminActivityLogTbody">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Category Modal -->
+<div id="categoryModal" class="fixed inset-0 bg-gray-900/60 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-md shadow-2xl p-6 border border-gray-100 dark:border-slate-700">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white" id="catModalTitle">Kategoriya</h3>
+            <button onclick="closeCategoryModal()" class="text-gray-400 hover:text-gray-600">&times;</button>
+        </div>
+        <form id="categoryForm" onsubmit="saveCategory(event)" class="space-y-4">
+            <input type="hidden" id="cat-id">
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Kategoriya nomi</label>
+                <input type="text" id="cat-name" required placeholder="Masalan: Web Dasturlash" class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-2.5 text-sm dark:bg-slate-900">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Slug (URL uchun)</label>
+                <input type="text" id="cat-slug" required placeholder="web-dasturlash" class="w-full border border-gray-300 dark:border-slate-600 rounded-xl p-2.5 text-sm dark:bg-slate-900">
+            </div>
+            <div class="flex justify-end gap-3 pt-2">
+                <button type="button" onclick="closeCategoryModal()" class="px-4 py-2 text-xs font-semibold text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 rounded-xl">Bekor qilish</button>
+                <button type="submit" id="catSaveBtn" class="px-5 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm">Saqlash</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Admin User Detail Modal -->
+<div id="adminUserModal" class="fixed inset-0 bg-gray-900/60 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-2xl shadow-2xl p-6 border border-gray-100 dark:border-slate-700 max-h-[85vh] overflow-y-auto">
+        <div class="flex justify-between items-center pb-3 border-b border-gray-100 dark:border-slate-700 mb-4">
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white" id="aum-name">Foydalanuvchi</h3>
+            <button onclick="closeModal('adminUserModal')" class="text-gray-400 hover:text-gray-600">&times;</button>
+        </div>
+        <div class="grid grid-cols-2 gap-4 mb-6 text-xs">
+            <div><span class="text-gray-400 block">Email:</span> <strong id="aum-email" class="text-gray-800 dark:text-gray-200">-</strong></div>
+            <div><span class="text-gray-400 block">Telefon:</span> <strong id="aum-phone" class="text-gray-800 dark:text-gray-200">-</strong></div>
+            <div><span class="text-gray-400 block">Rol:</span> <strong id="aum-role" class="text-gray-800 dark:text-gray-200">-</strong></div>
+            <div><span class="text-gray-400 block">Ro'yxatdan o'tgan:</span> <strong id="aum-date" class="text-gray-800 dark:text-gray-200">-</strong></div>
+        </div>
+        <h4 class="font-bold text-sm text-gray-900 dark:text-white mb-3">Buyurtmalari tarixi:</h4>
+        <div id="aum-orders" class="space-y-2 text-xs">
+            <!-- Populated by JS -->
+        </div>
+    </div>
 </div>
 
 <!-- Admin Order Management Modal -->
@@ -368,10 +574,11 @@
                 return;
             }
             myAdminId = user.id;
-            switchTab('dashboard'); // Automatically load dashboard on start
+            const urlParams = new URLSearchParams(window.location.search);
+            const initTab = urlParams.get('tab') || '{{ active_tab | default("dashboard") }}';
+            switchTab(initTab);
         } catch (e) {
             console.warn(e);
-            // Tarmoq xatosida tokenni aslo o'chirmaslik
         }
     }
 
@@ -394,16 +601,17 @@
 
     function switchTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
-        document.getElementById('content-' + tabId).classList.remove('hidden');
+        const targetContent = document.getElementById('content-' + tabId);
+        if (targetContent) targetContent.classList.remove('hidden');
         
         document.querySelectorAll('.tab-btn').forEach(b => {
-            b.classList.remove('border-blue-500', 'text-blue-600');
+            b.classList.remove('border-blue-500', 'text-blue-600', 'font-bold');
             b.classList.add('border-transparent', 'text-gray-500');
         });
         const activeBtn = document.getElementById('tab-' + tabId);
         if(activeBtn) {
             activeBtn.classList.remove('border-transparent', 'text-gray-500');
-            activeBtn.classList.add('border-blue-500', 'text-blue-600');
+            activeBtn.classList.add('border-blue-500', 'text-blue-600', 'font-bold');
         }
 
         if(tabId === 'dashboard') {
@@ -414,7 +622,11 @@
         }
         if(tabId === 'orders') loadAdminOrders();
         if(tabId === 'services') loadAdminServices();
+        if(tabId === 'categories') loadAdminCategoriesTab();
         if(tabId === 'users') loadAdminUsers();
+        if(tabId === 'reports') loadAdminReports();
+        if(tabId === 'settings') loadAdminSettings();
+        if(tabId === 'activity-log') loadAdminActivityLog();
     }
 
     // DASHBOARD
@@ -837,25 +1049,260 @@
     }
 
     // USERS
+    // USERS
     async function loadAdminUsers() {
         const res = await fetchWithAuth(`${API_URL}/admin/users`);
         if(res.ok) {
             const users = await res.json();
             const tb = document.getElementById('adminUsersTbody');
             tb.innerHTML = users.map(u => `
-                <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <tr class="hover:bg-gray-50 dark:hover:bg-slate-700/30 transition">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                         <div class="font-bold">${u.id}. ${u.name}</div>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600">${u.email}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 dark:text-blue-400">${u.email}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${u.phone || '-'}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm">
                         <span class="px-2 py-1 rounded-full text-xs font-bold ${u.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'}">${u.role.toUpperCase()}</span>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">${u.orders_count} ta</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 dark:text-white">${u.orders_count} ta</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${new Date(u.created_at).toLocaleDateString()}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+                        <button onclick="openAdminUserModal(${u.id})" class="text-blue-600 hover:text-blue-800 font-bold bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-lg text-xs">Tafsilot &rarr;</button>
+                    </td>
                 </tr>
             `).join('');
+        }
+    }
+
+    async function openAdminUserModal(id) {
+        try {
+            const res = await fetchWithAuth(`${API_URL}/admin/users/${id}`);
+            if (res.ok) {
+                const u = await res.json();
+                document.getElementById('aum-name').innerText = `${u.name} (ID: ${u.id})`;
+                document.getElementById('aum-email').innerText = u.email;
+                document.getElementById('aum-phone').innerText = u.phone || '-';
+                document.getElementById('aum-role').innerText = u.role.toUpperCase();
+                document.getElementById('aum-date').innerText = new Date(u.created_at).toLocaleString('uz-UZ');
+                
+                const ordersCont = document.getElementById('aum-orders');
+                if (!u.orders || u.orders.length === 0) {
+                    ordersCont.innerHTML = `<p class="text-gray-400">Foydalanuvchida hali buyurtmalar yo'q.</p>`;
+                } else {
+                    ordersCont.innerHTML = u.orders.map(o => `
+                        <div class="p-3 bg-gray-50 dark:bg-slate-700 rounded-xl flex items-center justify-between border border-gray-100 dark:border-slate-600">
+                            <div>
+                                <span class="font-bold text-gray-900 dark:text-white">${o.order_number}</span> - ${o.project_name}
+                                <div class="text-[10px] text-gray-400">${o.service_title_snapshot} &bull; ${new Date(o.created_at).toLocaleDateString()}</div>
+                            </div>
+                            <div class="text-right">
+                                <span class="font-extrabold text-blue-600 dark:text-blue-400 block">${o.price_snapshot.toLocaleString()} UZS</span>
+                                <span class="text-[10px] font-bold ${getBadgeColor(o.status)} px-2 py-0.5 rounded-full">${o.status}</span>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                openModal('adminUserModal');
+            }
+        } catch(e) {
+            showToast("Foydalanuvchi ma'lumotlarini yuklashda xatolik", "error");
+        }
+    }
+
+    // CATEGORIES
+    let adminCategoriesList = [];
+    async function loadAdminCategoriesTab() {
+        const res = await fetch(`${API_URL}/categories`);
+        if (res.ok) {
+            adminCategoriesList = await res.json();
+            const tb = document.getElementById('adminCategoriesTbody');
+            tb.innerHTML = adminCategoriesList.map(c => `
+                <tr class="hover:bg-gray-50 dark:hover:bg-slate-700/30 transition">
+                    <td class="px-6 py-4 font-bold text-gray-900 dark:text-white">${c.id}</td>
+                    <td class="px-6 py-4 font-semibold text-gray-800 dark:text-gray-200">${c.name}</td>
+                    <td class="px-6 py-4 font-mono text-xs text-blue-600">${c.slug}</td>
+                    <td class="px-6 py-4 text-right space-x-2">
+                        <button onclick="openCategoryModal(${c.id})" class="text-blue-600 hover:text-blue-800 text-xs font-bold bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-lg">Tahrirlash</button>
+                        <button onclick="deleteCategory(${c.id})" class="text-red-600 hover:text-red-800 text-xs font-bold bg-red-50 dark:bg-red-900/30 px-3 py-1.5 rounded-lg">O'chirish</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+    }
+
+    function openCategoryModal(catId = null) {
+        document.getElementById('cat-id').value = catId || '';
+        if (catId) {
+            const cat = adminCategoriesList.find(c => c.id === catId);
+            if (cat) {
+                document.getElementById('catModalTitle').innerText = "Kategoriyani tahrirlash";
+                document.getElementById('cat-name').value = cat.name;
+                document.getElementById('cat-slug').value = cat.slug;
+            }
+        } else {
+            document.getElementById('catModalTitle').innerText = "Yangi kategoriya qo'shish";
+            document.getElementById('cat-name').value = '';
+            document.getElementById('cat-slug').value = '';
+        }
+        openModal('categoryModal');
+    }
+
+    function closeCategoryModal() {
+        closeModal('categoryModal');
+    }
+
+    async function saveCategory(e) {
+        e.preventDefault();
+        const id = document.getElementById('cat-id').value;
+        const payload = {
+            name: document.getElementById('cat-name').value.trim(),
+            slug: document.getElementById('cat-slug').value.trim()
+        };
+
+        const method = id ? 'PUT' : 'POST';
+        const url = id ? `${API_URL}/admin/categories/${id}` : `${API_URL}/admin/categories`;
+
+        try {
+            const res = await fetchWithAuth(url, {
+                method: method,
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                showToast(id ? "Kategoriya yangilandi" : "Kategoriya qo'shildi", "success");
+                closeCategoryModal();
+                loadAdminCategoriesTab();
+            } else {
+                showToast("Saqlashda xatolik", "error");
+            }
+        } catch(e) {
+            showToast("Tarmoq xatosi", "error");
+        }
+    }
+
+    function deleteCategory(id) {
+        confirmAction("Kategoriyani o'chirish", "Ushbu kategoriyani o'chirmoqchimisiz?", async () => {
+            const res = await fetchWithAuth(`${API_URL}/admin/categories/${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                showToast("Kategoriya o'chirildi", "success");
+                loadAdminCategoriesTab();
+            } else {
+                showToast("O'chirishda xatolik", "error");
+            }
+        });
+    }
+
+    // REPORTS
+    async function loadAdminReports() {
+        const start = document.getElementById('rep_start').value;
+        const end = document.getElementById('rep_end').value;
+        let url = `${API_URL}/admin/reports?`;
+        if (start) url += `start_date=${start}&`;
+        if (end) url += `end_date=${end}`;
+
+        try {
+            const res = await fetchWithAuth(url);
+            if (res.ok) {
+                const rep = await res.json();
+                document.getElementById('repTotalOrders').innerText = rep.total_orders;
+                document.getElementById('repCompletedOrders').innerText = rep.completed_orders;
+                document.getElementById('repTotalRevenue').innerText = rep.total_revenue.toLocaleString() + ' UZS';
+                document.getElementById('repCancelledOrders').innerText = rep.cancelled_orders;
+
+                const counts = rep.status_counts || {};
+                const breakdown = document.getElementById('repStatusBreakdown');
+                breakdown.innerHTML = Object.entries(counts).map(([st, cnt]) => `
+                    <div class="p-3 bg-gray-50 dark:bg-slate-700/50 rounded-xl border border-gray-100 dark:border-slate-600 text-center">
+                        <span class="text-xs text-gray-500 block font-semibold">${st}</span>
+                        <strong class="text-lg text-gray-900 dark:text-white font-extrabold">${cnt}</strong>
+                    </div>
+                `).join('');
+            }
+        } catch(e) {
+            showToast("Hisobotlarni yuklashda xatolik", "error");
+        }
+    }
+
+    // SETTINGS
+    async function loadAdminSettings() {
+        try {
+            const res = await fetchWithAuth(`${API_URL}/admin/settings`);
+            if (res.ok) {
+                const settings = await res.json();
+                settings.forEach(s => {
+                    if (s.key === 'maintenance_mode') {
+                        document.getElementById('setting_maintenance').checked = s.value === 'true';
+                    } else if (s.key === 'site_name') {
+                        document.getElementById('setting_site_name').value = s.value;
+                    } else if (s.key === 'contact_phone') {
+                        document.getElementById('setting_contact_phone').value = s.value;
+                    } else if (s.key === 'contact_email') {
+                        document.getElementById('setting_contact_email').value = s.value;
+                    } else if (s.key === 'min_tt_length') {
+                        document.getElementById('setting_min_tt_length').value = s.value;
+                    }
+                });
+            }
+        } catch(e) {
+            console.error(e);
+        }
+    }
+
+    async function saveAllSettings(e) {
+        e.preventDefault();
+        const btn = document.getElementById('saveSettingsBtn');
+        setButtonLoading(btn, "Saqlanmoqda...");
+
+        const settingsList = [
+            { key: 'maintenance_mode', value: document.getElementById('setting_maintenance').checked ? 'true' : 'false' },
+            { key: 'site_name', value: document.getElementById('setting_site_name').value.trim() },
+            { key: 'contact_phone', value: document.getElementById('setting_contact_phone').value.trim() },
+            { key: 'contact_email', value: document.getElementById('setting_contact_email').value.trim() },
+            { key: 'min_tt_length', value: document.getElementById('setting_min_tt_length').value.trim() }
+        ];
+
+        try {
+            for (const s of settingsList) {
+                await fetchWithAuth(`${API_URL}/admin/settings`, {
+                    method: 'PUT',
+                    body: JSON.stringify(s)
+                });
+            }
+            setButtonSuccess(btn, "Saqlandi!");
+            showToast("Barcha sozlamalar muvaffaqiyatli saqlandi!", "success");
+        } catch(e) {
+            setButtonError(btn, "Xatolik");
+            showToast("Sozlamalarni saqlashda xatolik", "error");
+        } finally {
+            setTimeout(() => resetButton(btn), 2000);
+        }
+    }
+
+    // ACTIVITY LOG
+    async function loadAdminActivityLog() {
+        try {
+            const res = await fetchWithAuth(`${API_URL}/admin/activity-log`);
+            if (res.ok) {
+                const logs = await res.json();
+                const tb = document.getElementById('adminActivityLogTbody');
+                if (logs.length === 0) {
+                    tb.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-gray-400">Faoliyat jurnali bo'sh</td></tr>`;
+                    return;
+                }
+                tb.innerHTML = logs.map(l => `
+                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-700/30 transition">
+                        <td class="px-6 py-3 font-mono text-gray-400 text-xs">${new Date(l.created_at).toLocaleString('uz-UZ')}</td>
+                        <td class="px-6 py-3 font-bold text-gray-900 dark:text-white">${l.admin_name || 'Admin'}</td>
+                        <td class="px-6 py-3 font-semibold text-blue-600 dark:text-blue-400">${l.action}</td>
+                        <td class="px-6 py-3"><span class="px-2 py-0.5 rounded-md bg-gray-100 dark:bg-slate-700 text-xs">${l.entity || '-'}</span></td>
+                        <td class="px-6 py-3 font-mono text-[11px] text-gray-500 max-w-xs truncate">${l.metadata_json || '-'}</td>
+                    </tr>
+                `).join('');
+            }
+        } catch(e) {
+            showToast("Faoliyat jurnalini yuklashda xatolik", "error");
         }
     }
 
