@@ -44,6 +44,10 @@ class ResetPasswordRequest(BaseModel):
     token: str
     new_password: str
 
+class ChangePasswordRequest(BaseModel):
+    current_password: Optional[str] = None
+    new_password: str
+
 
 # --- Categories ---
 class CategoryBase(BaseModel):

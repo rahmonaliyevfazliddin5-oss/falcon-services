@@ -96,7 +96,7 @@ async def contact_page(request: Request):
 @router.get("/yordam", response_class=HTMLResponse)
 async def support_page(request: Request, db: Session = Depends(get_db)):
     user = get_optional_user(request, db)
-    return templates.TemplateResponse(request=request, name="support.html", context={"user": user})
+    return templates.TemplateResponse(request=request, name="support.html", context={"user": user, "active_page": "support"})
 
 @router.get("/support", response_class=HTMLResponse)
 async def support_legacy(request: Request):
@@ -170,14 +170,14 @@ async def client_dashboard(request: Request, db: Session = Depends(get_db)):
         return RedirectResponse(url="/kirish?redirect=/dashboard", status_code=302)
     if user.role == "admin":
         return RedirectResponse(url="/admin", status_code=302)
-    return templates.TemplateResponse(request=request, name="client_dashboard.html", context={"user": user})
+    return templates.TemplateResponse(request=request, name="client_dashboard.html", context={"user": user, "active_page": "dashboard"})
 
 @router.get("/buyurtmalarim", response_class=HTMLResponse)
 async def client_orders(request: Request, db: Session = Depends(get_db)):
     user = get_optional_user(request, db)
     if not user:
         return RedirectResponse(url="/kirish?redirect=/buyurtmalarim", status_code=302)
-    return templates.TemplateResponse(request=request, name="my_orders.html", context={"user": user})
+    return templates.TemplateResponse(request=request, name="my_orders.html", context={"user": user, "active_page": "orders"})
 
 @router.get("/buyurtma/{service_slug_or_id}", response_class=HTMLResponse)
 async def client_order_wizard(request: Request, service_slug_or_id: str, db: Session = Depends(get_db)):
@@ -194,19 +194,19 @@ async def client_order_wizard(request: Request, service_slug_or_id: str, db: Ses
     return templates.TemplateResponse(
         request=request, 
         name="order_create.html", 
-        context={"user": user, "service": service, "service_identifier": service_slug_or_id}
+        context={"user": user, "service": service, "service_identifier": service_slug_or_id, "active_page": "new_order"}
     )
 
 @router.get("/buyurtma/muvaffaqiyat", response_class=HTMLResponse)
 async def client_order_success(request: Request, order_number: str = Query(None)):
-    return templates.TemplateResponse(request=request, name="order_success.html", context={"order_number": order_number})
+    return templates.TemplateResponse(request=request, name="order_success.html", context={"order_number": order_number, "active_page": "orders"})
 
 @router.get("/buyurtmalar/{order_id}", response_class=HTMLResponse)
 async def client_order_detail(request: Request, order_id: int, db: Session = Depends(get_db)):
     user = get_optional_user(request, db)
     if not user:
         return RedirectResponse(url=f"/kirish?redirect=/buyurtmalar/{order_id}", status_code=302)
-    return templates.TemplateResponse(request=request, name="order_detail.html", context={"user": user, "order_id": order_id})
+    return templates.TemplateResponse(request=request, name="order_detail.html", context={"user": user, "order_id": order_id, "active_page": "orders"})
 
 @router.get("/buyurtmalar/{order_id}/chat", response_class=HTMLResponse)
 async def client_order_chat(request: Request, order_id: int):
@@ -217,7 +217,7 @@ async def client_profile(request: Request, db: Session = Depends(get_db)):
     user = get_optional_user(request, db)
     if not user:
         return RedirectResponse(url="/kirish?redirect=/profil", status_code=302)
-    return templates.TemplateResponse(request=request, name="profile.html", context={"user": user, "edit_mode": False})
+    return templates.TemplateResponse(request=request, name="profile.html", context={"user": user, "edit_mode": False, "active_page": "profile"})
 
 @router.get("/profile", response_class=HTMLResponse)
 async def profile_legacy(request: Request):
@@ -228,14 +228,14 @@ async def client_profile_edit(request: Request, db: Session = Depends(get_db)):
     user = get_optional_user(request, db)
     if not user:
         return RedirectResponse(url="/kirish?redirect=/profil/tahrirlash", status_code=302)
-    return templates.TemplateResponse(request=request, name="profile.html", context={"user": user, "edit_mode": True})
+    return templates.TemplateResponse(request=request, name="profile.html", context={"user": user, "edit_mode": True, "active_page": "profile"})
 
 @router.get("/bildirishnomalar", response_class=HTMLResponse)
 async def client_notifications(request: Request, db: Session = Depends(get_db)):
     user = get_optional_user(request, db)
     if not user:
         return RedirectResponse(url="/kirish?redirect=/bildirishnomalar", status_code=302)
-    return templates.TemplateResponse(request=request, name="notifications.html", context={"user": user})
+    return templates.TemplateResponse(request=request, name="notifications.html", context={"user": user, "active_page": "notifications"})
 
 # =========================================================================
 # 4. ADMIN PORTAL PAGES

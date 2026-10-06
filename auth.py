@@ -313,6 +313,22 @@ def reset_password(req: schemas.ResetPasswordRequest, db: Session = Depends(get_
 
     return {"message": "Parol muvaffaqiyatli yangilandi. Yangi parol bilan tizimga kirishingiz mumkin."}
 
+@router.post("/change-password")
+def change_password(
+    req: schemas.ChangePasswordRequest,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if not req.new_password or len(req.new_password) < 6:
+        raise HTTPException(status_code=400, detail="Yangi parol kamida 6 ta belgidan iborat bo'lishi kerak")
+    
+    if current_user.password_hash and req.current_password:
+        if not verify_password(req.current_password, current_user.password_hash):
+            raise HTTPException(status_code=400, detail="Joriy parol noto'g'ri kiritildi")
+            
+    current_user.password_hash = get_password_hash(req.new_password)
+    db.commit()
+    return {"message": "Parol muvaffaqiyatli yangilandi"}
 
 @router.get("/me", response_model=schemas.UserOut)
 def read_users_me(current_user: models.User = Depends(get_current_user)):

@@ -3,37 +3,47 @@
 {% block title %}Bildirishnomalar | Falcon Services{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-        <div>
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white">Bildirishnomalar markazi</h1>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Buyurtmalaringiz va hisobingizga oid barcha yangiliklar</p>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        
+        <!-- Persistent Client Sidebar -->
+        {% include "client_sidebar.html" %}
+
+        <!-- Main Notifications Area -->
+        <div class="lg:col-span-3 space-y-6">
+            
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white">Bildirishnomalar markazi</h1>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Buyurtmalaringiz va hisobingizga oid barcha yangiliklar</p>
+                </div>
+                <div>
+                    <button id="markAllReadBtn" onclick="markAllNotificationsRead()" class="bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 text-blue-600 dark:text-blue-400 font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl transition inline-flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        <span>Barchasini o'qilgan deb belgilash</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="notifLoading" class="py-16 flex justify-center">
+                <div class="spinner"></div>
+            </div>
+
+            <div id="notifEmpty" class="hidden bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 p-12 text-center shadow-sm">
+                <div class="w-16 h-16 bg-blue-50 dark:bg-slate-700 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1">Yangi bildirishnomalar yo'q</h3>
+                <p class="text-sm text-gray-400">Sizda hozircha barcha xabarlar o'qilgan yoki yangi xabarlar mavjud emas.</p>
+            </div>
+
+            <div id="notifList" class="space-y-3 hidden">
+                <!-- Rendered by JavaScript -->
+            </div>
+
         </div>
-        <div>
-            <button id="markAllReadBtn" onclick="markAllNotificationsRead()" class="bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 text-blue-600 dark:text-blue-400 font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl transition inline-flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                <span>Barchasini o'qilgan deb belgilash</span>
-            </button>
-        </div>
-    </div>
 
-    <div id="notifLoading" class="py-16 flex justify-center">
-        <div class="spinner"></div>
     </div>
-
-    <div id="notifEmpty" class="hidden bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 p-12 text-center shadow-sm">
-        <div class="w-16 h-16 bg-blue-50 dark:bg-slate-700 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-        </div>
-        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1">Yangi bildirishnomalar yo'q</h3>
-        <p class="text-sm text-gray-400">Sizda hozircha barcha xabarlar o'qilgan yoki yangi xabarlar mavjud emas.</p>
-    </div>
-
-    <div id="notifList" class="space-y-3 hidden">
-        <!-- Rendered by JavaScript -->
-    </div>
-
 </div>
 {% endblock %}
 

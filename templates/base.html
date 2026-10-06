@@ -478,6 +478,11 @@
                         mBadge.innerText = count > 99 ? '99+' : count;
                         mBadge.classList.toggle('hidden', count === 0);
                     }
+                    const sBadge = document.getElementById('sideNotifBadge');
+                    if (sBadge) {
+                        sBadge.innerText = count > 99 ? '99+' : count;
+                        sBadge.classList.toggle('hidden', count === 0);
+                    }
                 }
             } catch(e) {}
         }

@@ -4,56 +4,62 @@
 
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-        <div>
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white">Mening buyurtmalarim</h1>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Barcha buyurtmalaringiz tarixi va real-vaqt holati</p>
-        </div>
-        <div>
-            <a href="/xizmatlar" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow transition inline-flex items-center gap-2">
-                <span>+ Yangi buyurtma berish</span>
-            </a>
-        </div>
-    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        {% include "client_sidebar.html" %}
 
-    <!-- Filters & Search Toolbar -->
-    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 p-4 mb-6">
-        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-            <!-- Status Tabs -->
-            <div class="flex items-center gap-1 sm:gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0" id="statusFilterTabs">
-                <button onclick="setFilter('all')" class="status-tab px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-blue-600 text-white" data-status="all">Barchasi</button>
-                <button onclick="setFilter('Yangi')" class="status-tab px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700" data-status="Yangi">Yangi</button>
-                <button onclick="setFilter('in_progress')" class="status-tab px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700" data-status="in_progress">Jarayonda</button>
-                <button onclick="setFilter('Yakunlandi')" class="status-tab px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700" data-status="Yakunlandi">Yakunlangan</button>
-                <button onclick="setFilter('Bekor qilindi')" class="status-tab px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700" data-status="Bekor qilindi">Bekor qilingan</button>
-            </div>
-
-            <!-- Search input -->
-            <div class="w-full md:w-64">
-                <div class="relative">
-                    <input type="text" id="orderSearchInput" oninput="onSearchChange()" placeholder="Qidirish (raqam, loyiha)..." class="w-full pl-9 pr-3 py-2 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        <div class="lg:col-span-3 space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white">Mening buyurtmalarim</h1>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Barcha buyurtmalaringiz tarixi va real-vaqt holati</p>
+                </div>
+                <div>
+                    <a href="/xizmatlar" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow transition inline-flex items-center gap-2">
+                        <span>+ Yangi buyurtma berish</span>
+                    </a>
                 </div>
             </div>
+
+            <!-- Filters & Search Toolbar -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 p-4">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                    <!-- Status Tabs -->
+                    <div class="flex items-center gap-1 sm:gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0" id="statusFilterTabs">
+                        <button onclick="setFilter('all')" class="status-tab px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-blue-600 text-white" data-status="all">Barchasi</button>
+                        <button onclick="setFilter('Yangi')" class="status-tab px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700" data-status="Yangi">Yangi</button>
+                        <button onclick="setFilter('in_progress')" class="status-tab px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700" data-status="in_progress">Jarayonda</button>
+                        <button onclick="setFilter('Yakunlandi')" class="status-tab px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700" data-status="Yakunlandi">Yakunlangan</button>
+                        <button onclick="setFilter('Bekor qilindi')" class="status-tab px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700" data-status="Bekor qilindi">Bekor qilingan</button>
+                    </div>
+
+                    <!-- Search input -->
+                    <div class="w-full md:w-64">
+                        <div class="relative">
+                            <input type="text" id="orderSearchInput" oninput="onSearchChange()" placeholder="Qidirish (raqam, loyiha)..." class="w-full pl-9 pr-3 py-2 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Content -->
+            <div id="ordersLoading" class="py-16 flex justify-center">
+                <div class="spinner"></div>
+            </div>
+
+            <div id="ordersEmpty" class="hidden bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 p-12 text-center shadow-sm">
+                <div class="w-16 h-16 bg-blue-50 dark:bg-slate-700 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1">Buyurtmalar topilmadi</h3>
+                <p class="text-sm text-gray-400 mb-6">Tanlangan holat bo'yicha buyurtmalar mavjud emas</p>
+                <a href="/xizmatlar" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm px-5 py-2.5 rounded-xl shadow transition inline-block">Yangi buyurtma berish</a>
+            </div>
+
+            <div id="ordersList" class="space-y-4 hidden">
+                <!-- Rendered by JavaScript -->
+            </div>
         </div>
-    </div>
-
-    <!-- Orders Content -->
-    <div id="ordersLoading" class="py-16 flex justify-center">
-        <div class="spinner"></div>
-    </div>
-
-    <div id="ordersEmpty" class="hidden bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 p-12 text-center shadow-sm">
-        <div class="w-16 h-16 bg-blue-50 dark:bg-slate-700 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-        </div>
-        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1">Buyurtmalar topilmadi</h3>
-        <p class="text-sm text-gray-400 mb-6">Tanlangan holat bo'yicha buyurtmalar mavjud emas</p>
-        <a href="/xizmatlar" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm px-5 py-2.5 rounded-xl shadow transition inline-block">Yangi buyurtma berish</a>
-    </div>
-
-    <div id="ordersList" class="space-y-4 hidden">
-        <!-- Rendered by JavaScript -->
     </div>
 </div>
 {% endblock %}

@@ -796,3 +796,36 @@ def test_admin_broadcast(db_session):
     }, headers=admin_headers)
     assert bc_res.status_code == 200
     assert "foydalanuvchiga bildirishnoma yuborildi" in bc_res.json()["detail"]
+
+# Test 25: Parolni o'zgartirish (Change password)
+def test_change_password(db_session):
+    # Isolated user yaratamiz
+    reg_res = client.post("/api/auth/register", json={
+        "name": "Password Test User",
+        "email": "pwd_test@falcon.uz",
+        "password": "initial_password123"
+    })
+    assert reg_res.status_code == 200
+    token = reg_res.json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    # 1. Noto'g'ri joriy parol
+    bad_res = client.post("/api/auth/change-password", json={
+        "current_password": "wrongpassword",
+        "new_password": "brand_new_password123"
+    }, headers=headers)
+    assert bad_res.status_code == 400
+
+    # 2. To'g'ri joriy parol va yangi parol
+    good_res = client.post("/api/auth/change-password", json={
+        "current_password": "initial_password123",
+        "new_password": "brand_new_password123"
+    }, headers=headers)
+    assert good_res.status_code == 200
+
+    # 3. Yangi parol bilan kirish
+    new_login = client.post("/api/auth/login", data={"username": "pwd_test@falcon.uz", "password": "brand_new_password123"})
+    assert new_login.status_code == 200
+    assert "access_token" in new_login.json()
+
+
