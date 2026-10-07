@@ -48,7 +48,25 @@
             </div>
 
             <!-- Google bilan kirish (Asosiy tugmaning pastida) -->
-            <div class="w-full">
+            <div class="w-full flex flex-col items-center">
+                <!-- Google Identity Services Declarative Tags -->
+                <div id="g_id_onload"
+                     data-client_id="354347783742-g8fsuo6iathr7s7un3dddic44874nid0.apps.googleusercontent.com"
+                     data-context="signin"
+                     data-ux_mode="popup"
+                     data-callback="handleGoogleCredentialResponse"
+                     data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin w-full flex justify-center mb-1.5"
+                     data-type="standard"
+                     data-shape="rectangular"
+                     data-theme="outline"
+                     data-text="signin_with"
+                     data-size="large"
+                     data-logo_alignment="left"
+                     data-width="380">
+                </div>
+
                 <div id="googleGsiBtn" class="w-full flex justify-center mb-1 overflow-hidden"></div>
                 <button id="googleCustomBtn" type="button" onclick="handleGoogleSignIn()" class="w-full flex items-center justify-center gap-3 py-2.5 px-4 border border-gray-300 dark:border-slate-600 rounded-lg shadow-xs bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 text-sm font-semibold text-gray-700 dark:text-gray-200 transition">
                     <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24">
@@ -188,19 +206,21 @@
         modal.classList.remove('flex');
     }
 
-    const GOOGLE_CLIENT_ID = "{{ google_client_id | default('') }}" || "354347783742-g8fsuo6iathr7s7un3dddic44874nid0.apps.googleusercontent.com";
+    const GOOGLE_CLIENT_ID = "354347783742-g8fsuo6iathr7s7un3dddic44874nid0.apps.googleusercontent.com";
+
+    window.handleGoogleCredentialResponse = async function(response) {
+        if (response && response.credential) {
+            await submitGoogleAuth({ credential: response.credential });
+        }
+    };
 
     function initGoogleGsi() {
-        if (!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID === 'your_google_client_id_here') return;
         if (window.google && window.google.accounts && window.google.accounts.id) {
             try {
                 google.accounts.id.initialize({
                     client_id: GOOGLE_CLIENT_ID,
-                    callback: async (response) => {
-                        if (response.credential) {
-                            await submitGoogleAuth({ credential: response.credential });
-                        }
-                    }
+                    callback: handleGoogleCredentialResponse,
+                    auto_select: false
                 });
 
                 const gsiTarget = document.getElementById('googleGsiBtn');
@@ -223,7 +243,17 @@
         }
     }
 
-    window.addEventListener('load', initGoogleGsi);
+    window.addEventListener('load', () => {
+        initGoogleGsi();
+        let retries = 0;
+        const interval = setInterval(() => {
+            if (window.google && window.google.accounts && window.google.accounts.id) {
+                initGoogleGsi();
+                clearInterval(interval);
+            }
+            if (++retries > 30) clearInterval(interval);
+        }, 100);
+    });
 
     function quickSelectGoogleAccount(email, name) {
         document.getElementById('g-email').value = email;
