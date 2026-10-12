@@ -237,7 +237,7 @@
             return `
                 <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden hover:shadow-xl transition-all flex flex-col group">
                     <div class="relative overflow-hidden h-48 bg-gray-100 dark:bg-slate-900 cursor-pointer" onclick="window.location.href='${detailUrl}'">
-                        <img src="${s.image_url}" alt="${s.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://placehold.co/600x400/2563eb/ffffff?text=Falcon+Services'">
+                        <img src="${s.image_url}" alt="${s.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='/static/placeholder.jpg'">
                         ${s.category ? `
                             <span class="absolute top-3 left-3 bg-blue-600/90 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider backdrop-blur-sm">
                                 ${s.category.name}

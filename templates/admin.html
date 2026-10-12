@@ -1264,7 +1264,7 @@
                 return `
                 <tr class="hover:bg-gray-50 dark:hover:bg-slate-700/50 transition">
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 flex items-center gap-3">
-                        <img src="${s.image_url}" class="w-10 h-10 rounded object-cover shadow-sm" onerror="this.src='https://placehold.co/400x400/2563eb/ffffff?text=F'">
+                        <img src="${s.image_url}" class="w-10 h-10 rounded object-cover shadow-sm" onerror="this.src='/static/placeholder.jpg'">
                         ${s.title}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 font-medium">${catName}</td>
@@ -1664,7 +1664,7 @@
                             <div class="text-xs text-gray-400">${p.client_name} &bull; <span class="text-blue-500">${p.category_name}</span></div>
                         </td>
                         <td class="px-6 py-4">
-                            <img src="${p.image_url}" alt="${p.title}" class="w-16 h-10 object-cover rounded-lg border border-gray-100 dark:border-slate-600">
+                            <img src="${p.image_url}" alt="${p.title}" class="w-16 h-10 object-cover rounded-lg border border-gray-100 dark:border-slate-600" onerror="this.src='/static/placeholder.jpg'">
                         </td>
                         <td class="px-6 py-4">
                             <div class="text-xs font-mono text-gray-600 dark:text-gray-300 max-w-xs truncate">${p.technologies}</div>
@@ -1770,7 +1770,7 @@
                 tb.innerHTML = adminTeamList.map(m => `
                     <tr class="hover:bg-gray-50 dark:hover:bg-slate-700/30 transition">
                         <td class="px-6 py-4 flex items-center gap-3">
-                            <img src="${m.avatar_url || '/static/default-avatar.png'}" alt="${m.name}" class="w-10 h-10 rounded-full object-cover border border-gray-100 dark:border-slate-600">
+                            <img src="${m.avatar_url || '/static/default-avatar.png'}" alt="${m.name}" class="w-10 h-10 rounded-full object-cover border border-gray-100 dark:border-slate-600" onerror="this.src='/static/default-avatar.png'">
                             <div>
                                 <div class="font-bold text-gray-900 dark:text-white">${m.name}</div>
                                 <div class="text-[11px] text-gray-400">${m.bio ? m.bio.slice(0, 35) + '...' : ''}</div>
