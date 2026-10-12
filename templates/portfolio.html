@@ -5,61 +5,90 @@
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <!-- Header -->
-    <div class="text-center max-w-3xl mx-auto mb-12">
+    <div class="text-center max-w-3xl mx-auto mb-10">
         <span class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 py-1 rounded-full">Bizning ishlarimiz</span>
         <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white mt-3">Muvaffaqiyatli amalga oshirilgan loyihalar</h1>
-        <p class="text-sm sm:text-base text-gray-500 dark:text-gray-400 mt-2">Falcon Services jamoasi tomonidan mijozlarimiz uchun tayyorlangan so'nggi zamonaviy veb-saytlar va tizimlar.</p>
+        <p class="text-sm sm:text-base text-gray-500 dark:text-gray-400 mt-2">Falcon Services jamoasi tomonidan mijozlarimiz uchun tayyorlangan so'nggi zamonaviy veb-saytlar, mobil ilovalar va raqamli tizimlar.</p>
+    </div>
+
+    <!-- Category Filter Tabs -->
+    <div class="flex flex-wrap items-center justify-center gap-2 mb-10" id="portfolioFilterContainer">
+        <button onclick="filterPortfolio('all', this)" class="portfolio-filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition bg-blue-600 text-white shadow-sm">
+            Barchasi
+        </button>
+        <button onclick="filterPortfolio('Web & AI', this)" class="portfolio-filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700">
+            Web & AI
+        </button>
+        <button onclick="filterPortfolio('Mobil Ilova', this)" class="portfolio-filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700">
+            Mobil Ilovalar
+        </button>
+        <button onclick="filterPortfolio('Web & MVP', this)" class="portfolio-filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700">
+            Startaplar & MVP
+        </button>
     </div>
 
     <!-- Portfolio Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <!-- Project 1 -->
-        <div class="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-slate-700 hover:shadow-xl transition group">
-            <div class="h-56 bg-gray-100 dark:bg-slate-900 overflow-hidden relative">
-                <img src="/static/placeholder.jpg" alt="E-Commerce Platform" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                <span class="absolute top-3 left-3 bg-blue-600 text-white text-xs font-bold px-2.5 py-1 rounded-lg">Onlayn Do'kon</span>
-            </div>
-            <div class="p-6">
-                <h3 class="font-extrabold text-lg text-gray-900 dark:text-white mb-2">SmartMarket Onlayn Do'koni</h3>
-                <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed mb-4">Payme va Click to'lov tizimlari bilan integratsiya qilingan, 10 000+ mahsulotga mo'ljallangan yirik internet-do'kon.</p>
-                <div class="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-slate-700 text-xs">
-                    <span class="text-gray-400">Texnologiyalar: Python, Vue.js</span>
-                    <a href="/xizmatlar" class="font-bold text-blue-600 hover:underline">Shunga o'xshash xizmat &rarr;</a>
-                </div>
-            </div>
-        </div>
+    <div id="portfolioGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% if projects and projects|length > 0 %}
+            {% for p in projects %}
+            <div class="portfolio-card bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-slate-700 hover:shadow-xl transition flex flex-col group" data-category="{{ p.category_name }}">
+                <a href="/portfolio/{{ p.slug or p.id }}" class="h-56 bg-gray-100 dark:bg-slate-900 overflow-hidden relative block cursor-pointer">
+                    <img src="{{ p.image_url or '/static/placeholder.jpg' }}" alt="{{ p.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='/static/placeholder.jpg'">
+                    <span class="absolute top-3 left-3 bg-blue-600/90 text-white text-xs font-bold px-2.5 py-1 rounded-lg backdrop-blur-sm">{{ p.category_name }}</span>
+                    {% if p.is_featured %}
+                    <span class="absolute top-3 right-3 bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-sm">Top Loyiha</span>
+                    {% endif %}
+                </a>
+                <div class="p-6 flex-grow flex flex-col">
+                    <a href="/portfolio/{{ p.slug or p.id }}" class="font-extrabold text-lg text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 transition block">
+                        {{ p.title }}
+                    </a>
+                    <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-4 flex-grow line-clamp-3">
+                        {{ p.short_desc }}
+                    </p>
+                    
+                    {% if p.technologies %}
+                    <div class="pt-3 border-t border-gray-100 dark:border-slate-700 text-xs text-gray-400 mb-4 flex flex-wrap gap-1">
+                        {% for tech in p.technologies.split(',')[:3] %}
+                        <span class="bg-gray-100 dark:bg-slate-700/60 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded text-[11px] font-medium">{{ tech.strip() }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
 
-        <!-- Project 2 -->
-        <div class="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-slate-700 hover:shadow-xl transition group">
-            <div class="h-56 bg-gray-100 dark:bg-slate-900 overflow-hidden relative">
-                <img src="/static/placeholder.jpg" alt="Corporate Website" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                <span class="absolute top-3 left-3 bg-purple-600 text-white text-xs font-bold px-2.5 py-1 rounded-lg">Korporativ Sayt</span>
-            </div>
-            <div class="p-6">
-                <h3 class="font-extrabold text-lg text-gray-900 dark:text-white mb-2">Alpha Logistic Korporativ Sayti</h3>
-                <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed mb-4">Xalqaro yuk tashish kompaniyasi uchun ko'p tilli (UZ/RU/EN) zamonaviy portal va onlayn narx kalkulyatori.</p>
-                <div class="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-slate-700 text-xs">
-                    <span class="text-gray-400">Texnologiyalar: FastAPI, Tailwind</span>
-                    <a href="/xizmatlar" class="font-bold text-blue-600 hover:underline">Shunga o'xshash xizmat &rarr;</a>
+                    <div class="flex items-center justify-between pt-2">
+                        <a href="/portfolio/{{ p.slug or p.id }}" class="inline-flex items-center gap-1 font-bold text-xs sm:text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                            <span>Batafsil ko'rish</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </a>
+                        <a href="/xizmatlar" class="text-xs font-medium text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                            Buyurtma berish &rarr;
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
+            {% endfor %}
+        {% else %}
+            <!-- Fallback Static Cards when database has no projects -->
+            <div class="portfolio-card bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-slate-700 hover:shadow-xl transition group" data-category="Web & AI">
+                <div class="h-56 bg-gray-100 dark:bg-slate-900 overflow-hidden relative">
+                    <img src="/static/services/web-dev.webp" alt="SmartMarket" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='/static/placeholder.jpg'">
+                    <span class="absolute top-3 left-3 bg-blue-600 text-white text-xs font-bold px-2.5 py-1 rounded-lg">Web & AI</span>
+                </div>
+                <div class="p-6">
+                    <h3 class="font-extrabold text-lg text-gray-900 dark:text-white mb-2">SmartMarket Onlayn Do'koni</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed mb-4">Payme va Click to'lov tizimlari bilan integratsiya qilingan, 10 000+ mahsulotga mo'ljallangan yirik internet-do'kon.</p>
+                    <div class="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-slate-700 text-xs">
+                        <span class="text-gray-400">Texnologiyalar: Python, Vue.js</span>
+                        <a href="/xizmatlar" class="font-bold text-blue-600 hover:underline">Buyurtma berish &rarr;</a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
 
-        <!-- Project 3 -->
-        <div class="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-slate-700 hover:shadow-xl transition group">
-            <div class="h-56 bg-gray-100 dark:bg-slate-900 overflow-hidden relative">
-                <img src="/static/placeholder.jpg" alt="CRM System" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                <span class="absolute top-3 left-3 bg-green-600 text-white text-xs font-bold px-2.5 py-1 rounded-lg">CRM / ERP</span>
-            </div>
-            <div class="p-6">
-                <h3 class="font-extrabold text-lg text-gray-900 dark:text-white mb-2">Apex Education O'quv Markazi CRM</h3>
-                <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed mb-4">Talabalar davomati, to'lovlar, guruhlar va SMS xabarnomalarini boshqarish uchun avtomatlashtirilgan ichki tizim.</p>
-                <div class="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-slate-700 text-xs">
-                    <span class="text-gray-400">Texnologiyalar: PostgreSQL, API</span>
-                    <a href="/xizmatlar" class="font-bold text-blue-600 hover:underline">Shunga o'xshash xizmat &rarr;</a>
-                </div>
-            </div>
-        </div>
+    <!-- Empty state for filter -->
+    <div id="portfolioEmptyState" class="hidden text-center py-16 bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700">
+        <p class="text-gray-500 dark:text-gray-400 font-medium">Ushbu toifada hozircha loyihalar mavjud emas.</p>
     </div>
 
     <!-- CTA -->
@@ -76,4 +105,38 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function filterPortfolio(cat, btn) {
+        // Toggle active button style
+        document.querySelectorAll('.portfolio-filter-btn').forEach(b => {
+            b.classList.remove('bg-blue-600', 'text-white', 'shadow-sm');
+            b.classList.add('bg-gray-100', 'dark:bg-slate-800', 'text-gray-600', 'dark:text-gray-300');
+        });
+        btn.classList.add('bg-blue-600', 'text-white', 'shadow-sm');
+        btn.classList.remove('bg-gray-100', 'dark:bg-slate-800', 'text-gray-600', 'dark:text-gray-300');
+
+        const cards = document.querySelectorAll('.portfolio-card');
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+            const cardCat = card.getAttribute('data-category') || '';
+            if (cat === 'all' || cardCat.toLowerCase().includes(cat.toLowerCase())) {
+                card.classList.remove('hidden');
+                visibleCount++;
+            } else {
+                card.classList.add('hidden');
+            }
+        });
+
+        const emptyEl = document.getElementById('portfolioEmptyState');
+        if (visibleCount === 0) {
+            emptyEl.classList.remove('hidden');
+        } else {
+            emptyEl.classList.add('hidden');
+        }
+    }
+</script>
 {% endblock %}

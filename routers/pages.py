@@ -61,8 +61,9 @@ async def service_detail_legacy(request: Request, id: int, db: Session = Depends
     return templates.TemplateResponse(request=request, name="service_detail.html", context={"service": service, "slug_or_id": str(id)})
 
 @router.get("/portfolio", response_class=HTMLResponse)
-async def portfolio_page(request: Request):
-    return templates.TemplateResponse(request=request, name="portfolio.html")
+async def portfolio_page(request: Request, db: Session = Depends(get_db)):
+    projects = db.query(models.PortfolioProject).order_by(models.PortfolioProject.created_at.desc()).all()
+    return templates.TemplateResponse(request=request, name="portfolio.html", context={"projects": projects})
 
 @router.get("/portfolio/{slug_or_id}", response_class=HTMLResponse)
 async def portfolio_detail_page(request: Request, slug_or_id: str, db: Session = Depends(get_db)):
@@ -179,6 +180,14 @@ async def client_orders(request: Request, db: Session = Depends(get_db)):
         return RedirectResponse(url="/kirish?redirect=/buyurtmalarim", status_code=302)
     return templates.TemplateResponse(request=request, name="my_orders.html", context={"user": user, "active_page": "orders"})
 
+@router.get("/buyurtma", response_class=HTMLResponse)
+async def client_order_redirect(request: Request):
+    return RedirectResponse(url="/xizmatlar", status_code=302)
+
+@router.get("/buyurtma/muvaffaqiyat", response_class=HTMLResponse)
+async def client_order_success(request: Request, order_number: str = Query(None)):
+    return templates.TemplateResponse(request=request, name="order_success.html", context={"order_number": order_number, "active_page": "orders"})
+
 @router.get("/buyurtma/{service_slug_or_id}", response_class=HTMLResponse)
 async def client_order_wizard(request: Request, service_slug_or_id: str, db: Session = Depends(get_db)):
     user = get_optional_user(request, db)
@@ -196,10 +205,6 @@ async def client_order_wizard(request: Request, service_slug_or_id: str, db: Ses
         name="order_create.html", 
         context={"user": user, "service": service, "service_identifier": service_slug_or_id, "active_page": "new_order"}
     )
-
-@router.get("/buyurtma/muvaffaqiyat", response_class=HTMLResponse)
-async def client_order_success(request: Request, order_number: str = Query(None)):
-    return templates.TemplateResponse(request=request, name="order_success.html", context={"order_number": order_number, "active_page": "orders"})
 
 @router.get("/buyurtmalar/{order_id}", response_class=HTMLResponse)
 async def client_order_detail(request: Request, order_id: int, db: Session = Depends(get_db)):
@@ -293,3 +298,28 @@ async def admin_settings_page():
 @router.get("/admin/activity-log")
 async def admin_activity_log_page():
     return RedirectResponse(url="/admin?tab=activity-log", status_code=302)
+
+@router.get("/admin/portfolio")
+async def admin_portfolio_page():
+    return RedirectResponse(url="/admin?tab=portfolio", status_code=302)
+
+@router.get("/admin/team")
+async def admin_team_page():
+    return RedirectResponse(url="/admin?tab=team", status_code=302)
+
+@router.get("/admin/support")
+async def admin_support_page():
+    return RedirectResponse(url="/admin?tab=support", status_code=302)
+
+@router.get("/admin/reviews")
+async def admin_reviews_page():
+    return RedirectResponse(url="/admin?tab=reviews", status_code=302)
+
+@router.get("/admin/banners")
+async def admin_banners_page():
+    return RedirectResponse(url="/admin?tab=banners", status_code=302)
+
+@router.get("/admin/broadcast")
+async def admin_broadcast_page():
+    return RedirectResponse(url="/admin?tab=broadcast", status_code=302)
+

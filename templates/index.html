@@ -127,26 +127,53 @@
             </div>
             <a href="/portfolio" class="text-blue-600 dark:text-blue-400 text-sm font-bold hover:underline">Barcha ishlar &rarr;</a>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-slate-700">
-                <img src="/static/placeholder.jpg" class="h-44 w-full object-cover">
-                <div class="p-5">
-                    <h3 class="font-bold text-gray-900 dark:text-white text-base">SmartMarket Do'koni</h3>
-                    <p class="text-xs text-gray-500 mt-1">To'liq to'lov integratsiyasi bilan onlayn do'kon.</p>
+        <div id="portfolioPreviewGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-slate-700 hover:shadow-xl transition group flex flex-col">
+                <a href="/portfolio/eventmind-ai-platformasi" class="h-44 bg-gray-100 dark:bg-slate-900 overflow-hidden relative block">
+                    <img src="/static/services/web-dev.webp" alt="EventMind AI" class="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='/static/placeholder.jpg'">
+                    <span class="absolute top-3 left-3 bg-blue-600/90 text-white text-[10px] font-bold px-2.5 py-1 rounded-md backdrop-blur-sm">Web & AI</span>
+                </a>
+                <div class="p-5 flex-grow flex flex-col">
+                    <a href="/portfolio/eventmind-ai-platformasi" class="font-bold text-gray-900 dark:text-white text-base group-hover:text-blue-600 transition block mb-1">
+                        EventMind AI Platformasi
+                    </a>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-4 flex-grow">Sun'iy intellektga asoslangan tadbirlar va chiptalar boshqaruvi platformasi.</p>
+                    <div class="pt-3 border-t border-gray-100 dark:border-slate-700 flex justify-between items-center text-xs">
+                        <a href="/portfolio/eventmind-ai-platformasi" class="font-bold text-blue-600 hover:underline">Batafsil &rarr;</a>
+                        <a href="/xizmatlar" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">Xizmatlar</a>
+                    </div>
                 </div>
             </div>
-            <div class="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-slate-700">
-                <img src="/static/placeholder.jpg" class="h-44 w-full object-cover">
-                <div class="p-5">
-                    <h3 class="font-bold text-gray-900 dark:text-white text-base">Alpha Logistic Portali</h3>
-                    <p class="text-xs text-gray-500 mt-1">Yuk tashish kompaniyasi korporativ veb-sayti.</p>
+            <div class="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-slate-700 hover:shadow-xl transition group flex flex-col">
+                <a href="/portfolio/payfast-mobil-tolov-ilovasi" class="h-44 bg-gray-100 dark:bg-slate-900 overflow-hidden relative block">
+                    <img src="/static/services/mobile.webp" alt="PayFast" class="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='/static/placeholder.jpg'">
+                    <span class="absolute top-3 left-3 bg-purple-600/90 text-white text-[10px] font-bold px-2.5 py-1 rounded-md backdrop-blur-sm">Mobil Ilova</span>
+                </a>
+                <div class="p-5 flex-grow flex flex-col">
+                    <a href="/portfolio/payfast-mobil-tolov-ilovasi" class="font-bold text-gray-900 dark:text-white text-base group-hover:text-blue-600 transition block mb-1">
+                        PayFast FinTex Mobil Ilova
+                    </a>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-4 flex-grow">Tezkor P2P o'tkazmalar, kommunal to'lovlar va NFC orqali to'lovlar.</p>
+                    <div class="pt-3 border-t border-gray-100 dark:border-slate-700 flex justify-between items-center text-xs">
+                        <a href="/portfolio/payfast-mobil-tolov-ilovasi" class="font-bold text-blue-600 hover:underline">Batafsil &rarr;</a>
+                        <a href="/xizmatlar" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">Xizmatlar</a>
+                    </div>
                 </div>
             </div>
-            <div class="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-slate-700">
-                <img src="/static/placeholder.jpg" class="h-44 w-full object-cover">
-                <div class="p-5">
-                    <h3 class="font-bold text-gray-900 dark:text-white text-base">Apex Education CRM</h3>
-                    <p class="text-xs text-gray-500 mt-1">Talabalar va o'quv markazlari avtomatizatsiyasi.</p>
+            <div class="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-slate-700 hover:shadow-xl transition group flex flex-col">
+                <a href="/portfolio/agrotrade-b2b-ekotizimi" class="h-44 bg-gray-100 dark:bg-slate-900 overflow-hidden relative block">
+                    <img src="/static/services/mvp.webp" alt="AgroTrade" class="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='/static/placeholder.jpg'">
+                    <span class="absolute top-3 left-3 bg-green-600/90 text-white text-[10px] font-bold px-2.5 py-1 rounded-md backdrop-blur-sm">Web & MVP</span>
+                </a>
+                <div class="p-5 flex-grow flex flex-col">
+                    <a href="/portfolio/agrotrade-b2b-ekotizimi" class="font-bold text-gray-900 dark:text-white text-base group-hover:text-blue-600 transition block mb-1">
+                        AgroTrade B2B Savdo Tizimi
+                    </a>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-4 flex-grow">Fermerlar va ulgurji xaridorlarni bog'lovchi avtomatlashtirilgan bozor.</p>
+                    <div class="pt-3 border-t border-gray-100 dark:border-slate-700 flex justify-between items-center text-xs">
+                        <a href="/portfolio/agrotrade-b2b-ekotizimi" class="font-bold text-blue-600 hover:underline">Batafsil &rarr;</a>
+                        <a href="/xizmatlar" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">Xizmatlar</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -240,6 +267,40 @@
         }).join('');
     }
     
+    async function loadPortfolioPreview() {
+        try {
+            const res = await fetch(`${API_URL}/projects`);
+            if (res.ok) {
+                const projects = await res.json();
+                if (projects && projects.length > 0) {
+                    const grid = document.getElementById('portfolioPreviewGrid');
+                    if (grid) {
+                        grid.innerHTML = projects.slice(0, 3).map(p => `
+                            <div class="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-slate-700 hover:shadow-xl transition group flex flex-col">
+                                <a href="/portfolio/${p.slug || p.id}" class="h-44 bg-gray-100 dark:bg-slate-900 overflow-hidden relative block">
+                                    <img src="${p.image_url || '/static/placeholder.jpg'}" alt="${p.title}" class="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='/static/placeholder.jpg'">
+                                    <span class="absolute top-3 left-3 bg-blue-600/90 text-white text-[10px] font-bold px-2.5 py-1 rounded-md backdrop-blur-sm">${p.category_name}</span>
+                                </a>
+                                <div class="p-5 flex-grow flex flex-col">
+                                    <a href="/portfolio/${p.slug || p.id}" class="font-bold text-gray-900 dark:text-white text-base group-hover:text-blue-600 transition block mb-1">
+                                        ${p.title}
+                                    </a>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-4 flex-grow">${p.short_desc}</p>
+                                    <div class="pt-3 border-t border-gray-100 dark:border-slate-700 flex justify-between items-center text-xs">
+                                        <a href="/portfolio/${p.slug || p.id}" class="font-bold text-blue-600 hover:underline">Batafsil &rarr;</a>
+                                        <a href="/xizmatlar" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">Xizmatlar</a>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                }
+            }
+        } catch (e) {
+            console.error("Portfolio preview error", e);
+        }
+    }
+
     async function loadPublicStats() {
         try {
             const res = await fetch(`${API_URL}/stats`);
@@ -259,6 +320,7 @@
     
     document.addEventListener('DOMContentLoaded', () => {
         loadRecommended();
+        loadPortfolioPreview();
         loadPublicStats();
     });
     window.addEventListener('languageChanged', renderRecommended);

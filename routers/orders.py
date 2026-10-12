@@ -93,8 +93,11 @@ def create_order(order_in: schemas.OrderCreate, current_user: models.User = Depe
 
     return new_order
 
+@router.get("", response_model=list[schemas.OrderOut])
 @router.get("/my", response_model=list[schemas.OrderOut])
 def get_my_orders(current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if current_user.role == "admin":
+        return db.query(models.Order).order_by(models.Order.created_at.desc()).all()
     return db.query(models.Order).filter(models.Order.user_id == current_user.id).order_by(models.Order.created_at.desc()).all()
 
 @router.get("/{id}", response_model=schemas.OrderDetailOut)
